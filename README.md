@@ -18,6 +18,10 @@ The project is in its early stages, and we are working on adding more capabiliti
 
 • Current focus: We are currently focused on making it easy to build RAG Application. Going forward we will be focusing on maintaince and monitoring of the RAG system as well cosidering how to help these applications to take from pilots to production.
 
+## Communities
+
+Join our Slack community to stay updated and discuss with other members: [Join our Slack]([https://join.slack.com/t/yourworkspace/shared_invite/xyz](https://join.slack.com/t/theailounge/shared_invite/zt-2ogkrruyf-FPOHuPr5hdqXl34bDWjHjw))
+
 ## 📐 Architecture
 
 ![picture of Architecture flow]()
