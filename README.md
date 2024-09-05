@@ -20,7 +20,7 @@ The project is in its early stages, and we are working on adding more capabiliti
 
 ## Communities
 
-Join our Slack community to stay updated and discuss with other members: [Join our Slack]([https://join.slack.com/t/yourworkspace/shared_invite/xyz](https://join.slack.com/t/theailounge/shared_invite/zt-2ogkrruyf-FPOHuPr5hdqXl34bDWjHjw))
+Join our Slack community to stay updated and discuss with other members: [Join our Slack](https://join.slack.com/t/theailounge/shared_invite/zt-2ogkrruyf-FPOHuPr5hdqXl34bDWjHjw)
 
 ## 📐 Architecture
 
