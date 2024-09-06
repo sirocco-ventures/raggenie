@@ -18,9 +18,12 @@ The project is in its early stages, and we are working on adding more capabiliti
 
 • Current focus: We are currently focused on making it easy to build RAG Application. Going forward we will be focusing on maintaince and monitoring of the RAG system as well cosidering how to help these applications to take from pilots to production.
 
-## Communities
+## 🌎 Communities
 
-Join our Slack community to stay updated and discuss with other members: [Join our Slack](https://join.slack.com/t/theailounge/shared_invite/zt-2ogkrruyf-FPOHuPr5hdqXl34bDWjHjw)
+Join our communities for product updates, support, and to stay connected with the latest from RAGGENIE!
+*  Join our [Slack community](https://join.slack.com/t/theailounge/shared_invite/zt-2ogkrruyf-FPOHuPr5hdqXl34bDWjHjw) <img src="https://cdn.prod.website-files.com/634fa785d369cb60d80b6dd1/6375e1774613600a91630a78_Slack_icon_2019.svg.png" width="15" alt="RAGGENIE Logo">
+*  Leave a star on our [GitHub](https://github.com/sirocco-ventures/raggenie) 🌟
+*  Report bugs with [GitHub Issues](https://github.com/sirocco-ventures/raggenie/issues) 🐞
 
 ## 📐 Architecture
 
@@ -102,4 +105,4 @@ These are the planned features and improvements that are in the pipeline for fut
 RagGenie is licensed under the [MIT License](https://opensource.org/license/mit), which is a permissive open-source license that allows you to freely use, modify, and distribute the software with very few restrictions.
 
 ## 🤝 Contributing
-Contributions are welcome! Please check the outstanding issues and feel free to open a pull request. For more information, please check out the [contribution guidelines]().
+Contributions are welcome! Please check the outstanding issues and feel free to open a pull request. For more information, please check out the [contribution guidelines](https://github.com/sirocco-ventures/raggenie/blob/main/CONTRIBUTING.md).
