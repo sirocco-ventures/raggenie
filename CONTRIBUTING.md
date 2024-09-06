@@ -7,8 +7,8 @@ To make a contribution, follow the following steps:
 1. Fork and clone this repository
 2. Do the changes on your fork
 3. If you modified the code (new feature or bug-fix), please add tests for it
-4. Check the linting [see below]()
-5. Ensure that all tests pass [see below]()
+4. Check the linting [see below](https://github.com/sirocco-ventures/raggenie/blob/main/CONTRIBUTING.md#-Linting)
+5. Ensure that all tests pass [see below](https://github.com/sirocco-ventures/raggenie/blob/main/CONTRIBUTING.md#-Testing)
 6. Submit a pull request
 
 For more details about pull requests, please read [GitHub's guides](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
