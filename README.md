@@ -65,7 +65,7 @@ RAGGENIE can do actions to accomplish tasks with user queries. These can be setu
 * Fetch data from a database
 * Insert data into database
 
-### 🖼️ UI Plugin*
+### 🖼️ UI Plugin
 This component will help you embed the chat widget into your UI with JavaScript. So that you can embeed this as a chat bot to your website or portal
 
 ## 🛠️ Getting Started
@@ -89,12 +89,15 @@ pip install -r requirements.txt
 
 #### Running RAGGENIE
 
-* Init API mode
-To run raggenie specify the config file to use
+* In API mode
+To run raggenie API specify the config file to use
 ```bash
 python main.py --config ./config/config.yaml llm
 ```
-
+* Using Docker
+```bash
+Docker Compose up
+```
 
 ## 🚧 Feature Pipeline
 These are the planned features and improvements that are in the pipeline for future releases.
