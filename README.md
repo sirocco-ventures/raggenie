@@ -18,6 +18,13 @@ The project is in its early stages, and we are working on adding more capabiliti
 
 • Current focus: We are currently focused on making it easy to build RAG Application. Going forward we will be focusing on maintaince and monitoring of the RAG system as well cosidering how to help these applications to take from pilots to production.
 
+## 🌎 Communities
+
+Join our communities for product updates, support, and to stay connected with the latest from RAGGENIE!
+*  Join our [Slack community](https://join.slack.com/t/theailounge/shared_invite/zt-2ogkrruyf-FPOHuPr5hdqXl34bDWjHjw) <img src="https://cdn.prod.website-files.com/634fa785d369cb60d80b6dd1/6375e1774613600a91630a78_Slack_icon_2019.svg.png" width="15" alt="RAGGENIE Logo">
+*  Leave a star on our [GitHub](https://github.com/sirocco-ventures/raggenie) 🌟
+*  Report bugs with [GitHub Issues](https://github.com/sirocco-ventures/raggenie/issues) 🐞
+
 ## 📐 Architecture
 
 ![picture of Architecture flow]()
@@ -58,7 +65,7 @@ RAGGENIE can do actions to accomplish tasks with user queries. These can be setu
 * Fetch data from a database
 * Insert data into database
 
-### 🖼️ UI Plugin*
+### 🖼️ UI Plugin
 This component will help you embed the chat widget into your UI with JavaScript. So that you can embeed this as a chat bot to your website or portal
 
 ## 🛠️ Getting Started
@@ -82,12 +89,15 @@ pip install -r requirements.txt
 
 #### Running RAGGENIE
 
-* Init API mode
-To run raggenie specify the config file to use
+* In API mode
+To run raggenie API specify the config file to use
 ```bash
 python main.py --config ./config/config.yaml llm
 ```
-
+* Using Docker
+```bash
+Docker Compose up
+```
 
 ## 🚧 Feature Pipeline
 These are the planned features and improvements that are in the pipeline for future releases.
@@ -98,4 +108,4 @@ These are the planned features and improvements that are in the pipeline for fut
 RagGenie is licensed under the [MIT License](https://opensource.org/license/mit), which is a permissive open-source license that allows you to freely use, modify, and distribute the software with very few restrictions.
 
 ## 🤝 Contributing
-Contributions are welcome! Please check the outstanding issues and feel free to open a pull request. For more information, please check out the [contribution guidelines]().
+Contributions are welcome! Please check the outstanding issues and feel free to open a pull request. For more information, please check out the [contribution guidelines](https://github.com/sirocco-ventures/raggenie/blob/main/CONTRIBUTING.md).
