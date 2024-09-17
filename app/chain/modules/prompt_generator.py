@@ -75,7 +75,7 @@ class PromptGenerator(AbstractHandler):
             auto_context = "\n\n".join(cont["document"] for cont in rag.get("context", []))
             auto_schema = "\n\n".join(schema["document"] for schema in rag.get("schema", []))
             system_prompt_context = context.system_prompt
-            system_prompt_context.template.format(
+            system_prompt= system_prompt_context.template.format(
                 schema=auto_schema,
                 context=auto_context,
                 question=request.get("question", ""),
