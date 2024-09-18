@@ -1,0 +1,16 @@
+.SelectContainer {
+    margin-bottom: 24px;
+}
+
+
+.SelectLabel{
+    color: #323232;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    margin-bottom: 5px;
+    margin-left: 4.23px;
+    display: block;
+}

@@ -1,0 +1,31 @@
+.DeployPageButton{
+    display: inline-flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    margin-left: 35px;
+}
+.LightButton{
+        border-radius: var(--4, 4px);
+        background: #ECF5FF;
+        color: #3893FF;
+        font-family: Inter;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        display: inline-flex;
+        align-content: center;
+        align-items: center;
+        gap: 10px
+}
+
+.DeployURLContainer{
+    max-width: 1180px;
+}
+
+
+
+.SmallTabContainer{
+    width: 397px;
+    display: flex;
+}
+

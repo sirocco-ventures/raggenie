@@ -1,0 +1,112 @@
+.ActionDiv {
+    border-radius: 8px;
+    background: var(--neural-7);
+    padding: 17px 16px;
+    display: flex;
+}
+
+.expandRowContainer {
+    padding: 10px 22px;
+}
+
+.expandRowDiv{
+    border-radius: 4px;
+    background: #F5FAFF;
+    padding: 0px 0px 0px 42px;
+    display: flex;
+    align-items: center;
+    margin: 2px 0px;
+}
+
+.expandRowCol {
+    width: 200px;
+    padding: 12px 0px;
+}
+
+
+.selectDropDownLabel {
+    color: #323232;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    margin-bottom: 5px;
+    margin-left: 4.23px;
+    display: block;
+}
+
+.selectDropDown {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+  
+  .selectDropDown select {
+    appearance: none;
+    width: 100%;
+    font-size: 12pz;
+    padding: 0.675em 6em 0.675em 1em;
+    background-color: #fff;
+    border: 1px solid #caced1;
+    border-radius: 4px;
+    color: #000;
+    cursor: pointer;
+    
+  }
+  
+  .selectDropDown::before,
+  .selectDropDown::after {
+    --size: 0.3rem;
+    content: "";
+    position: absolute;
+    margin-top: .5rem;
+    right: 1rem;
+    pointer-events: none;
+  }
+  
+  .selectDropDown::before {
+    border-left: var(--size) solid transparent;
+    border-right: var(--size) solid transparent;
+    border-bottom: var(--size) solid black;
+    top: 40%;
+  }
+  
+  .selectDropDown::after {
+    border-left: var(--size) solid transparent;
+    border-right: var(--size) solid transparent;
+    border-top: var(--size) solid black;
+    top: 55%;
+  }
+
+
+
+.selectHasError {
+    border-color: #FF7F6D;
+}
+
+.selectHasError:hover {
+    border-color: #FFB9AF;
+}
+
+.selectHasError:focus {
+    border-color: #FF7F6D;
+}
+
+.selectErrorMessage {
+    color: #FF7F6D;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px; /* 133.333% */
+    margin-left: 4px;
+}
+
+.selectHasError:hover ~ .selectErrorMessage {
+    color: #FFB9AF;
+}
+
+.selectHasError:focus ~ .selectErrorMessage {
+    color: #FF7F6D;
+}

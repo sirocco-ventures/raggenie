@@ -1,0 +1,27 @@
+.Tag{
+    padding: 3px 8px;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+    border-radius: 4px;
+    display: block;
+}
+
+.Tag-Primary{
+
+}
+
+
+.Tag-success{
+    border: 0px solid #64A25E;
+    background: #E4F5E1;
+    color: #2F6846;
+}
+
+.Tag-warning{
+    border: 0px solid #FFC57D;
+    background: #F9EEE2;
+    color: #EE9D3E;;
+}

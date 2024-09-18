@@ -1,0 +1,40 @@
+.tabNavBar {
+    display: flex;
+    padding: var(--4, 4px) 5px;
+    gap: 10px;
+    border-radius: 10px;
+    background: #F9F9F9;
+    flex-direction: row;
+}
+
+.tabNavBarLinkActive {
+    flex-grow: 1;
+    background-color: aquamarine;
+    padding: 15px 10px;
+    text-align: center;
+    border-radius: var(--8, 8px);
+    color: #000;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px; /* 125% */
+background: #F9F9F9;
+cursor: pointer;
+    /* 125% */
+}
+
+.tabNavBarLinkActive.active{
+    background: #F0F0F0;
+}
+.tabNavBarLinkActive:hover{
+    background: white;
+}
+
+.tabContent {
+    background-color: #FFF;
+    padding: 47px 13px;
+    display: block;
+}
+

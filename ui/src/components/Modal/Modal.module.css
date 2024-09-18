@@ -1,0 +1,37 @@
+
+.modal {
+    height: 85vh;
+    width: 460px;
+    position: fixed;
+    background-color: #FFF;
+    right: 0px;
+    bottom: 0px;
+    border-radius: 10px 0px 0px 0px;
+    padding: 27px 29px;
+    box-shadow: -2px 2px 20px 2px #e9e5e5;
+    display: none;
+}
+
+.modalShow {
+    display: block;
+}
+
+
+.modalHeader {
+    display: flex;
+    margin-bottom: 41px;
+}
+
+.modalTitle {
+    flex-grow: 1;
+    color: #323232;
+    font-family: Inter;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.closeIconContainer{ 
+    cursor: pointer;
+}

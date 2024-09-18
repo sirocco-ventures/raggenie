@@ -1,0 +1,71 @@
+.ActionDiv {
+    border-radius: 8px;
+    background: var(--neural-7);
+    padding: 17px 16px;
+    display: flex;
+}
+
+
+.configHeading{
+    color: #323232;
+font-feature-settings: 'liga' off, 'clig' off;
+font-family: Inter;
+font-size: 16px;
+font-style: normal;
+font-weight: 500;
+line-height: 20px; /* 125% */
+margin: 0;
+margin-bottom: 10px;
+}
+
+.configDescription{
+    color: #888787;
+font-feature-settings: 'liga' off, 'clig' off;
+font-family: Inter;
+font-size: 14px;
+font-style: normal;
+font-weight: 400;
+line-height: 20px; /* 142.857% */
+margin-bottom: 30px;
+}
+
+.saveConfigContainer {
+    bottom: 20px;
+    border-radius: var(--8, 8px);
+    background: #F9F9F9;
+    height: auto;
+    bottom: 20px;
+    padding: 17px 19px 18px 16px;
+    align-content: space-around;
+    justify-content: space-between;
+}
+
+.configSaveContainer{
+    text-align: right;  
+}
+
+.inferenceSaveContainer {
+    display: flex;
+}
+
+.backButton{
+    font-size: 14px;
+}
+
+.dropdownHead{
+    color: #323232;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    margin: 0px;
+    display: block;
+}
+
+.alignDropdownOptions{
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    gap: 8px;
+}

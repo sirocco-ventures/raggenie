@@ -1,0 +1,47 @@
+
+/* Tabs style */
+
+.Tabs {
+    display: flex;
+}
+
+.TabButton {
+    padding: 15px 16px;
+    color: #C8C8C8;
+    text-align: center;
+    font-family: Inter;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+
+
+.TabButton:hover{
+    background-color: #F0F0F0;
+}
+
+.TabButtonDisabled {
+   cursor:no-drop ;
+}
+
+.TabButtonActive {
+    border-bottom: 2px solid #3893FF;
+    color: #3893FF;
+}
+
+
+.TabPanel {
+    display: none;
+}
+
+.TabBody {
+    padding: 25px 0px;
+}
+
+.TabPanelActive {
+    display: initial;
+}
