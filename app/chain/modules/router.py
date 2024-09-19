@@ -1,5 +1,5 @@
 from app.base.abstract_handlers import AbstractHandler
-from typing import Any, Optional
+from typing import Any
 from loguru import logger
 from app.chain.formatter.general_response import Formatter
 
@@ -18,9 +18,9 @@ class Router(AbstractHandler):
         capability_handler (AbstractHandler): Handler for capability-related intents.
         metadata_handler (AbstractHandler): Handler for metadata-related intents.
     """
-    
-    
-    def __init__(self, common_context, fallback_handler, general_handler, capability_handler, metadata_handler) -> None:
+
+
+    def __init__(self, common_context, fallback_handler, intent_handler, general_handler, capability_handler, metadata_handler) -> None:
         """
         Initializes the Router with the provided handlers.
 
@@ -31,13 +31,14 @@ class Router(AbstractHandler):
             capability_handler (AbstractHandler): Handler for capability-related intents.
             metadata_handler (AbstractHandler): Handler for metadata-related intents.
         """
-        
+
         self.fallback_handler = fallback_handler
-        self.forwared_handler = general_handler
+        self.forwared_handler = intent_handler
+        self.general_handler = general_handler
         self.capability_handler = capability_handler
         self.metadata_handler = metadata_handler
 
-        
+
     def handle(self, request: Any) -> str:
         """
         Routes the request to the appropriate handler based on the detected intent.
@@ -52,14 +53,22 @@ class Router(AbstractHandler):
 
         logger.info("passing through => Router")
         response = request
-        
+
         intent_extractor = request.get("intent_extractor", {})
         intent = intent_extractor.get("intent", "")
-        
+
         if intent:
             if intent in  self.forwared_handler.data_sources:
-                return super().handle(self.forwared_handler.invoke(request))
-            elif intent == "database_structure_and_metadata_inquiry" and intent != "out_of_context":
+                datasource = self.forwared_handler.data_sources[intent]
+
+                if datasource.__category__ == 2:
+                    logger.info("entered database workflow")
+                    return super().handle(self.forwared_handler.invoke(request))
+                else:
+                    logger.info("entered default workflow")
+                    return super().handle(self.general_handler.invoke(request))
+
+            elif intent == "metadata_inquiry" and intent != "out_of_context":
                 return super().handle(self.metadata_handler.invoke(request))
             elif intent in request.get("available_intents", []) and intent != "out_of_context":
                 return super().handle(self.capability_handler.invoke(request))

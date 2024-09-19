@@ -1,5 +1,5 @@
 from app.base.abstract_handlers import AbstractHandler
-from typing import Any, Optional
+from typing import Any
 from loguru import logger
 from app.chain.formatter.general_response import Formatter
 
@@ -11,7 +11,7 @@ class FollowupInterpreter(AbstractHandler):
     the inference results from follow-up queries and format the response accordingly.
     """
 
-    
+
     def __init__(self, common_context, general_chain) -> None:
         """
         Initialize the FollowupInterpreter.
@@ -23,7 +23,7 @@ class FollowupInterpreter(AbstractHandler):
 
         self.common_context = common_context
         self.general_chain = general_chain
-        
+
     def handle(self, request: Any) -> str:
         """
         Handle the incoming request by interpreting the inference results and formatting the response.
@@ -34,14 +34,14 @@ class FollowupInterpreter(AbstractHandler):
             str: The formatted response after processing the request.
         """
 
-        logger.info("passing through => interpretter")
+        logger.info("passing through => interpreter")
         response = request
-        
+
         if "inference" in request:
             inference = request["inference"]
             if inference["completed"] == True or inference["completed"] == "true":
                 logger.info("Intent completed, trigger the action")
-                
+
             response = Formatter.format(inference["message"])
             response["summary"] = request["inference"]["summary"]
             response["question"] = request["question"]
@@ -49,6 +49,6 @@ class FollowupInterpreter(AbstractHandler):
         else:
             logger.info("No intents detected")
             response = Formatter.format("Sorry, I didn't get that")
-            
+
         return super().handle(response)
 

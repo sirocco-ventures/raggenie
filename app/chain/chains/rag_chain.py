@@ -24,7 +24,7 @@ class RAGChain:
     for a specific part of the information retrieval process.
     """
 
-    
+
     def __init__(self,configs,store):
         logger.info("loading modules into RAG chain")
         self.configs = configs
@@ -32,12 +32,12 @@ class RAGChain:
 
         self.document_retriever = DocumentRetriever(self.store)
         self.schema_retriever = SchemaRetriever(self.store)
-        
+
         self.document_retriever.set_next(self.schema_retriever)
         self.handler =  self.document_retriever
 
 
 
     def invoke(self, user_request):
-        
+
         return self.handler.handle(user_request)

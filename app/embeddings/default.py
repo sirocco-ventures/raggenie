@@ -9,4 +9,4 @@ class DefaultEmbedding:
 
     def load_emb(self):
         return self.ef
-    
+

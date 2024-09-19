@@ -49,7 +49,7 @@ class AltasMongoDB(BaseVectorDB):
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 documents.append(sample)
-                
+
             self.doc_collection.insert_many(documents)
 
         if chunked_schema:
@@ -78,14 +78,14 @@ class AltasMongoDB(BaseVectorDB):
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 caches.append(sample)
-                
+
             self.cache_collection.insert_many(caches)
- 
+
         self.create_knn_index()
 
     def _create_index(self, collection, index_name):
         index = list(collection.list_search_indexes())
-        
+
         if len(index)==0:
             collection.create_search_index({
                 "definition": {
@@ -105,14 +105,14 @@ class AltasMongoDB(BaseVectorDB):
             logger.info(f"Index created:{index_name}")
 
         else:
-            logger.info(f"{index_name} Index already exists")      
+            logger.info(f"{index_name} Index already exists")
 
 
     def create_knn_index(self):
         self._create_index(self.doc_collection, self.doc_index_name)
         self._create_index(self.schema_collection, self.schema_index_name)
         self._create_index(self.cache_collection, self.cache_index_name)
-          
+
     def _find_similar(self, datasources, query, collection, count):
         output = []
         for datasource in datasources:
@@ -137,16 +137,16 @@ class AltasMongoDB(BaseVectorDB):
                 "datasource" : 1,
                 "document": 1,
                 "metadatas": 1,
-                "score": { "$meta": "vectorSearchScore" }
+                "score": {"$meta": "vectorSearchScore"}
                 }
             }
             ])
-            results = list(res) 
+            results = list(res)
             for result in results:
                 result['distances'] = 1 - result['score']
             output.extend(result)
-        return output       
-    
+        return output
+
     def find_similar_schema(self, datasource, query,count):
        return self. _find_similar(self,datasource, self.schema_collection, query, count)
 
@@ -155,4 +155,3 @@ class AltasMongoDB(BaseVectorDB):
 
     def find_similar_cache(self, datasource, query,count = 3):
        return self. _find_similar(self,datasource, self.cache_collection, query, count)
-    

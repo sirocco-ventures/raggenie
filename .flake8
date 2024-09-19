@@ -1,0 +1,37 @@
+[flake8]
+max-line-length = 88
+enable-extensions = N, F, C, W, E # Enable naming checks
+select = E201, E202, E204, E999, N801, N802, N803, N806, F401, F405, F811, F821, F823, F841, C901, W503, W504, E741, T001
+exclude = .git, __pycache__, build, dist, venv
+
+# Naming and Style Checks
+#N801: Class names should use CamelCase
+#N802: Function names should be snake_case
+#N803: Argument names should be snake_case
+#N806: Variable in function should be snake_case
+
+# Functionality Checks
+#F405: Name may be undefined, or defined from star imports: module
+#F401: Module imported but unused
+#F811: Redefinition of unused name from line n
+#F823: Local variable name ... referenced before assignment
+#F841: Local variable name is assigned to but never used
+#F821: Undefined name
+
+# Performance & Efficiency
+# E741: Do not use ambiguous variable names like 'l', 'O', or 'I'
+
+# Code Complexity
+#C901: Function is too complex (cyclomatic complexity)
+
+# Line Breaks
+#W503: Line break before binary operator
+#W504: Line break after binary operator
+
+#T001: Print statements found
+
+
+#E201: Whitespace after '('
+#E202: Whitespace before ')'
+#E203: Whitespace before ':'
+#E211: Whitespace before '('

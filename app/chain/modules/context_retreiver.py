@@ -25,7 +25,7 @@ class ContextRetreiver(AbstractHandler):
     def handle(self, request: Any) -> str:
         """
         Handle the incoming request by retrieving relevant context.
-        
+
         Args:
             request (Dict[str, Any]): The incoming request to be processed.
 
@@ -33,15 +33,15 @@ class ContextRetreiver(AbstractHandler):
             str: The response after processing the request.
         """
 
-        logger.info("retreiving context into chain")
+        logger.info("retrieving context into chain")
         response = request
-        
+
         context = []
-        
+
         if "context_id" in request:
             records = self.context_store.query_data(model = ChatHistory, filters= {"chat_context_id": request["context_id"]})
             context.extend(records)
 
         response["context"] = context
-        
+
         return super().handle(response)

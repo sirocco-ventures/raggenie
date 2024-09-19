@@ -1,5 +1,5 @@
 from app.base.abstract_handlers import AbstractHandler
-from typing import Any, Optional
+from typing import Any
 from loguru import logger
 from app.providers.config import configs
 from app.loaders.base_loader import BaseLoader
@@ -13,7 +13,7 @@ class FollowupHandler(AbstractHandler):
     This class extends AbstractHandler and provides functionality to process
     follow-up queries, extract intent-specific parameters, and generate appropriate responses.
     """
-    
+
     def __init__(self, common_context , model_configs) -> None:
         """
         Initialize the FollowupHandler.
@@ -25,7 +25,7 @@ class FollowupHandler(AbstractHandler):
 
         self.model_configs = model_configs
         self.common_context = common_context
-        
+
     def handle(self, request: Any) -> str:
         """
         Handle the incoming request by processing follow-up queries and extracting parameters.
@@ -37,39 +37,39 @@ class FollowupHandler(AbstractHandler):
             str: The response after processing the request.
         """
         response = request
-        logger.info("passing through => Intent extracter")
-        
+        logger.info("passing through => Intent extractor")
+
         use_case = self.model_configs.get("use_case", {})
         capabilities = use_case.get("capabilities", [])
-        
+
         intent_extracted = request.get("intent_extractor")
         intent = intent_extracted.get("intent", "")
-        
-        filtered_capabilities = [capability for capability in capabilities if capability["name"]== intent ]
+
+        filtered_capabilities = [capability for capability in capabilities if capability["name"]== intent]
         capability = filtered_capabilities[0]
-        
-        
+
+
         long_description = use_case["long_description"]
         capability_description = capability["description"]
         parameter_description = ""
-        
+
         parameters = capability["requirements"]
         for parameter in parameters:
             parameter_description= parameter_description + parameter["parameter_name"]+ " : "+ parameter["parameter_description"]+"\n"
-        
+
         prompt = """
                 You are part of a Form automations system where your duty is to: $capability_description
                 You will be given inputs that need to be captured. Your task is to ask and capture this information from the user and get it confirmed.
-                
+
                 -- Form system context ---
                 $long_description
                 -- Form system context ---
-                
+
                 Required parameters
                 -- Parameter section ---
                 $parameter_description
                 --- Parameter section ---
-                
+
                 Instructions:
                 Carefully review all previous messages to establish context.
                 Only extract values that are explicitly provided in previous messages.
@@ -90,22 +90,22 @@ class FollowupHandler(AbstractHandler):
         contexts = contexts[-5:] if len(contexts) >= 5 else contexts
 
         prompt = Template(prompt).safe_substitute(
-            question = request["question"], 
-            long_description= long_description, 
-            capability_description= capability_description, 
+            question = request["question"],
+            long_description= long_description,
+            capability_description= capability_description,
             parameter_description=parameter_description
         )
 
 
         loader = BaseLoader(model_configs=self.model_configs["models"])
         infernce_model = loader.load_model(configs.inference_llm_model)
-                
+
         output, response_metadata = infernce_model.do_inference(
                             prompt, contexts
-                    )      
-                        
+                    )
+
         response["inference"] = parse_llm_response(output)
         response["capability"] = capability
         return super().handle(response)
 
-    
+

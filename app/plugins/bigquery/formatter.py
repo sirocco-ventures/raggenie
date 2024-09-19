@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 from loguru import logger
 
 
@@ -19,11 +19,11 @@ class Formatter:
         self.empty_message = input.get("empty_message")
 
         logger.info("Formatting output using inference")
-        
-        if self.kind  == "list":             
-            response = self.BasicFormatter(data, input)
+
+        if self.kind  == "list":
+            response = self.basic_formatter(data, input)
         elif self.kind == "aggregation":
-            response = self.AggregationFormatter(data, input)
+            response = self.aggregation_formatter(data, input)
         else:
             response["data"] = data
             response["kind"] = "list"
@@ -36,10 +36,10 @@ class Formatter:
             "content": self.general_message,
             "empty_message": self.empty_message,
         })
-        
+
         return response
-    
-    def BasicFormatter(self, data: Any, input:Any) -> dict :
+
+    def basic_formatter(self, data: Any, input:Any) -> dict :
         """
         Formats data as a list, handling cases for none, single, and multiple entries.
 
@@ -47,7 +47,7 @@ class Formatter:
         :return: A dictionary containing the formatted list response.
         """
         logger.info("Formatting data as a list")
-        
+
         if data is None:
             response = {"data": [], "kind": "none"}
         elif len(data) == 1:
@@ -56,9 +56,9 @@ class Formatter:
             response = {"data": data, "kind": "list"}
 
         return response
-    
-    
-    def AggregationFormatter(self, data:Any, input:Any) -> dict :
+
+
+    def aggregation_formatter(self, data:Any, input:Any) -> dict :
         """
         Formats data for aggregation visualisation, supporting table and chart formats.
 
@@ -66,14 +66,13 @@ class Formatter:
         :param visualisation: Dictionary containing visualisation details (e.g., x-axis, y-axis, chart type).
         :return: A dictionary containing the formatted aggregation response.
         """
-        
+
         logger.info("Formatting data as aggregation")
-        
+
         visualisation = input.get("visualisation", {})
         response = {}
-        
-        
-        
+
+
         if data is None or len(data) == 0:
             response = {"data": [], "kind": "none"}
         elif len(data) == 1:
@@ -82,10 +81,10 @@ class Formatter:
             value_fields = visualisation.get("y-axis", [])
             key_fields = visualisation.get("x-axis", [])
             title = visualisation.get("title", "")
-                        
-            visualisaton_kind = visualisation.get("type", "table").replace(" ", "_").lower()
-        
-            if visualisaton_kind in ["bar_chart", "line_chart", "pie_chart"] and len(value_fields) > 0 and len(key_fields) > 0:
+
+            visualisaton_kind = visualisation["type"].replace(" ", "_") if visualisation["type"] is not None else visualisation["type"]
+
+            if visualisaton_kind.lower() in ["bar_chart", "line_chart", "pie_chart"] and len(value_fields) > 0 and len(key_fields) > 0:
                 response["kind"] = visualisaton_kind
                 response["data"] = data
                 response["x"] = key_fields
@@ -93,9 +92,9 @@ class Formatter:
                 response["title"] = title
             else:
                 response = {"kind": "table", "data": data}
-                
+
         return response
-    
-    
-    
-        
+
+
+
+

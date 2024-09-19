@@ -1,20 +1,20 @@
 from app.base.model_loader import ModelLoader
 from app.base.base_llm import BaseLLM
-from typing import Any, List, Mapping, Optional
+from typing import Any
 from loguru import logger
 from app.base.loader_metadata_mixin import LoaderMetadataMixin
 import json
 
 class TogethorModelLoader(ModelLoader, LoaderMetadataMixin):
-    
+
     model: Any = None
     model_config : Any = {}
-    
-        
+
+
 
     def do_inference(self, prompt, previous_messages) -> dict:
         messages = self.messages_format(prompt, previous_messages)
-        
+
         self.model = BaseLLM(
             url = self.model_config["endpoint"],
             headers = {
@@ -26,15 +26,15 @@ class TogethorModelLoader(ModelLoader, LoaderMetadataMixin):
                 "messages": messages,
                 "logprobs": 1,
             }
-        )        
+        )
         out = self.model._call("")
         logger.debug(out)
         response = self.get_response(out)
         respone_metadata = self.get_response_metadata(prompt, response, out)
-        
+
         return response, respone_metadata
-        
-        
+
+
     def get_response(self, message) -> str:
         if "choices" in message and len(message["choices"]) > 0:
             choice = message["choices"][0]
@@ -44,7 +44,7 @@ class TogethorModelLoader(ModelLoader, LoaderMetadataMixin):
                 return choice["text"]
 
         return ""
-         
+
     def get_response_metadata(self, prompt, response, out) -> dict:
         response_metadata = {}
         if "usage" in out:
@@ -66,15 +66,15 @@ class TogethorModelLoader(ModelLoader, LoaderMetadataMixin):
                                         "logprobs" : choice['logprobs']['token_logprobs']
                                     })
                     return response_metadata
-        
-    
+
+
         response_metadata.update({
                 "logprobs" : []
             })
         return response_metadata
-    
+
     def messages_format(self, prompt, previous_messages) -> list:
-        chat_history = [] 
+        chat_history = []
         for prev_message in previous_messages:
             chat_history.append({"role": "user", "content": prev_message.chat_query})
             if prev_message.chat_answer is not None:
@@ -88,5 +88,5 @@ class TogethorModelLoader(ModelLoader, LoaderMetadataMixin):
             messages.extend(chat_history)
         messages.append({"role": "user", "content": prompt})
 
-        logger.info(f"messages:{messages}") 
+        logger.info(f"messages:{messages}")
         return messages

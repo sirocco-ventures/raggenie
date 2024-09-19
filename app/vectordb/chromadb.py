@@ -11,7 +11,7 @@ from app.base.base_vectordb import BaseVectorDB
 
 
 class ChromaDataBase(BaseVectorDB):
-    def __init__(self, path:str , embeddings: dict):
+    def __init__(self, path:str, embeddings: dict):
         logger.info("initializing with configs")
         self.client = None
         self.embedding_function = None
@@ -24,7 +24,7 @@ class ChromaDataBase(BaseVectorDB):
 
     def connect(self):
         try:
-            self.client = chromadb.PersistentClient(**self.params) 
+            self.client = chromadb.PersistentClient(**self.params)
             self.client.reset()
             self.embedding_function = self.load_embeddings_function()
 
@@ -49,17 +49,17 @@ class ChromaDataBase(BaseVectorDB):
         except Exception as e:
             logger.critical(f"Failed connecting ChromaDB: {e}")
 
-    
-    
+
+
     def load_yaml_data(self, yaml_path):
         with open(yaml_path, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
-        start_time = time.time()    
+        start_time = time.time()
         for i in range(len(data_loaded)):
             self.store.add(
                 documents=[data_loaded[i]["description"]],
                 metadatas=[data_loaded[i]["metadata"]],
-                ids=["id_"+str(i) ]
+                ids=["id_"+str(i)]
             )
         end_time = time.time()
         response_time = end_time - start_time
@@ -77,27 +77,27 @@ class ChromaDataBase(BaseVectorDB):
     def prepare_data(self,datasource_name, chunked_document, chunked_schema, queries):
         logger.info("Inserting into vector store")
         logger.info(f"datasource_name:{datasource_name}")
-        start_time = time.time()   
+        start_time = time.time()
         if chunked_document:
-            doc_count = self.documentation_store.count() 
+            doc_count = self.documentation_store.count()
             for i, doc in enumerate(chunked_document, start = doc_count):
                 self._add_to_store(doc.page_content, {**doc.metadata, "datasource": datasource_name}, self.documentation_store, i)
-        
+
         if chunked_schema:
-            schema_count = self.schema_store.count() 
+            schema_count = self.schema_store.count()
             for i, doc in enumerate(chunked_schema, start = schema_count):
                 self._add_to_store(doc.page_content, {**doc.metadata, "datasource": datasource_name}, self.schema_store, i)
-            
+
         if queries:
-            cache_count = self.schema_store.count() 
+            cache_count = self.schema_store.count()
             for j,doc in enumerate(queries, start = cache_count):
                 doc = self._convert_lists_to_strings(doc)
                 doc = flatdict.FlatDict(doc, delimiter='.')
 
                 self._add_to_store(doc['description'], {**dict(doc['metadata']), "datasource": datasource_name}, self.samples_store, j)
-                self._add_to_store(doc['description'], {**dict(doc['metadata']), "datasource": datasource_name}, self.cache_store, j)       
+                self._add_to_store(doc['description'], {**dict(doc['metadata']), "datasource": datasource_name}, self.cache_store, j)
 
-                
+
         logger.info("Created vector store for the source documents")
         end_time = time.time()
         response_time = end_time - start_time
@@ -145,7 +145,7 @@ class ChromaDataBase(BaseVectorDB):
         unflat_dict = self._convert_strings_to_lists(unflat_dict)
         return unflat_dict
 
-        
+
     def _find_similar(self, datasources, query, store, sample_count=3):
         results = []
         logger.info(f"datasources:{datasources}")
@@ -155,7 +155,7 @@ class ChromaDataBase(BaseVectorDB):
                 n_results=sample_count,
                 where={"datasource": datasource}  # Filter by the datasource in the metadata
             )
-  
+
             output = []
 
 
@@ -175,22 +175,21 @@ class ChromaDataBase(BaseVectorDB):
     def update_store(self, ids = None, metadatas = None, documents = None):
         if ids is None:
             ids = "id_" + str(self.samples_store.count()+1)
-            
+
         self.samples_store.upsert(
             ids = ids,
             metadatas = metadatas,
             documents = documents
         )
-        
+
     def update_weights(self,results,increment_value = 1):
         results['metadatas'][0]['weights'] += increment_value
 
         self.update_store(results['ids'],results['metadatas'],results['documents']
         )
 
-        
+
     def _find_by_id(self, id_d, store):
-        out = []
         results = store.get(
             ids= [id_d]
         )
@@ -213,17 +212,17 @@ class ChromaDataBase(BaseVectorDB):
 
     def find_similar_schema(self, datasource, query, count):
         return self._find_similar(datasource, query, self.schema_store, count)
-    
+
     def find_similar_samples(self, query, count = 3):
-        output = self._find_similar(query, self.samples_store, count)        
+        output = self._find_similar(query, self.samples_store, count)
         output = sorted(output, key=lambda d: int(float(d['metadatas']['weights'])),reverse = True)
         return output
-    
+
     def find_samples_by_id(self, id):
         return self._find_by_id(id, self.samples_store)
-    
+
     def find_similar_cache(self, datasource, query, count = 3):
         return self._find_similar(datasource, query, self.samples_store, count)
-    
-    
-    
+
+
+

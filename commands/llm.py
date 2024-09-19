@@ -31,7 +31,6 @@ def llm(ctx) -> None:
         
     except Exception as e:
         logger.critical(f"Failed to start the LLM server: {e}")
-        raise e
         sys.exit(1)
 
 

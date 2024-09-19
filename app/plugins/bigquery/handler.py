@@ -6,21 +6,19 @@ import re
 from typing import List
 import json
 import uuid
-from app.base.query_plugin import QueryPlugin
-
 from app.base.base_plugin import BasePlugin
 from app.base.plugin_metadata_mixin import PluginMetadataMixin
 from app.base.query_plugin import QueryPlugin
 
 
 class Bigquery(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
-    
+
     def __init__(self, project_id: str, service_account_json: str):
-        super().__init__(__name__) 
+        super().__init__(__name__)
 
         self.params = {
             'project' : project_id,
-            'credentials' : json.loads(service_account_json),
+            'credentials' : service_account.Credentials.from_service_account_info(json.loads(service_account_json)),
         }
         self.client = None
 
@@ -40,7 +38,7 @@ class Bigquery(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
         except Exception as error:
             logger.error(f"Error connecting to Google Bigquery: {error}")
             return False, str(error)
-        
+
     def healthcheck(self):
         """
         Perform a health check by executing a simple query.
@@ -49,7 +47,7 @@ class Bigquery(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
         if self.client is None:
             logger.warning("Connection to BigQuery is not established.")
             return False, "Connection to BigQuery is not established."
-        try:  
+        try:
             query = 'SELECT schema_name FROM `region-us`.INFORMATION_SCHEMA.SCHEMATA LIMIT 1'
             query_job = self.client.query(query)
             results = query_job.result()
@@ -64,9 +62,9 @@ class Bigquery(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
         except Exception as error:
             logger.error(f"Healthcheck failed: {error}")
             return False, str(error)
-        
+
     def configure_datasource(self, init_config):
-        
+
         return None
 
     def fetch_data(self,query: str):
@@ -89,10 +87,10 @@ class Bigquery(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
         Fetch schema details for all tables in all datasets.
         :return: A tuple containing the schema DDLs and table metadata.
         """
-        
+
         schema_ddl = []
         table_metadata = []
-        
+
         if self.client is None:
             logger.error("BigQuery client is not connected.")
             return schema_ddl, table_metadata
@@ -101,15 +99,15 @@ class Bigquery(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
         if not datasets:
             logger.critical("Project does not contain any datasets.")
             return schema_ddl, table_metadata
-        
+
         for dataset in datasets:
             dataset_id = dataset.dataset_id
             schema_structure_query = f"SELECT * FROM {dataset_id}.INFORMATION_SCHEMA.TABLES"
             result, error = self.fetch_data(schema_structure_query)
-                
+
             if result is not None:
                 for res in result:
-                    
+
                     schema = {
                         "table_id": str(uuid.uuid4()),
                         "table_name":  f"{dataset.dataset_id}.{res[2]}",
@@ -117,7 +115,7 @@ class Bigquery(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
                         "columns": []
                     }
                     fields= []
-                    
+
                     ddl = res[11]
 
                     # Regex to extract column names and data types
@@ -135,19 +133,19 @@ class Bigquery(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
                             "column_name": column,
                             "column_type": datatype,
                             "description": "",
-                        })  
+                        })
                     schema["columns"] = fields
-                    
+
                     table_metadata.append(schema)
                     schema_ddl.append(ddl)
 
             else:
-                logger.critical(f"Error fetching schema:{error}")  
-                      
+                logger.critical(f"Error fetching schema:{error}")
+
 
         return schema_ddl, table_metadata
-    
-    
+
+
 
     def create_ddl_from_metadata(self, table_metadata: List[dict]):
         """

@@ -11,7 +11,7 @@ class Cachechecker(AbstractHandler):
     if a query exists in the cache and handle the response accordingly.
     """
 
-    def __init__(self,common_context, Cachestore, forward_handler, forward: bool = True) -> None:
+    def __init__(self,common_context, cachestore, forward_handler, forward: bool = True) -> None:
         """
         Initialize the Cachechecker.
 
@@ -21,16 +21,16 @@ class Cachechecker(AbstractHandler):
             forward_handler: The next handler in the chain.
             forward (bool): Whether to forward the request to the next handler.
         """
-        self.cache = Cachestore
+        self.cache = cachestore
         self.forward_handler = forward_handler
         self.forward = forward
         self.common_context = common_context
-        
+
 
     def handle(self, request: Any) -> str:
         """
         Handle the incoming request by checking the cache
-        
+
         Args:
             request (Any): The incoming request to be processed.
 
@@ -43,21 +43,20 @@ class Cachechecker(AbstractHandler):
         question = request.get("question", "")
         rag_filters = response["rag_filters"]["datasources"]
         output = self.cache.find_similar_cache(rag_filters, question)
-        
         if "rag" not in response:
             response["rag"] = {
                 "suggestions": output
             }
         else:
             response["rag"]["suggestions"] = output
-            
-        
-        
+
+
+
         if self.forward and len(output) > 0:
-            if output[0]["distances"] < 0.1:
+            if output[0]["distances"] < -10:
                 result = output[0]["metadatas"]
                 logger.info("query retrieved from cache")
                 return self.forward_handler.handle({"inference":result})
-                
+
         logger.info("query not retrieved from cache")
         return super().handle(response)

@@ -12,7 +12,7 @@ class VectorDBLoader:
     def load_class(self):
         vectordb_classes = {
             "chroma": ChromaDataBase,
-            "mongodb" : AltasMongoDB,
+            "mongodb": AltasMongoDB,
         }
         vectordb_provider = self.config.get('name',{})
         connection_params = self.config.get('params',{})

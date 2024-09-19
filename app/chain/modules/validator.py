@@ -1,6 +1,7 @@
 from app.base.abstract_handlers import AbstractHandler
-from typing import Any, Optional
+from typing import Any
 from loguru import logger
+from app.chain.formatter.general_response import Formatter
 
 class Validator(AbstractHandler):
     """
@@ -13,7 +14,7 @@ class Validator(AbstractHandler):
         common_context (dict): Shared context information used for formatting responses and accessing intent-specific data.
         datasource (dict): Data source used to validate the generated SQL queries.
     """
-    
+
     def __init__(self,common_context,datasource) -> None:
         """
         Initializes the Validator with the provided context and datasource.
@@ -22,7 +23,7 @@ class Validator(AbstractHandler):
             common_context (dict): Shared context information used for validation and response formatting.
             datasource (dict): Data source used for query validation.
         """
-        
+
         super().__init__()
         self.common_context = common_context
         self.datasource = datasource
@@ -30,7 +31,7 @@ class Validator(AbstractHandler):
     def handle(self, request: Any) -> str:
         """
         Validates the generated SQL query and updates the response if there are validation issues.
-        
+
         Args:
             request (Any): The incoming request containing the generated query and other relevant information.
 
@@ -40,8 +41,6 @@ class Validator(AbstractHandler):
         logger.info("passing through => query_validator")
         response = request
 
-        gen_formatter = self.common_context.get("general_response")
-        
         inference = request.get("inference", {})
         formated_sql = inference.get("query", "")
 
@@ -53,6 +52,6 @@ class Validator(AbstractHandler):
                 result = validator.validate(formated_sql)
                 if result:
                     logger.critical(f"Generated Query Validation Issue: {result}")
-                    return gen_formatter.format(result)
-                    
+                    return Formatter.format(result)
+
         return super().handle(response)

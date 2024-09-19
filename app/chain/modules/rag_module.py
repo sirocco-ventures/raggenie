@@ -1,9 +1,8 @@
 from app.base.abstract_handlers import AbstractHandler
-from typing import Any, Optional
+from typing import Any
 from loguru import logger
-from app.providers.container import Container
-from app.providers.config import configs
 from app.chain.chains.rag_chain import RAGChain
+from app.chain.formatter.general_response import Formatter
 
 
 
@@ -20,7 +19,7 @@ class RagModule(AbstractHandler):
         configs (dict): Model configurations, including prompt injection settings.
         common_context (dict): Shared context information used across handlers.
     """
-    
+
     def __init__(self, model_configs, store, common_context):
         """
         Initializes the RagModule with model configurations, data store, and common context.
@@ -45,16 +44,16 @@ class RagModule(AbstractHandler):
             str: The result of the superclass's handle method with updated response information.
         """
         logger.info("passing through => rag_module")
-        
+
         response = request
-        
+
         prompt_injection = self.configs.get("prompt_injection", {"mode": "auto"})
-        if prompt_injection["mode"] != "manual" :   
+        if prompt_injection["mode"] != "manual" :
             response = request
             question = request.get("question", "")
             rag_filters = response.get("rag_filters", {})
             intent_extractor = request.get("intent_extractor", {})
-            
+
             rag_chain = RAGChain(self.configs, self.store)
             out = rag_chain.invoke({
                 "question": question,
@@ -63,8 +62,7 @@ class RagModule(AbstractHandler):
             })
 
             if out is None:
-                gen_formatter = self.common_context["general_response"]
-                return gen_formatter.format("Sorry, It is out of my context to answer!")
+                return Formatter.format("Sorry, It is out of my context to answer!")
 
             if 'rag' in response:
                 response["rag"].update(out["rag"])

@@ -35,7 +35,7 @@ class DefaultEmbeddingModel():
         # Define paths to save the tokenizer and model
         embedding_dir = os.path.join(os.getcwd(), "embeddings", "onnx")
         ensure_dir(embedding_dir)
-        
+
         tokenizer_path = os.path.join(embedding_dir, "tokenizer.json")
         model_path = os.path.join(embedding_dir, "model.onnx")
 
@@ -43,7 +43,7 @@ class DefaultEmbeddingModel():
         if not os.path.isfile(tokenizer_path):
             logger.info("Downloading tokenizer...")
             download_file(TOKENIZER_URL, tokenizer_path)
-        
+
         if not os.path.isfile(model_path):
             logger.info("Downloading ONNX model...")
             download_file(MODEL_URL, model_path)
@@ -52,7 +52,7 @@ class DefaultEmbeddingModel():
         self.tokenizer = Tokenizer.from_file(tokenizer_path)
         self.tokenizer.enable_truncation(max_length=256)
         self.tokenizer.enable_padding(pad_id=0, pad_token="[PAD]", length=256)
-        
+
         # Load the ONNX model
         self.model = ort.InferenceSession(model_path)
 

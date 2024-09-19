@@ -1,7 +1,4 @@
-from fastapi import  status
-from fastapi import HTTPException
-from typing import Dict, Any
-import app.schemas.common as schemas
+from typing import  Any
 from app.plugins.loader import DSLoader
 from loguru import logger
 
@@ -16,13 +13,13 @@ def test_plugin_connection(db_configs, config, provider_class):
             return None, f"Missing required config key: {conf.slug}"
         else:
             params[conf.field] = config.provider_config[conf.slug]
-    
+
     params = {
         "type": provider_class,
         "params": params,
     }
-    
-    datasource = DSLoader(params).load_ds()    
+
+    datasource = DSLoader(params).load_ds()
     success, err = datasource.connect()
 
     if not success and err:
@@ -35,9 +32,9 @@ def test_plugin_connection(db_configs, config, provider_class):
     return True, "Test Credentials successfully completed"
 
 def get_plugin_metadata(db_configs, config, provider_class):
-        
-    params = {}   
-    for conf in db_configs:     
+
+    params = {}
+    for conf in db_configs:
         if conf.slug not in config:
             return {}, Exception(f"Missing required config key: {conf.slug}")
         else:
@@ -46,11 +43,11 @@ def get_plugin_metadata(db_configs, config, provider_class):
         "type": provider_class,
         "params": params,
     }
-            
+
     datasource = DSLoader(
             params
-        ).load_ds()    
-    
+        ).load_ds()
+
     success, err=datasource.connect()
 
     if not success and err:
@@ -61,26 +58,26 @@ def get_plugin_metadata(db_configs, config, provider_class):
     if not success and err:
         logger.warning("Datasource health failed")
         return {}, Exception("Connection to "+provider_class+" is not established")
-        
+
     schema_ddl, schema_config = datasource.fetch_schema_details()
     if len(schema_config) > 0:
         return schema_config, None
     else:
         return {}, Exception("Failed to fetch schema details")
-    
+
 
 def check_configurations_availability(db: Session)-> Any:
     conf, is_error = repo.getbotconfiguration(db)
 
     if (conf == [] or conf==None) or is_error:
         return "Configuration Not Found"
-    
+
     inference, is_error = repo.get_inference_by_id(conf.id,db)
     if (inference == [] or inference==None) or is_error:
         return "Inference configuration not found"
-    
+
     connectors, is_error = repo.get_all_connectors(db)
     if (connectors == [] or connectors==None) or is_error:
         return "Connector not found"
-        
+
     return None

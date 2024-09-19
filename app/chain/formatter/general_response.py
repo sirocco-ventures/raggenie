@@ -1,5 +1,5 @@
 class Formatter:
-    
+
     def format(data: any) -> (dict):
         response = {}
 
@@ -8,5 +8,5 @@ class Formatter:
         response["role"] = "assistant"
         response["content"] = data
         response["summary"] = data
-        
+
         return response

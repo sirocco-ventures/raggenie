@@ -1,8 +1,6 @@
 from app.base.abstract_handlers import AbstractHandler
 from loguru import logger
 from typing import Any
-import numpy as np
-from app.providers.container import Container
 
 
 class SamplesRetriever(AbstractHandler):
@@ -15,7 +13,7 @@ class SamplesRetriever(AbstractHandler):
     Attributes:
         store (object): The data store used to find similar samples.
     """
-    
+
     def __init__(self,store):
         """
         Initializes the SamplesRetriever with the provided store.
@@ -24,7 +22,7 @@ class SamplesRetriever(AbstractHandler):
             store (object): The data store used to find similar samples.
         """
         self.store =store
-    
+
     def handle(self, request: Any) -> str:
         """
         Retrieves similar samples from the store and updates the response with the results.
@@ -37,7 +35,7 @@ class SamplesRetriever(AbstractHandler):
         """
         logger.info("passing through => samples_retriever")
         response = request
-        
+
 
         question = request.get("question", "")
 
@@ -47,7 +45,7 @@ class SamplesRetriever(AbstractHandler):
             response = {
                 "rag": {
                     "suggestions": similar_samples,
-                    "suggestions_score": "" 
+                    "suggestions_score": ""
                 }
             }
         else:

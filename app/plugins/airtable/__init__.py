@@ -60,7 +60,7 @@ __prompt__ = Prompt(**{
             question: list all hospital supports xyz ab plan
             query: https://api.airtable.com/v0/appXXXXXXX/hospitals?filterByFormula=AND(SEARCH(LOWER("xyz ab"),LOWER({{insurance_plan}}))=1)
 
-            
+
             Adhere to these rules while generating query:
             - Deliberately go through the question and database schema word by word to appropriately answer the question
             - Dont change the field names
@@ -70,13 +70,13 @@ __prompt__ = Prompt(**{
         "user_prompt":{
             "template": """
             User question is "$question"
-            generate a json in the follwing format without any formatting. 
+            generate a json in the following format without any formatting.
             {
                 "explanation": "Explain how you finalized the sql query using the schemas and rules provided",
                 "query" : "complete airtable rest api query without authentication",
                 "operation_kind" : "aggregation|list",
                 "general_message": "general message like 'here is the list of x'",
-                "schema": "used schema details seperated by comma",
+                "schema": "used schema details separated by comma",
                 "confidence" : "confidence in 100",
                 "main_entity": "document"
             }
@@ -85,7 +85,7 @@ __prompt__ = Prompt(**{
         "regeneration_prompt": {
             "template": """
             User query is "$question"
-            generate a json in the follwing format without any formatting. extra explantion is strictly prohibited. 
+            generate a json in the following format without any formatting. extra explanation is strictly prohibited.
             {
                 "output": "Your answer for the question",
                 "main_entity": "document",
@@ -94,7 +94,7 @@ __prompt__ = Prompt(**{
             """
         }
     })
-    
+
 
 
 __all__ = [

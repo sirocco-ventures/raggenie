@@ -43,12 +43,12 @@ def update_existing_connector(connector_id: int, connector: schemas.ConnectorUpd
 def update_schemas(connector_id: int, connector: schemas.ConnectorUpdate, db: Session):
     try:
         db_connector = db.query(models.Connector).filter(models.Connector.id == connector_id).first()
-        
+
         if db_connector and connector.schema_config:
             db_connector.schema_config = connector.schema_config
             db.commit()
             db.refresh(db_connector)
-        
+
         return db_connector, False
     except SQLAlchemyError as e:
         db.rollback()
@@ -86,7 +86,7 @@ def getbotconfiguration(db:Session):
         return (
             db.query(models.Configuration).filter(models.Configuration.status == 2).first()
         ), False
-    
+
     except SQLAlchemyError as e:
         return str(e), True
 
@@ -147,30 +147,30 @@ def update_existing_configuration(config_id: int, configuration: schemas.Configu
     except SQLAlchemyError as e:
         db.rollback()
         return str(e), True
-    
+
 def get_configuration_by_id(config_id: int, db: Session):
     try:
         return db.query(models.Configuration).filter(models.Configuration.id == config_id).first(), False
     except SQLAlchemyError as e:
         return str(e), True
-    
+
 def update_configuration_status(config_id: int, db: Session):
     try:
         db_config, is_error = get_configuration_by_id(config_id, db)
-        
+
         if db_config and not is_error:
             db_config.status = 2
-            
+
             db.commit()
             db.refresh(db_config)
-            
+
             return db_config, False
         else:
             return None, True
     except (SQLAlchemyError, ValueError) as e:
         db.rollback()
         return str(e), True
-    
+
 
 
 def create_capability(capability: schemas.CapabilitiesBase, db: Session):
@@ -189,7 +189,7 @@ def create_capability(capability: schemas.CapabilitiesBase, db: Session):
     except SQLAlchemyError as e:
         db.rollback()
         return str(e), True
-    
+
 def create_capability_action_mappings(capability_id: int, action_ids: List[int], db: Session):
     try:
         for action_id in action_ids:
@@ -211,7 +211,7 @@ def get_all_capabilities(db: Session):
         capabilities = db.query(models.Capabilities).options(
             joinedload(models.Capabilities.cap_actions_mapping).joinedload(models.CapActionsMapping.actions)
         ).all()
-        
+
         return capabilities, False
     except SQLAlchemyError as e:
         return str(e), True
@@ -226,7 +226,7 @@ def update_capability(cap_id: int, capability: schemas.CapabilitiesUpdateBase, d
             capability_record.description = capability.description if capability.description else capability_record.description
             capability_record.requirements = capability.requirements if capability.requirements else capability_record.requirements
             capability_record.config_id = capability.config_id if capability.config_id else capability_record.config_id
-            
+
             if capability.actions_list:
                 db.query(models.CapActionsMapping).filter(models.CapActionsMapping.capability_id == cap_id).delete()
 
@@ -242,7 +242,7 @@ def update_capability(cap_id: int, capability: schemas.CapabilitiesUpdateBase, d
             db.refresh(capability_record)
 
             return capability_record, False
-        
+
         return None, True
     except SQLAlchemyError as e:
         db.rollback()
@@ -251,27 +251,27 @@ def update_capability(cap_id: int, capability: schemas.CapabilitiesUpdateBase, d
 def delete_capability(cap_id: int, db: Session):
     try:
         capability_record = db.query(models.Capabilities).filter(models.Capabilities.id == cap_id).first()
-        
+
         if capability_record:
             db.query(models.CapActionsMapping).filter(models.CapActionsMapping.capability_id == cap_id).delete()
 
             db.delete(capability_record)
             db.commit()
-            
+
             return True, False
-        
+
         return False, True
     except SQLAlchemyError as e:
         db.rollback()
         return str(e), True
-    
+
 
 def get_inference_by_id(inference_id: int, db: Session):
     try:
         return db.query(models.Inference).filter(models.Inference.id == inference_id).first(), False
     except SQLAlchemyError as e:
         return str(e), True
-    
+
 
 def create_inference(inference: schemas.InferenceBase, db: Session):
     try:
@@ -293,7 +293,7 @@ def create_inference(inference: schemas.InferenceBase, db: Session):
         )
         db.add(db_mapping)
         db.commit()
-        
+
         db.refresh(db_inference)
 
         return db_inference, False
@@ -301,7 +301,7 @@ def create_inference(inference: schemas.InferenceBase, db: Session):
     except SQLAlchemyError as e:
         db.rollback()
         return str(e), True
-    
+
 def update_inference(inference_id: int, inference: schemas.InferenceBaseUpdate, db: Session):
     try:
         db_inference = db.query(models.Inference).filter(models.Inference.id == inference_id).first()
@@ -348,20 +348,20 @@ def list_actions(db:Session):
     try:
         return db.query(models.Actions).all(), False
     except SQLAlchemyError as e:
-        return str(e), 
+        return str(e),
 
 def get_action_by_id(action_id:int, db:Session):
     try:
         return db.query(models.Actions).filter(models.Actions.id == action_id).first(), False
     except SQLAlchemyError as e:
-        return str(e), 
+        return str(e),
 
 def get_actions_by_connector(connector_id:int, db:Session):
     try:
         return db.query(models.Actions).filter(models.Actions.connector_id == connector_id).all(), False
     except SQLAlchemyError as e:
         return str(e), True
-    
+
 def create_action(action:schemas.Actions, db:Session):
     try:
         db_action = models.Actions(
@@ -370,12 +370,55 @@ def create_action(action:schemas.Actions, db:Session):
             types=action.types,
             connector_id = action.connector_id,
             condition = action.condition if action.condition else None,
-            table = action.table if action.table else None
+            table = action.table if action.table else None,
+            body = action.body
         )
         db.add(db_action)
         db.commit()
         db.refresh(db_action)
         return db_action, False
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        return str(e), True
+
+
+def update_action(action_id: int, action: schemas.ActionsUpdate, db: Session):
+    try:
+        db_action = db.query(models.Actions).filter(models.Actions.id == action_id).first()
+
+        if db_action is None:
+            return "Data is None", True
+
+        db_action.name = action.name if action.name else db_action.name
+        db_action.description = action.description if action.description else db_action.description
+        db_action.types = action.types if action.types else db_action.types
+        db_action.connector_id = action.connector_id if action.connector_id else db_action.connector_id
+        db_action.condition = action.condition if action.condition else db_action.condition
+        db_action.table = action.table if action.table else db_action.table
+        db_action.body = action.body if action.body else db_action.body
+
+        db.commit()
+        db.refresh(db_action)
+
+        return db_action, False
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        return str(e), True
+
+
+def delete_action_by_id(action_id: int, db: Session):
+    try:
+        db_action = db.query(models.Actions).filter(models.Actions.id == action_id).first()
+
+        if db_action is None:
+            return "Data is None", True
+
+        db.delete(db_action)
+        db.commit()
+
+        return True, False
 
     except SQLAlchemyError as e:
         db.rollback()

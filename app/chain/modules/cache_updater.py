@@ -10,17 +10,17 @@ class Cacheupdater(AbstractHandler):
     the cache with new question-inference pairs when appropriate.
     """
 
-    def __init__(self,Cachestore) -> None:
+    def __init__(self,cachestore) -> None:
         """
         Initialize the Cacheupdater.
 
         Args:
             Cachestore (Any): The cache storage mechanism.
         """
-        self.cache = Cachestore
+        self.cache = cachestore
 
     def handle(self, response: Any) -> str:
-         """
+        """
         Handle the incoming response by updating the cache if necessary.
 
         Args:

@@ -22,20 +22,11 @@ class Formatter:
         self.main_entity = inference.get("main_entity", "")
         self.kind = inference.get("operation_kind", "")
         self.general_message = inference.get("general_message", "Unable to process question, try again")
-        self.next_questions = inference.get("next_questions", [])
-
-        # Extract results from data records
-        results = [record["fields"] for record in data.get("records", [])]
 
         response["content"] = self.general_message
-
-        if len(results) == 0:
-            response["content"]= "Sorry, I couldn't find any details regarding this"
 
         response["main_entity"] = self.main_entity
         response["main_format"] = self.kind
         response["role"] = "assistant"
-        response["data"]= results
-
         return response
 

@@ -1,7 +1,6 @@
 from app.base.abstract_handlers import AbstractHandler
 from loguru import logger
-from typing import Any, Optional
-import numpy as np
+from typing import Any
 from app.providers.container import Container
 
 
@@ -16,7 +15,7 @@ class SchemaRetriever(AbstractHandler):
     Attributes:
         store (object): The data store used to find similar schemas.
     """
-    
+
     def __init__(self,store):
         """
         Initializes the SchemaRetriever with the provided store.
@@ -38,22 +37,20 @@ class SchemaRetriever(AbstractHandler):
         """
 
         logger.info("passing through => schema_retriever")
-        
+
         response = request
-        
+
         datasources = request.get('rag_filters', {}).get("datasources", [])
         schema_count = request.get('rag_filters', {}).get("schema_count", 0)
-        intent = request.get("intent_extractor", {}).get("intent", "")
-
 
         auto_context = "\n\n".join(cont.get("document", "") for cont in request.get("rag", {}).get("context", []))
 
 
         out = self.store.find_similar_schema(datasources, request["question"] + "\n" + auto_context, schema_count)
-        
+
         if out and len(out) > 0:
             distances = [doc['distances'] for doc in out]
-            if len(out) > 2 and intent != 'database_structure_and_metadata_inquiry':
+            if len(out) > 2:
                 clusters = Container.clustering().kmeans(distances, 2)
                 shortest_cluster = clusters[0]
                 opt_doc = [doc for doc in out if doc.get('distances') in shortest_cluster]
@@ -67,9 +64,9 @@ class SchemaRetriever(AbstractHandler):
             response["rag"].update({
                 "schema": [],
             })
-            
+
         return response
-        
+
 
 
 

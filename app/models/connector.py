@@ -5,7 +5,7 @@ from app.utils.database import Base
 
 class Connector(Base):
     __tablename__ = 'connectors'
-    
+
     id = Column(Integer, primary_key=True, index=True)
     connector_type = Column(Integer, ForeignKey('providers.id'), nullable=False)
     connector_name = Column(String, nullable=False, index=True)
@@ -17,7 +17,7 @@ class Connector(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
-    
+
     provider = relationship('Provider', back_populates='connectors')
     actions = relationship('Actions', back_populates='connectors')
     sample_sql = relationship('SampleSQL', back_populates='connectors')
@@ -44,7 +44,7 @@ class Configuration(Base):
 
 class Capabilities(Base):
     __tablename__ = 'capabilities'
-    
+
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     description=Column(String, nullable=False)
@@ -97,6 +97,7 @@ class Actions(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
     types = Column(String, nullable=False)
+    body = Column(JSON, nullable=False)
     table = Column(String, nullable=True)
     enable = Column(Boolean, default=True)
     condition = Column(JSON, default=None)

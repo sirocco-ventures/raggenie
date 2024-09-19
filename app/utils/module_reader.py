@@ -21,10 +21,10 @@ def get_plugin_providers():
                 "category": getattr(module, '__category__'),
                 "args": getattr(module, "__connection_args__")
             })
-            
+
         except Exception as e:
-            logger.info(f"failed loading {module_info.name}")
-            
+            logger.warning(f"failed loading {module_info.name} {e}")
+
     return modules
 
 def get_llm_providers():
@@ -39,8 +39,8 @@ def get_llm_providers():
                 "unique_name": getattr(module, '__unique_name__'),
                 "icon": getattr(module, '__icon__')
             })
-            
+
         except Exception as e:
-            logger.info(f"failed loading {module_info.name}")
-            
+            logger.info(f"failed loading {module_info.name} cause {e}")
+
     return modules

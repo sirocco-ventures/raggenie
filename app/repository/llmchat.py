@@ -21,7 +21,7 @@ def create_new_chat(chat: schemas.ChatHistoryCreate, db: Session):
         db_chat = ChatHistory(
             **chat.model_dump()
         )
-        
+
         db.add(db_chat)
         db.commit()
         db.refresh(db_chat)
@@ -49,7 +49,7 @@ def update_chat_feedback(feedback: schemas.FeedbackCreate, db: Session):
         return chat, False
     except SQLAlchemyError as e:
         return e, True
-    
+
 
 def get_primary_chat(db: Session):
     try:

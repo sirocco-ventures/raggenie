@@ -36,11 +36,11 @@ class ContextStorage(AbstractHandler):
 
         logger.info("Storing interaction into context")
         response = request
-        
+
         summary = ''
         if "summary" in request:
             summary = request['summary']
         if "context_id" in request:
             self.context_store.insert_data(Chat(context_id = request["context_id"], question = request["question"], created_at = datetime.datetime.now(), answer = request["content"], summary = summary))
-        
+
         return super().handle(response)

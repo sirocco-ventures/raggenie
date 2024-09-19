@@ -74,26 +74,26 @@ __prompt__ = Prompt(**{
         "base_prompt": "{system_prompt}{user_prompt}",
         "system_prompt": {
             "template": """
-            You are an Postgresql expert. Your job is to answer questions about a Postgres database using only the provided schema details and rules. 
-        
+            You are an Postgresql expert. Your job is to answer questions about a Postgres database using only the provided schema details and rules.
+
             go through the schema details given below
             -- start db schema section--
             {schema}
             -- end db schema section--
 
-            A breif description about the schema is given below
+            A brief description about the schema is given below
 
             -- start db context section--
             {context}
             -- end db context section--
-            
+
             Sample sql queries with their questions are given below
 
             -- start query samples section--
             $suggestions
             -- end query samples section--
-            
-            Adhere to the given rules without failiure
+
+            Adhere to the given rules without failure
 
             -- start rules section --
             - Use Table Aliases always to prevent ambiguity . For example, `SELECT table1.col1, table2.col1 FROM table1 JOIN table2 ON table1.id = table2.id`.
@@ -117,15 +117,15 @@ __prompt__ = Prompt(**{
             3. Do only the task asked, Don't hallucinate and overdo the task
             for example user asked 'how all my applications are performing' you should return only based on open incident count not cost
             4. Strictly return all the fields in the schema during listing operations
-            5. Strictly return atleast 1 text fields and an id field during aggregation/group by operations
-            6. Generate a query to solve the problem using the schema, context, and striclty follow the rules
+            5. Strictly return at least 1 text fields and an id field during aggregation/group by operations
+            6. Generate a query to solve the problem using the schema, context, and strictly follow the rules
             7. output in the given json format, extra explanation is strictly prohibited
 
             {
                 "explanation": "Explain how you finalized the sql query using the schemas and rules provided",
                 "query" : "postgresql query",
                 "operation_kind" : "aggregation|list",
-                "schema": "used schema details seperated by comma",
+                "schema": "used schema details separated by comma",
                 "confidence" : "confidence in 100",
                 "visualisation": {
                     "chart": "chart that can be shown for the data or none",
@@ -164,8 +164,8 @@ __prompt__ = Prompt(**{
             4. Do only the task asked, Don't hallucinate and overdo the task
             for example user asked 'how all my applications are performing' you should return only based on open incident count not cost
             5. Strictly return all the fields in the schema during listing operations
-            6. Strictly return atleast 1 text fields and an id field during aggregation/group by operations
-            7. Generate a query to solve the problem using the schema, context and the rules and based on the previous query try to rectify the query error 
+            6. Strictly return at least 1 text fields and an id field during aggregation/group by operations
+            7. Generate a query to solve the problem using the schema, context and the rules and based on the previous query try to rectify the query error
             8. output in the given json format, extra explanation is strictly prohibited
 
             {
@@ -179,7 +179,7 @@ __prompt__ = Prompt(**{
                     "y-axis": "field that can be used as y axis",
                     "title": "layout title name"
                 },
-                "schema": "used schema details seperated by comma",
+                "schema": "used schema details separated by comma",
                 "confidence" : "confidence in 100",
                 "general_message": "a general message describing the answers like 'here is your list of incidents' or 'look what i found'",
                 "main_entity" : "main entity  for the query must be either resource|event|incident|service|platform|none, in case of aggregation choose main entity based on group by operation wisely",
@@ -188,7 +188,7 @@ __prompt__ = Prompt(**{
             """
         }
     })
-    
+
 
 
 __all__ = [

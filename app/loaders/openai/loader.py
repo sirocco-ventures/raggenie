@@ -1,12 +1,12 @@
 from app.base.model_loader import ModelLoader
 from app.base.base_llm import BaseLLM
-from typing import Any, List, Mapping, Optional
+from typing import Any
 from loguru import logger
 from app.base.loader_metadata_mixin import LoaderMetadataMixin
 import json
 
 class OpenAiModelLoader(ModelLoader, LoaderMetadataMixin):
-    
+
     model: Any = None
     model_config : Any = {}
 
@@ -24,21 +24,21 @@ class OpenAiModelLoader(ModelLoader, LoaderMetadataMixin):
                 "logprobs": False,
             }
         )
-        
+
         out = self.model._call("")
         logger.info(f"openai response:{out}")
         response = self.get_response(out)
         usage = self.get_response_metadata(prompt, response, out)
-        
+
         return response, usage
-        
-        
+
+
     def get_response(self, message) -> str:
         if "choices" in message and len(message["choices"]) > 0:
             choice = message["choices"][0]
             if "message" in choice:
                 return choice["message"]["content"]
-        
+
         return ""
 
     def get_response_metadata(self, prompt, response, out) -> dict:
@@ -62,15 +62,15 @@ class OpenAiModelLoader(ModelLoader, LoaderMetadataMixin):
                                 })
 
                 return response_metadata
-        
-    
+
+
         response_metadata.update({
                 "logprobs" : []
             })
         return response_metadata
-    
+
     def messages_format(self, prompt, previous_messages) -> list:
-        chat_history = [] 
+        chat_history = []
         for prev_message in previous_messages:
             chat_history.append({"role": "user", "content": prev_message.chat_query})
             if prev_message.chat_answer is not None:
@@ -83,5 +83,5 @@ class OpenAiModelLoader(ModelLoader, LoaderMetadataMixin):
             messages.extend(chat_history)
         messages.append({"role": "user", "content": prompt})
 
-        logger.info(f"messages:{messages}") 
+        logger.info(f"messages:{messages}")
         return messages

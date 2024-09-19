@@ -39,23 +39,23 @@ __prompt__ = Prompt(**{
         "system_prompt": {
             "template": """
             You are an BigQuery SQL expert.Your job is to answer questions about a bigquery data. You must output the BigQuery SQL that answers the question using the SQL structure provided inside a BigQuery.
-        go through the schema details given below	
+        go through the schema details given below
         - start db schema section--
         {schema}
         -- end db schema section--
 
-        A breif description about the schema is given below:
+        A brief description about the schema is given below:
         -- start db context section--
         {context}
         -- end db context section--
 
         Sample sql queries with their questions are given below
 
-        -- start query samples section--        
+        -- start query samples section--
         $suggestions
         -- end query samples section--
 
-        
+
         Adhere to these rules while generating query:
           1.Do not hallucinate and give incorrect answer
           2.Do not give incomplete answers
@@ -63,13 +63,13 @@ __prompt__ = Prompt(**{
         },
         "user_prompt":{
             "template": """
-            generate a json in the follwing format without any formatting. extra explantion is strictly prohibited. 
+            generate a json in the following format without any formatting. extra explanation is strictly prohibited.
             {
                 "explanation": "Explain how you finalized the nerd graphql query using the schemas and rules provided",
                 "query" : "BigQuery SQL query to answer `$question` by strictly following the rules.",
                 "operation_kind" : "aggregation|list",
                 "visualisation": {
-                            "chart": "chart which can be a bar chart, line chart, or pie chart, can be shown for the data only if operation_kind is 'aggregation'; otherwise, None",
+                            "type": "chart type (bar chart, line chart, pie chart) or 'table' for tabular format; 'none' if operation_kind is 'list'",
                             "x-axis": ["fields that can be used as x axis"],
                             "y-axis": ["field that can be used as y axis"],
                             "title": "layout title name"
@@ -101,7 +101,7 @@ __prompt__ = Prompt(**{
             Answer the given user question by writing an BigQuery SQL query by taking into account your previous errors and rectifying them.
 
 
-            generate a json in the follwing format without any formatting. extra explantion is strictly prohibited. 
+            generate a json in the following format without any formatting. extra explanation is strictly prohibited.
             {{
                 "explanation": "Explain how you are going to finalize the SQL query by taking the previous generation details into account",
                 "query" : "BigQuery SQL query to answer `$question` by strictly following the rules and based on schema and based on the previous query try to rectify the query error",
@@ -120,7 +120,7 @@ __prompt__ = Prompt(**{
             """
         }
     })
-    
+
 
 
 __all__ = [

@@ -1,5 +1,5 @@
 from app.base.abstract_handlers import AbstractHandler
-from typing import Any, Optional
+from typing import Any
 from loguru import logger
 from app.providers.config import configs
 from app.loaders.base_loader import BaseLoader
@@ -19,7 +19,7 @@ class IntentExtracter(AbstractHandler):
         common_context (Any): Shared context information used across handlers.
         model_configs (dict): Configuration settings for the model, including use case details and model paths.
     """
-    
+
     def __init__(self, common_context , model_configs) -> None:
         """
         Initializes the IntentExtractor with common context and model configurations.
@@ -30,64 +30,71 @@ class IntentExtracter(AbstractHandler):
         """
         self.model_configs = model_configs
         self.common_context = common_context
-        
+
     def handle(self, request: Any) -> str:
         """
         Processes the request to extract the intent from the user's query.
-        
+
         Args:
             request (Any): The incoming request containing the user query and context.
 
         Returns:
             str: The result of the superclass's handle method with updated response information.
         """
-        
+
         response = request
-        logger.info("passing through => Intent extracter")
+        logger.info("passing through => Intent extractor")
 
         use_case = self.model_configs.get("use_case", {})
         long_description = use_case.get("long_description", "")
         short_description = use_case.get("short_description", "")
         capabilities = use_case.get("capabilities", [])
-        
+
         capability_description = ""
-        capability_names = ["out_of_context", "database_structure_and_metadata_inquiry"]
-        datasource_names = []
-        
+        capability_names = ["out_of_context", "metadata_inquiry"]
+
         for capability in capabilities:
             name = capability["name"]
             description = capability["description"]
             capability_names.append(name)
             capability_description += f"{name} : {description}\n"
-            
-            
+
+
         datasources = self.model_configs.get("datasources", [])
+        datasource_names = []
         for datasource in datasources:
             name = datasource["name"]
             description = datasource["description"]
             capability_names.append(name)
+            datasource_names.append(name)
             capability_description += f"{name} : {description}\n"
-            
+        response["available_datasources"] = datasource_names
+
+
         contexts = request.get("context", [])
         contexts = contexts[-5:] if len(contexts) >= 5 else contexts
 
         prompt = """
         You are part of a chatbot system where you have to extract intent from users chats and match it with given intents.
-        
+
         -- chatbot context ---
         $long_description
+        Also provide data structure information and overview of available data.
         -- chatbot context ---
 
         Available intents are:
         -- Intent section ---
-        $capabilities: 
-        database_structure_and_metadata_inquiry: This identifies questions about available data, the structure of a database (including tables and columns), the meaning behind specific columns, and the purpose and examples of metadata within a database context.
+        metadata_inquiry: queries about overview of available data, the structure of a database (including tables and columns), the meaning behind specific columns, and the purpose within a database context, eg: what kind of data you have? or list questions which can be asked?
+        $capabilities
         out_of_context: If chat is irrelevant to chatbot context and its capabilities
         --- Intent section ---
 
         Instructions:
-        1. Only one intent must be identified.Multiple intents are prohibited.
-        2.Carefully review the chat history to understand the user's context and instructions. Pay special attention to whether the previous intent has been completed. If the current user query doesn't clearly match an intent, consider the previous messages to identify the most appropriate intent.
+        1.Only one intent must be identified.Multiple intents are prohibited.
+        2.Pay special attention to whether the previous intent has been completed.
+        3.Strictly only if the current user query doesn't clearly match an intent, consider the previous messages to identify the most appropriate intent.
+        3.If user seeks data structure info or data overview, label intent as metadata_inquiry.
+        4.When asked to list possible questions, provide general examples without mentioning "specific" word
 
         Generate a response for the user query '$question' in the following JSON format:
 
@@ -96,26 +103,26 @@ class IntentExtracter(AbstractHandler):
             "intent": "Detected intent, strictly one from the $capability_list"
         }
         """
-       
 
-          
-        response["available_datasources"] = datasource_names
+
+
         capability_list = "|".join(capability_names)
 
         prompt = Template(prompt).safe_substitute(
-            question = request["question"], 
-            long_description = long_description, 
-            short_description =short_description, 
-            capability_list = capability_list, 
+            question = request["question"],
+            long_description = long_description,
+            short_description =short_description,
+            capability_list = capability_list,
             capabilities= capability_description
         )
+        logger.debug(f"intent prompt:{prompt}")
 
         loader = BaseLoader(model_configs=self.model_configs["models"])
         infernce_model = loader.load_model(configs.inference_llm_model)
 
         output, response_metadata = infernce_model.do_inference(
                             prompt, contexts
-                    )      
+                    )
         response["intent_extractor"] = parse_llm_response(output)
         response["available_intents"] = capability_names
         response["rag_filters"] = {
@@ -126,4 +133,3 @@ class IntentExtracter(AbstractHandler):
         return super().handle(response)
 
 
-    

@@ -16,7 +16,7 @@ class Handler(ABC):
     @abstractmethod
     def handle(self, request) -> Optional[str]:
         pass
-    
+
 class AbstractHandler(Handler):
     """
     The default chaining behavior can be implemented inside a base handler

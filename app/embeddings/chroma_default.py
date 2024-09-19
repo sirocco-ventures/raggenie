@@ -9,5 +9,5 @@ class ChromaDefaultEmbedding:
 
     def load_emb(self):
         return self.ef
-    
+
 

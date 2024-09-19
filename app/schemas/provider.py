@@ -58,7 +58,7 @@ class CategoryBase(BaseModel):
 
 class CategoryResponse(CategoryBase):
     id: int
-    
+
 
 class CategoryCreate(CategoryBase):
     pass

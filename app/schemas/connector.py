@@ -1,6 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional, Union
-from datetime import datetime
+from typing import List, Dict, Optional, Union
 
 class ConnectorBase(BaseModel):
     connector_type: int
@@ -26,14 +25,6 @@ class ConnectorUpdate(BaseModel):
 
 class SchemaUpdate(BaseModel):
     schema_config : Optional[List[Dict]]=None
-
-class Actions(BaseModel):
-    name: str
-    description: Optional[str] = None
-    types: str
-    condition: Optional[Dict] = None
-    table : Optional[str] = None
-    connector_id: Optional[int] = None
 
 class CapabilitiesBase(BaseModel):
     id:Optional[int]=None
@@ -112,9 +103,18 @@ class Actions(BaseModel):
     condition: Optional[Dict] = None
     table : Optional[str] = None
     connector_id: Optional[int] = None
+    body : Dict
 
 
 class ActionsResponse(Actions):
     id: int
     enable: Optional[bool] =True
 
+class ActionsUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    types: Optional[str] = None
+    condition: Optional[Dict] = None
+    table : Optional[str] = None
+    connector_id: Optional[int] = None
+    body : Optional[Dict] = None

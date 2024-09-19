@@ -1,7 +1,6 @@
 from app.base.abstract_handlers import AbstractHandler
 from loguru import logger
-from typing import Any, Optional
-import numpy as np
+from typing import Any
 from app.providers.container import Container
 
 
@@ -24,7 +23,7 @@ class DocumentRetriever(AbstractHandler):
         self.store =store
         self.context_relevance_threshold = 4
 
-    
+
     def handle(self, request: Any) -> str:
         """
         Handle the incoming request by retrieving relevant documents.
@@ -43,13 +42,13 @@ class DocumentRetriever(AbstractHandler):
         intent = request["intent_extractor"]["intent"]
         out = self.store.find_similar_documentation(datasources, request["question"], document_count)
 
-        
-        
+
+
         logger.info("sorting retrieved documents")
         if out and len(out) > 0 and out[0]['distances'] < self.context_relevance_threshold:
-            
+
             distances = [doc['distances'] for doc in out]
-            if len(out) > 2 and intent != 'database_structure_and_metadata_inquiry':
+            if len(out) > 2 and intent != 'metadata_inquiry':
                 clusters = Container.clustering().kmeans(distances, 2)
                 shortest_cluster = clusters[0]
                 opt_doc = []
@@ -58,7 +57,7 @@ class DocumentRetriever(AbstractHandler):
                         opt_doc.append(doc)
             else:
                 opt_doc = out
-                 
+
             response["rag"]={
                 "context": opt_doc,
             }
@@ -66,7 +65,7 @@ class DocumentRetriever(AbstractHandler):
             response["rag"]={
                 "context": [],
             }
-        
+
         return super().handle(response)
 
 

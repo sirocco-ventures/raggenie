@@ -4,6 +4,18 @@ from app.schemas import llmchat as schemas
 
 
 def create_chat(chat: schemas.ChatHistoryCreate, db: Session):
+
+    """
+    Creates a new chat record in the database.
+
+    Args:
+        chat (schemas.ChatHistoryCreate): Data required to create a new chat.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: Chat history schema and error message (if any).
+    """
+
     result, is_error = repo.create_new_chat(chat, db)
 
     if is_error:
@@ -26,11 +38,23 @@ def create_chat(chat: schemas.ChatHistoryCreate, db: Session):
 
 
 def create_feedback(feedback: schemas.FeedbackCreate, db: Session):
+
+    """
+    Updates an existing chat record with feedback data.
+
+    Args:
+        feedback (schemas.FeedbackCreate): Feedback data to update the chat record.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: Updated chat history schema and error message (if any).
+    """
+
     result, is_error = repo.update_chat_feedback(feedback, db)
 
     if is_error:
         return result, "DB Error"
-    
+
     if result is None:
         return [], None
 
@@ -46,11 +70,22 @@ def create_feedback(feedback: schemas.FeedbackCreate, db: Session):
         feedback_status=result.feedback_status,
         user_id=result.user_id
     )
-    
+
     return data, None
 
 
 def list_chats_by_context(db: Session):
+
+    """
+    Retrieves the primary chat records from the database.
+
+    Args:
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: List of chat responses and error message (if any).
+    """
+
     result, is_error = repo.get_primary_chat(db)
 
     if is_error:
@@ -58,7 +93,7 @@ def list_chats_by_context(db: Session):
 
     if not result:
         return [], None
-    
+
     chat_data = [
         schemas.ChatResponse(
             chat_context_id=chat.chat_context_id,
@@ -80,6 +115,18 @@ def list_chats_by_context(db: Session):
 
 
 def list_all_chats_by_context_id(context_id: str, db: Session):
+
+    """
+    Retrieves all chat records based on the context ID from the database.
+
+    Args:
+        context_id (str): The ID of the context to filter chats.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: List of chat responses and error message (if any).
+    """
+
     result, is_error = repo.get_all_chats_by_context_id(context_id, db)
 
     if is_error:
@@ -87,7 +134,7 @@ def list_all_chats_by_context_id(context_id: str, db: Session):
 
     if not result:
         return [], None
-        
+
     chat_data = [
         schemas.ChatResponse(
             chat_context_id=chat.chat_context_id,
@@ -104,6 +151,6 @@ def list_all_chats_by_context_id(context_id: str, db: Session):
             updated_at=chat.updated_at
         ) for chat in result
     ]
-    
+
     return chat_data, None
 

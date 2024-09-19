@@ -23,7 +23,7 @@ class UrlReader(DocsReader):
                         out.append({"content": str(text), "metadata": metadata})
                     else:
                         logger.critical(f"Failed to retrieve content, status code: {response.status_code}")
-                    
+
                 except Exception as e:
                             logger.error(e)
         return out

@@ -28,25 +28,25 @@ class CapabilityChain:
     and easy extension of functionality.
     """
     def __init__(self, model_configs, context_storage, general_chain):
-       
+
         logger.info("loading modules into capability chain")
 
-        
+
         self.common_context = {}
-        
+
         self.input_formatter = InputFormatter()
         self.context_retriver = ContextRetreiver(self.common_context, context_storage)
         self.followup_handler = FollowupHandler(self.common_context, model_configs)
         self.followup_interpreter = FollowupInterpreter(self.common_context, general_chain)
         self.post_processor = PostProcessor()
 
-        
-         
+
+
         logger.info("initializing chain")
         self.input_formatter.set_next(self.context_retriver).set_next(self.followup_handler).set_next(self.followup_interpreter).set_next(self.post_processor)
         self.handler =  self.input_formatter
-        
-        
+
+
     def invoke(self, user_request):
         logger.info("Processing user request")
         return self.handler.handle(user_request)

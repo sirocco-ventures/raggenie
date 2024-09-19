@@ -1,6 +1,5 @@
 from sqlalchemy import Column, String, Integer, DateTime, Boolean, JSON
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 from app.utils.database import Base
 
 class ChatHistory(Base):

@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 
 class MessagePlugin(ABC):
-    
+
     @abstractmethod
-    def Send(self):
+    def send(self):
         pass
-    

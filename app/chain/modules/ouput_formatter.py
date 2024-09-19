@@ -1,5 +1,5 @@
 from app.base.abstract_handlers import AbstractHandler
-from typing import Any, Optional
+from typing import Any
 from loguru import logger
 
 
@@ -14,7 +14,7 @@ class OutputFormatter(AbstractHandler):
         common_context (dict): Shared context information used across handlers.
         datasource (dict): A dictionary for data formatting based on the intent.
     """
-    
+
     def __init__(self,common_context, datasource):
         """
         Initializes the OutputFormatter with common context and datasource.
@@ -26,7 +26,7 @@ class OutputFormatter(AbstractHandler):
         self.datasource = datasource
         self.common_context = common_context
 
-        
+
     def handle(self, request: Any) -> str:
         """
         Formats the response based on the inference and query response.
@@ -37,18 +37,18 @@ class OutputFormatter(AbstractHandler):
         Returns:
             str: The result of the superclass's handle method with updated response information.
         """
-        
+
         logger.info("passing through => output_formatter")
 
         input_data = request.get("inference", {})
         response = {}
-        
+
         if "main_entity" in input_data and "operation_kind" in input_data :
             intent_key = self.common_context.get("intent")
             if intent_key in self.datasource:
                 response = self.datasource[intent_key].format(request.get("query_response"), input_data)
-        elif "answer" in input_data:
-            response["content"] = input_data.get('answer') 
+        elif "general_message" in input_data:
+            response["content"] = input_data.get('general_message')
 
 
         if "data" in response and isinstance(response["data"], list) and len(response["data"]) == 0:
@@ -63,7 +63,7 @@ class OutputFormatter(AbstractHandler):
 
 
         response["next_questions"] = input_data.get("next_questions", [])
-        
+
         if "context_id" in request:
             response["context_id"] = request["context_id"]
             response["question"] = request["question"]

@@ -13,13 +13,12 @@ from app.chain.modules.cache_checker import Cachechecker
 from app.chain.modules.context_retreiver import ContextRetreiver
 from app.chain.modules.context_storage import ContextStorage
 
-from app.providers.config import configs
 
 
 
 from loguru import logger
 
-class Chain:
+class QueryChain:
     """
     Chain class represents the main processing chain for handling user requests.
 
@@ -48,14 +47,14 @@ class Chain:
     and easy extension of functionality.
     """
     def __init__(self, model_configs, store, datasource, context_store):
-        
+
         logger.info("loading modules into chain")
-    
+
 
         self.vector_store = store
         self.data_sources = datasource if datasource is not None else []
         self.context_store = context_store
-        
+
         self.common_context = {
             "chain_retries" : 0,
             "llm": {
@@ -82,7 +81,7 @@ class Chain:
                 "schema" : [],
             },
         }
-        
+
         self.configs = model_configs
         self.input_formatter = InputFormatter()
         self.rag_module = RagModule(model_configs, self.vector_store, self.common_context)
@@ -92,7 +91,7 @@ class Chain:
         self.context_retriver = ContextRetreiver(self.common_context, context_store)
         self.context_storage = ContextStorage(self.common_context, context_store)
 
-       
+
 
         self.executer = Executer(self.common_context,self.data_sources, self.prompt_generator)
         self.cache_checker = Cachechecker(self.common_context, self.vector_store,self.executer)
@@ -108,8 +107,8 @@ class Chain:
         .set_next(self.output_formatter).set_next(self.post_processor)
 
         self.handler =  self.input_formatter
-        
-        
+
+
     def invoke(self, user_request):
         self.common_context["chain_retries"] = 0
         self.common_context["intent"] = user_request["intent_extractor"]["intent"]

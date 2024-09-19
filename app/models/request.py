@@ -6,8 +6,8 @@ from typing import Any
 class Chat(BaseModel):
     content: str
     role: str
-    
-    
+
+
 class FlowItem(BaseModel):
     question: str
     answer: dict
@@ -23,9 +23,9 @@ class ResponseItem(BaseModel):
 class FeedbackCorrectionRequest(BaseModel):
     responses: List[ResponseItem]
 
-    
+
 class ConnectionArgument(BaseModel):
-    type: Literal[1,2,3,6,7]
+    type: Literal[1,2,3,4,6,7]
     generic_name: str
     description: str
     order: int

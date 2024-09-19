@@ -1,11 +1,8 @@
 from app.base.abstract_handlers import AbstractHandler
-from typing import Any, Optional
 from app.providers.config import configs
 from app.loaders.base_loader import BaseLoader
 from app.utils.parser import parse_llm_response
 from loguru import logger
-import time
-import math
 
 class Generator(AbstractHandler):
         """
@@ -14,7 +11,7 @@ class Generator(AbstractHandler):
         This class extends AbstractHandler and provides functionality to generate
         inferences using a specified language model based on given prompts and contexts.
         """
-    
+
         def __init__(self, common_context, model_configs) -> None:
                 """
                 Initialize the Generator.
@@ -25,7 +22,7 @@ class Generator(AbstractHandler):
                 """
                 self.model_configs = model_configs
                 self.common_context = common_context
-        
+
         def handle(self, request: dict) -> str:
                 """
                 Handle the incoming request by generating an inference based on the prompt and context.
@@ -40,7 +37,7 @@ class Generator(AbstractHandler):
                 str: The response after processing the request, including the generated inference.
                 """
                 logger.info("passing through => generator")
-                
+
                 response = request
                 prompt = response["prompt"]
 
@@ -49,15 +46,13 @@ class Generator(AbstractHandler):
 
                 loader = BaseLoader(model_configs=self.model_configs["models"])
                 infernce_model = loader.load_model(configs.inference_llm_model)
-                
-                start_time = time.time()
+
                 output, response_metadata = infernce_model.do_inference(
                         prompt, contexts
-                )      
-                
-                latency = time.time() - start_time
-                
+                )
+
+
                 parsed = parse_llm_response(output)
                 response["inference"]  = parsed
-                
+
                 return super().handle(response)

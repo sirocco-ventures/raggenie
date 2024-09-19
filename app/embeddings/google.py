@@ -10,4 +10,3 @@ class Google:
 
     def load_emb(self):
         return self.ef
-    

@@ -14,7 +14,7 @@ class DocxReader(DocsReader):
                         "path": path
                     }
                     out.append({"content": str(text), "metadata": metadata})
-                    
+
                 except Exception as e:
                             logger.error(e)
         return out

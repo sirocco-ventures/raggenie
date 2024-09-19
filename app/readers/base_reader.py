@@ -24,6 +24,6 @@ class BaseReader:
                 loader = UrlReader(source=self.source)
             case "pdf":
                 loader = PDFLoader(source=self.source)
-            case default:
+            case _:
                 raise ValueError(f"Documentation in given format '{type}' not supported.")
         return loader.load()

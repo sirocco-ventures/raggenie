@@ -3,11 +3,8 @@ from app.chain.modules.input_formatter import InputFormatter
 from app.chain.modules.intent_extracter import IntentExtracter
 from app.chain.modules.router import Router
 from app.chain.modules.post_processor import PostProcessor
-from app.chain.formatter.general_response import Formatter
 
 from app.chain.modules.context_retreiver import ContextRetreiver
-
-from app.providers.config import configs
 
 
 from loguru import logger
@@ -36,30 +33,30 @@ class IntentChain:
     for a specific part of the processing pipeline. This allows for flexibility
     and easy extension of functionality.
     """
-    def __init__(self, model_configs, store, datasource, context_store, general_chain, capability_chain, metadata_chain):
+    def __init__(self, model_configs, store, datasource, context_store, intent_chain, general_chain, capability_chain, metadata_chain):
         logger.info("loading modules into chain")
-        
+
         self.vector_store = store
         self.context_store = context_store
         self.data_sources = datasource if datasource is not None else []
-        
+
         self.common_context = {
             "chain_retries" : 0,
         }
-        
+
         self.configs = model_configs
         self.input_formatter = InputFormatter()
         self.context_retriver = ContextRetreiver(self.common_context, context_store)
         self.intent_extractor = IntentExtracter(self.common_context, model_configs)
         self.post_processor = PostProcessor()
-        self.router = Router(self.common_context, self.post_processor, general_chain, capability_chain, metadata_chain)
-      
+        self.router = Router(self.common_context, self.post_processor, intent_chain, general_chain, capability_chain, metadata_chain)
+
         self.input_formatter.set_next(self.context_retriver).set_next(self.intent_extractor).set_next(self.router).set_next(self.post_processor)
-        
+
         self.handler =  self.input_formatter
-        
-        
+
+
     def invoke(self, user_request):
         self.common_context["chain_retries"] = 0
         self.common_context["context_id"] = user_request["context_id"]
-        return self.handler.handle(user_request)        
+        return self.handler.handle(user_request)

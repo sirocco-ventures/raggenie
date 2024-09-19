@@ -1,7 +1,7 @@
 from app.base.model_loader import ModelLoader
 from app.base.loader_metadata_mixin import LoaderMetadataMixin
 from app.base.base_llm import BaseLLM
-from typing import Any, List, Mapping, Optional
+from typing import Any
 import json
 
 class Ai71ModelLoader(ModelLoader, LoaderMetadataMixin):
@@ -25,10 +25,10 @@ class Ai71ModelLoader(ModelLoader, LoaderMetadataMixin):
         )
 
         out = self.model._call("")
-        
+
         response = self.get_response(out)
         usage = self.get_response_metadata(prompt, response, out)
-        
+
         return response, usage
 
     def get_response(self, message) -> str:
@@ -36,11 +36,11 @@ class Ai71ModelLoader(ModelLoader, LoaderMetadataMixin):
             choice = message["choices"][0]
             if "message" in choice:
                 return choice["message"]["content"]
-        
+
         return ""
-        
+
     def get_response_metadata(self, prompt, response, out) -> dict:
-        
+
         return{
                 "input_tokens" : 0,
                 "output_tokens" : 0,
@@ -49,7 +49,7 @@ class Ai71ModelLoader(ModelLoader, LoaderMetadataMixin):
         }
 
     def messages_format(self, prompt, previous_messages) -> list:
-        chat_history = [] 
+        chat_history = []
         for prev_message in previous_messages:
             chat_history.append({"role": "user", "content": prev_message.chat_query})
             if prev_message.chat_answer is not None:

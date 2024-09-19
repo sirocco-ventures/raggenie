@@ -7,7 +7,7 @@ from typing import Any, Dict
 import app.schemas.provider as schemas
 
 
-def insertorUpdateData(db: Session, model: Any, filters: Dict[str, Any], data: Dict[str, Any]) -> tuple:
+def insert_or_update_data(db: Session, model: Any, filters: Dict[str, Any], data: Dict[str, Any]) -> tuple:
     try:
         existing_record = db.query(model).filter_by(**filters).first()
 
@@ -50,7 +50,7 @@ def get_config_types(provider_id: int, db:Session):
         return db.query(models.ProviderConfig).filter(models.ProviderConfig.provider_id==provider_id).all(), False
     except SQLAlchemyError as e:
         return e, True
-    
+
 def get_sql_by_connector(id:int, db:Session):
     try:
         return db.query(models.SampleSQL).filter(models.SampleSQL.connector_id == id).all(), False
@@ -85,7 +85,7 @@ def create_sql(sql:schemas.SampleSQLBase, db:Session):
     except SQLAlchemyError as e:
         db.rollback()
         return str(e), True
-    
+
 def update_sql(sql_id:int, sql:schemas.SampleSQLUpdate, db:Session):
     try:
         db_sql = db.query(models.SampleSQL).filter(models.SampleSQL.id == sql_id).first()
@@ -102,7 +102,7 @@ def update_sql(sql_id:int, sql:schemas.SampleSQLUpdate, db:Session):
     except SQLAlchemyError as e:
         db.rollback()
         return str(e), True
-    
+
 
 def delete_sql(sql_id:int, db: Session):
     try:
@@ -116,7 +116,7 @@ def delete_sql(sql_id:int, db: Session):
     except SQLAlchemyError as e:
         db.rollback()
         return str(e), True
-    
+
 def get_sql_by_key(key: str, db: Session):
     try:
         return db.query(models.SampleSQL).options(joinedload(models.SampleSQL.connectors)).filter(conn_model.Connector.connector_name == key).first(), False

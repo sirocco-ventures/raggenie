@@ -19,12 +19,12 @@ class BaseLoader:
                         loader = OpenAiModelLoader(model_config = model)
                     case "ai71":
                         loader = Ai71ModelLoader(model_config = model)
-                    case default:
+                    case _ :
                         raise ValueError(f"Model with unique name '{unique_name}' not found.")
                 return loader
-        
+
         raise ValueError(f"Model with unique name '{unique_name}' not found.")
-    
+
     def load_model_config(self, unique_name):
         for model in self.model_configs:
             if model['unique_name'] == unique_name:

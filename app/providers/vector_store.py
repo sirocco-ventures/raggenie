@@ -15,8 +15,8 @@ class Vectorstore:
     def __init__(self, config):
         logger.info("initializing with configs")
         logger.info(config)
-        
-        self.client = chromadb.PersistentClient(path=config["path"],settings=Settings(allow_reset=True)) 
+
+        self.client = chromadb.PersistentClient(path=config["path"],settings=Settings(allow_reset=True))
         self.client.reset()
         self.embedding_function = EmLoader(config).load_embclass().load_emb()
 
@@ -38,17 +38,17 @@ class Vectorstore:
             embedding_function = self.embedding_function,
             metadata={"hnsw:space": "cosine"}
         )
-    
-    
+
+
     def load_yaml_data(self, yaml_path):
         with open(yaml_path, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
-        start_time = time.time()    
+        start_time = time.time()
         for i in range(len(data_loaded)):
             self.store.add(
                 documents=[data_loaded[i]["description"]],
                 metadatas=[data_loaded[i]["metadata"]],
-                ids=["id_"+str(i) ]
+                ids=["id_"+str(i)]
             )
         end_time = time.time()
         response_time = end_time - start_time
@@ -65,22 +65,22 @@ class Vectorstore:
 
     def prepare_data(self, chunked_document, chunked_schema, queries):
         logger.info("Inserting into vector store")
-        start_time = time.time()    
+        start_time = time.time()
         for i, doc in enumerate(chunked_document):
             self._add_to_store(doc.page_content, {**doc.metadata, "type": "documentation"}, self.documentation_store, i)
-        
+
         for i, doc in enumerate(chunked_schema):
             self._add_to_store(doc.page_content, {**doc.metadata, "type": "schema"}, self.schema_store, i)
-                
+
         if queries:
             for j,doc in enumerate(queries,start = 1):
                 doc = self._convert_lists_to_strings(doc)
                 doc = flatdict.FlatDict(doc, delimiter='.')
 
                 self._add_to_store(doc['description'], dict(doc['metadata']), self.samples_store, j+len(chunked_document))
-                self._add_to_store(doc['description'], dict(doc['metadata']), self.cache_store, j+len(chunked_document))       
+                self._add_to_store(doc['description'], dict(doc['metadata']), self.cache_store, j+len(chunked_document))
 
-                
+
         logger.info("Created vector store for the source documents")
         end_time = time.time()
         response_time = end_time - start_time
@@ -128,9 +128,8 @@ class Vectorstore:
         unflat_dict = self._convert_strings_to_lists(unflat_dict)
         return unflat_dict
 
-        
+
     def _find_similar(self, query, store, sample_count=3):
-        out = []
         results = store.query(
             query_texts=[query],
             n_results=sample_count
@@ -152,22 +151,21 @@ class Vectorstore:
     def update_store(self, ids = None, metadatas = None, documents = None):
         if ids is None:
             ids = "id_" + str(self.samples_store.count()+1)
-            
+
         self.samples_store.upsert(
             ids = ids,
             metadatas = metadatas,
             documents = documents
         )
-        
+
     def update_weights(self,results,increment_value = 1):
         results['metadatas'][0]['weights'] += increment_value
 
         self.update_store(results['ids'],results['metadatas'],results['documents']
         )
 
-        
+
     def _find_by_id(self, id_d, store):
-        out = []
         results = store.get(
             ids= [id_d]
         )
@@ -190,17 +188,17 @@ class Vectorstore:
 
     def find_similar_schema(self, query, sample_count=5):
         return self._find_similar(query, self.schema_store, sample_count)
-    
+
     def find_similar_samples(self, query, sample_count=3):
-        output = self._find_similar(query, self.samples_store, sample_count)        
+        output = self._find_similar(query, self.samples_store, sample_count)
         output = sorted(output, key=lambda d: int(float(d['metadatas']['weights'])),reverse = True)
         return output
-    
+
     def find_samples_by_id(self, id):
         return self._find_by_id(id, self.samples_store)
-    
+
     def find_similar_cache(self, query):
         return self._find_similar(query, self.samples_store)
-    
-    
-    
+
+
+

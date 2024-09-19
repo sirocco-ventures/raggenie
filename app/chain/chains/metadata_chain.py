@@ -38,11 +38,11 @@ class MetadataChain:
         self.vector_store = store
         self.data_sources = datasource if datasource is not None else []
         self.context_store = context_store
-        
+
         self.common_context = {
             "chain_retries" : 0,
         }
-        
+
         self.input_formatter = InputFormatter()
         self.context_retriver = ContextRetreiver(self.common_context, context_store)
         self.document_retriever = DocumentRetriever(self.vector_store)
@@ -54,9 +54,9 @@ class MetadataChain:
 
         self.input_formatter.set_next(self.context_retriver).set_next(self.metadata_ragfilter).set_next(self.document_retriever).set_next(self.metadata_generator).set_next(self.output_formatter).set_next(self.post_processor)
         self.handler =  self.input_formatter
-        
-        
+
+
     def invoke(self, user_request):
-        
+
         self.common_context["chain_retries"] = 0
         return self.handler.handle(user_request)

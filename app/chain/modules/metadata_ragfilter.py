@@ -1,5 +1,5 @@
 from app.base.abstract_handlers import AbstractHandler
-from typing import Any, Optional
+from typing import Any
 from loguru import logger
 
 
@@ -17,11 +17,11 @@ class MetadataRagFilter(AbstractHandler):
         handle(request: Any) -> str:
             Processes the request to apply RAG filters and forwards it to the next handler.
     """
-        
+
     def handle(self, request: Any) -> str:
         """
         Applies RAG filters to the request's response and forwards it to the next handler.
-        
+
         Args:
             request (Any): The incoming request containing the necessary information for filtering.
 
@@ -35,5 +35,6 @@ class MetadataRagFilter(AbstractHandler):
                 "document_count": 10,
                 "schema_count": 10
         }
+
 
         return super().handle(response)
