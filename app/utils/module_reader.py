@@ -23,7 +23,8 @@ def get_plugin_providers():
             })
 
         except Exception as e:
-            logger.warning(f"failed loading {module_info.name} {e}")
+            if module_info.name != "loader":
+                logger.warning(f"failed loading {module_info.name} {e}")
 
     return modules
 
@@ -41,6 +42,7 @@ def get_llm_providers():
             })
 
         except Exception as e:
-            logger.info(f"failed loading {module_info.name} cause {e}")
+            if module_info.name != "base_loader":
+                logger.info(f"failed loading {module_info.name} cause {e}")
 
     return modules

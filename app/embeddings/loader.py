@@ -28,9 +28,9 @@ class EmLoader:
 
 
         emb_class = emb_classes.get(emb_provider)
-        logger.info(f"embedding class: {emb_class}")
+        logger.info(f"embedding class: {emb_provider}")
         if emb_class:
-            return emb_class(**connection_params)
+            return emb_class(**connection_params if connection_params else {})
         else:
             logger.info("No specified embedding providers")
             return DefaultEmbedding()
