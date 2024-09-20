@@ -157,8 +157,9 @@ xmltodict==0.13.0
 yarl==1.11.1
 zipp==3.20.2
 pymongo==4.8.0
-poetry
-pre-commit
-codespell
-flake8
-pep8-naming
+poetry==1.8.3
+pre-commit==3.8.0
+codespell==2.3.0
+flake8==7.1.1
+pep8-naming==0.14.1
+pysqlite3-binary==0.5.3.post1
