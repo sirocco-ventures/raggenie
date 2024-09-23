@@ -3,7 +3,7 @@ from app.chain.modules.input_formatter import InputFormatter
 from app.chain.modules.intent_extracter import IntentExtracter
 from app.chain.modules.router import Router
 from app.chain.modules.post_processor import PostProcessor
-
+from app.chain.formatter.general_response import Formatter
 from app.chain.modules.context_retreiver import ContextRetreiver
 
 
@@ -57,6 +57,10 @@ class IntentChain:
 
 
     def invoke(self, user_request):
-        self.common_context["chain_retries"] = 0
-        self.common_context["context_id"] = user_request["context_id"]
-        return self.handler.handle(user_request)
+        try:
+            self.common_context["chain_retries"] = 0
+            self.common_context["context_id"] = user_request["context_id"]
+            return self.handler.handle(user_request)
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
+            return Formatter.format("Oops! Something went wrong. Try Again!")
