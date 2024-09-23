@@ -17,6 +17,7 @@ export const deployTabroutes = [
     icon: "",
     page: <CopyEmbedCode />,
     isPrivate: true,
+    disabled: true
   },
 ];
 
