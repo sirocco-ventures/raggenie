@@ -144,8 +144,13 @@
     border-radius: 10px;
 }
 
+.BotMessage p {
+    color: #323232;
+    font-size: 14px;
+}
+
 .MessageAvatar {
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 
@@ -448,7 +453,7 @@
     background: #84BCFF;
 }
 
-.chatHistoryText{
+.ChatHistoryText{
     display: none;
     color: #FFF;
     /* Small text */
@@ -459,11 +464,11 @@
     line-height: 150%; /* 24px */
 }
 
-.ButtonContainer:hover .chatHistoryText{
+.ButtonContainer:hover .ChatHistoryText{
     display: flex;
 }
 
-.ButtonContainer:hover .chatHistoryIcon {
+.ButtonContainer:hover .ChatHistoryIcon {
     animation: rotateIcon 1s ease-in-out forwards;
 }
 
@@ -480,7 +485,7 @@
 }
 
 
-.chatHistoryIcon{
+.ChatHistoryIcon{
     margin-top: 5px;
 }
 

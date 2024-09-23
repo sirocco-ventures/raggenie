@@ -1,10 +1,10 @@
-.chatDropDown {
+.ChatDropDown {
     display: flex;
     flex-direction: column;
 
 }
 
-.chatDropDown h3 {
+.ChatDropDown h3 {
     flex-grow: 1;
     margin: 0;
     color: #5B5B5B;
@@ -20,7 +20,7 @@
 
 
 
-.chatDropDown li {
+.ChatDropDown li {
     cursor: pointer;
     display: block;
     color: #858585;
@@ -43,16 +43,16 @@
 
 
 
-.chatDropDown li:hover{
+.ChatDropDown li:hover{
     border-radius: 4px;
     background: #F0F0F0;
 }
 
-.chatDropDown li:focus{
+.ChatDropDown li:focus{
     background: #D8D8D8;
 }
 
-.chatDropDown li div {
+.ChatDropDown li div {
     margin: 0;
     width: 260px;
     overflow: hidden;
@@ -60,18 +60,18 @@
     white-space: nowrap;
 }
 
-.chatDropDown ul {
+.ChatDropDown ul {
     padding: 0;
     margin-top: 0;
     margin-left: 10px;
     width: 300px;
 }
 
-.listOptions{
+.ListOptions{
     width: 100%;
 }
 
-.chatDropDown li::before {
+.ChatDropDown li::before {
     content: "";
     position: absolute;
     left: 6px;
@@ -87,13 +87,13 @@
     /* Centers the image vertically */
 }
 
-.chatHistoryHeadWithArrow {
+.ChatHistoryHeadWithArrow {
     cursor: pointer;
     display: flex;
     gap: 8px;
 }
 
-.chatHistoryHeadWithArrow img {
+.ChatHistoryHeadWithArrow img {
     padding-top: 2px;
 }
 

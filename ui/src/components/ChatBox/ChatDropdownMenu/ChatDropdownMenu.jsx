@@ -38,11 +38,11 @@ export default function ChatDropdownMenu({ handleNavigateChatContext = () => {},
     };
 
     return (
-        <div className={style.chatDropDown}>
+        <div className={style.ChatDropDown}>
             {data.map((item, index) => (
                 <div key={index}>
                     <div
-                        className={style.chatHistoryHeadWithArrow}
+                        className={style.ChatHistoryHeadWithArrow}
                         onClick={() => toggleDropdown(index)}
                     >
                         <h3>{item.title}</h3>
@@ -62,7 +62,7 @@ export default function ChatDropdownMenu({ handleNavigateChatContext = () => {},
                     >
                         <ul>
                             {item.chatQuery.slice(0, showUpto).map((chat, chatIndex) => (
-                                <span key={chatIndex} className={style.listOptions}>
+                                <span key={chatIndex} className={style.ListOptions}>
                                     <li onClick={(e) => handleNavigateChatContext(e, chat.contextId)}>
                                         {chat?.message}
                                     </li>

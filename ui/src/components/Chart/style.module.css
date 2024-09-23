@@ -42,13 +42,13 @@
 .PieLegend{
     display: flex;
     color: #888787;
-font-family: Inter;
-font-size: 14px;
-font-style: normal;
-font-weight: 400;
-line-height: 20px; /* 166.667% */
-margin-right: 100px;
-margin-bottom: 10px;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; /* 166.667% */
+    margin-right: 100px;
+    margin-bottom: 10px;
 }
 
 

@@ -83,10 +83,10 @@ Input::placeholder {
     margin-left: 4px;
 }
 
-.hasError:hover ~ .ErrorMessage {
+.HasError:hover ~ .ErrorMessage {
     color: #FFB9AF;
 }
 
-.hasError:focus ~ .ErrorMessage {
+.HasError:focus ~ .ErrorMessage {
     color: #FF7F6D;
 }
