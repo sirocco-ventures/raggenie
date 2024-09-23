@@ -9,7 +9,6 @@ import BotConfiguration from "src/pages/ChatConfiguration/ChatConfiguration";
 
 
 const  routes = [
-,
     {
         title: "chatContext",
         path: "/preview/:contextId/chat",
