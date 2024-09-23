@@ -11,7 +11,7 @@ const CopyURL = () => {
 
    
     const CopyUrlRef = useRef(null)
-    const previewURL = `http://localhost:5173/${v4()}/chat`
+    const previewURL = `http://${window.location.host}/${v4()}/chat`
     const handleCopyUrl=()=>{
        try {
             var copyText = CopyUrlRef.current.innerText;
