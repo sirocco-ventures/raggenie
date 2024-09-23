@@ -156,7 +156,7 @@ const BotConfiguration = () => {
         });
     }
 
-    const getCurrentConfig = ()=>{
+    const getCurrentConfig = (llmsList)=>{
         
         getBotConfiguration().then(response=>{
             let configs = response.data?.data?.configurations
@@ -191,8 +191,9 @@ const BotConfiguration = () => {
                     inferenceSetValue("inferenceEndpoint", inference.endpoint)
                     inferenceSetValue("inferenceAPIKey", inference.apikey)
 
-                    let tempSelectedProvider = LLMModels.find(item=>item.value == inference.llm_provider )
-                    console.log({tempSelectedProvider})
+                    
+                    let tempSelectedProvider = llmsList.find(item=>item.value == inference.llm_provider )
+                    
                     setSelectedProvider(tempSelectedProvider)
 
                     setDisabledGenerateYAMLButton(false)
@@ -207,7 +208,7 @@ const BotConfiguration = () => {
     }
 
    
-    const getLLMModels = ()=>{
+    const getLLMModels = async ()=>{
         getLLMProviders().then(response=>{
             var llmProviders = response.data.data?.providers
 
@@ -217,14 +218,14 @@ const BotConfiguration = () => {
             })
 
             setllmModels(llmList)
+            setSelectedProvider(llmList[0])
+            getCurrentConfig(llmList)
         })
     }
 
 
     
     const onInferanceSave = (data) => {
-        
-
         configClearErrors("inferenceProvider")
         if(selectedProvider ==  undefined ){
             configSetError("inferenceProvider", { type:"required", message: "This field is required" });
@@ -378,8 +379,9 @@ const BotConfiguration = () => {
 
 
     useEffect(() => {
-        getCurrentConfig()
-        getLLMModels()
+        getLLMModels();
+       
+      
     }, [])
 
 
@@ -412,8 +414,6 @@ const BotConfiguration = () => {
                     <form onSubmit={inferenceHandleSubmit(onInferanceSave)}>
                         <div>
                             <Input label="Name" hasError={inferenceFormError["inferenceName"]?.message ? true : false} errorMessage={inferenceFormError["inferenceName"]?.message}  {...inferenceRegister("inferenceName", { required: "This field is required", maxLength: 50})} />
-                            
-
                             <div style={{marginBottom: "30px"}}>
                                 <Controller
                                     control={inferenceController}
