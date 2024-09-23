@@ -6,9 +6,11 @@ import Samples from "src/pages/Samples/Samples";
 import ChatConfiguration from "src/pages/ChatConfiguration/ChatConfiguration";
 import ProviderForm from "src/pages/Configuration/ProviderForm/ProviderForm";
 import BotConfiguration from "src/pages/ChatConfiguration/ChatConfiguration";
+import Chat from "src/pages/Chat/Chat";
 
 
 const  routes = [
+
     {
         title: "chatContext",
         path: "/preview/:contextId/chat",

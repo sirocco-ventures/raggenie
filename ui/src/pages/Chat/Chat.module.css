@@ -1,15 +1,18 @@
-.DisableChatBox {
-    position: fixed;
-    width: 100%;
-    background: black;
-    top: 0px;
-    left: 0px;
-    height: 100vh;
-    opacity: 0.91;
+.ChatBody {
+    height: calc(100vh - 67px);
 }
 
-.MessageStyle {
-    margin-top: 50vh;
-    color: #ababab;
-    text-align: center;
+.ChatHeader {
+    background: #FFF;
+    border-bottom: 1px solid #F0F0F0;
+    padding: 18px 26px;
+}
+
+.ChatHeaderTitle {
+    color: var(--neural-1);
+    font-family: Inter;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%; 
 }
