@@ -24,15 +24,15 @@
 
 
 .Title{
-margin: 0;
-padding: 0;
-color: #323232;
-/* Small text */
-font-family: Inter;
-font-size: 16px;
-font-style: normal;
-font-weight: 500;
-line-height: 150%; /* 24px */
+    margin: 0;
+    padding: 0;
+    color: #323232;
+    /* Small text */
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%; /* 24px */
 }
 
 .Description{

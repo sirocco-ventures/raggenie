@@ -41,10 +41,10 @@ const Capability = ({capabilityId = "", capabilityIndex = 0, title = "", name = 
     return(
         <>
             <form onSubmit={onFormSubmit}>
-                <div data-capability-index={`${capabilityIndex}`} data-capability-id={`${capabilityId}`} className={`${style.capabilityContainer} ${expand == false ? "" : style.capabilityContainerCollapse}`}>
-                    <div className={style.capabilityHeader}>
+                <div data-capability-index={`${capabilityIndex}`} data-capability-id={`${capabilityId}`} className={`${style.CapabilityContainer} ${expand == false ? "" : style.CapabilityContainerCollapse}`}>
+                    <div className={style.CapabilityHeader}>
                         <div onClick={()=>setExpand(!expand)} style={{cursor: "pointer"}}> {expand == false ? <IoIosArrowUp/> : <IoIosArrowDown/>} </div>
-                        <div className={`flex-grow-1 ${style.capabilityTitle}`}>
+                        <div className={`flex-grow-1 ${style.CapabilityTitle}`}>
                             {capabilityLitle}
                         </div>
                         <div> 
@@ -53,16 +53,16 @@ const Capability = ({capabilityId = "", capabilityIndex = 0, title = "", name = 
                         </div>
                     </div>
                     <div>
-                        <div className={style.capabilityDetailsContainer}>
+                        <div className={style.CapabilityDetailsContainer}>
                             <Input type="hidden" name="capability-id" value={capabilityId}  />
                             <Input label="Capability Name" name="capability-name" value={name}  onChange={(e)=>setCapabilityLitle(e.target.value)} />
                             <Textarea label="Description" name="capability-description" value={description} rows={8}/>
                         </div>
                     </div>
 
-                    <div className={style.capabilityParamsBody}>
-                        <div className={style.capabilityParamsHeader}>
-                            <div className={`flex-grow-1 ${style.capabilityTitle}`}>
+                    <div className={style.CapabilityParamsBody}>
+                        <div className={style.CapabilityParamsHeader}>
+                            <div className={`flex-grow-1 ${style.CapabilityTitle}`}>
                                 Create Parameters for Capability
                             </div>
                             <div> 
@@ -70,11 +70,11 @@ const Capability = ({capabilityId = "", capabilityIndex = 0, title = "", name = 
                             </div>
                         </div>
                         <div>
-                            <table className={style.capabilityParamsTable}>
+                            <table className={style.CapabilityParamsTable}>
                                 <thead>
                                     <tr>
-                                        <th className={style.capabilityParamsTableHeader} style={{width: "250px"}}>Name</th>
-                                        <th className={style.capabilityParamsTableHeader}>Description</th>
+                                        <th className={style.CapabilityParamsTableHeader} style={{width: "250px"}}>Name</th>
+                                        <th className={style.CapabilityParamsTableHeader}>Description</th>
                                     </tr>
                                 </thead>
                                 <tbody key={"tbody"}>
@@ -82,12 +82,12 @@ const Capability = ({capabilityId = "", capabilityIndex = 0, title = "", name = 
                                     return(
                                         <>
                                             <tr key={index}>
-                                                <td className={style.capabilityParamsTableColumn}>
+                                                <td className={style.CapabilityParamsTableColumn}>
                                                     <Input type="hidden" name="params-id[]" value={item.parameter_id} />
                                                     <Input type="hidden" name="params-name[]" value={item.parameter_name} />
                                                     {item.parameter_name}
                                                 </td>
-                                                <td className={style.capabilityParamsTableColumn}>
+                                                <td className={style.CapabilityParamsTableColumn}>
                                                     <Input type="hidden" name="params-description[]" value={item.parameter_description} />
                                                     {item.parameter_description}
                                                     <span style={{float: "right"}}>

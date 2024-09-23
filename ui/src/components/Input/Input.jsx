@@ -34,7 +34,7 @@ const Input = forwardRef(({
         <>
             <div className={style.InputContainer}>
                 {label !== "" && <label className={style.InputLabel}>{label}</label> }
-                <input ref={ref} type={type} defaultValue={value} placeholder={placeholder} className={`${style.Input} ${hasError ? style.hasError : ""} ${className}`} onChange={inputOnChange} {...props} />
+                <input ref={ref} type={type} defaultValue={value} placeholder={placeholder} className={`${style.Input} ${hasError ? style.HasError : ""} ${className}`} onChange={inputOnChange} {...props} />
                 { type == "text" && <div className={style.InputHintContainer}>
                     <div className={style.InputHint}>
                             { minLength > 0 && maxLength == Infinity && <span className={style.InputHintMessage}>{`Min characters ${minLength}`}</span> }  
@@ -46,7 +46,7 @@ const Input = forwardRef(({
                        {(minLength > 0 || maxLength != Infinity) && <span className={style.InputHintMessage}>{textLength}/ { maxLength != Infinity ? maxLength: minLength }</span> }
                     </div>
                 </div>}
-                {errorMessage !== "" && <span className={style.errorMessage}>{errorMessage}</span>}
+                {errorMessage !== "" && <span className={style.ErrorMessage}>{errorMessage}</span>}
             </div>
 
         </>

@@ -111,28 +111,28 @@
     /* Adjust duration and easing as needed */
 }
 
-.seeMoreDropDown{
+.SeeMoreDropDown{
     display: flex;
-min-width: 295px;
-padding: var(--12, 12px) 6px;
-align-items: center;
-gap: 10px;
-border-radius: var(--4, 4px);
-border: 1px solid var(--white-100, #FFF);
-background: #ffffff;
-color: #858585;
-font-family: Inter;
-font-size: 12px;
-font-style: normal;
-font-weight: 400;
-width: 295px;
-height: 30px;
-line-height: 150%;
-cursor: pointer;
-margin-bottom: 18px; /* 18px */
+    min-width: 295px;
+    padding: var(--12, 12px) 6px;
+    align-items: center;
+    gap: 10px;
+    border-radius: var(--4, 4px);
+    border: 1px solid var(--white-100, #FFF);
+    background: #ffffff;
+    color: #858585;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    width: 295px;
+    height: 30px;
+    line-height: 150%;
+    cursor: pointer;
+    margin-bottom: 18px; /* 18px */
 }
 
-.seeMoreDropDown:hover{
+.SeeMoreDropDown:hover{
     background: #F0F0F0;
 }
 

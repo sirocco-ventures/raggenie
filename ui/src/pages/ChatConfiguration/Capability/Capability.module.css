@@ -1,22 +1,22 @@
 
-.capabilityContainer {
+.CapabilityContainer {
     background-color: var(--neural-7);
     padding: 17px 15px;
     overflow: hidden;
     margin-bottom: 11px;
 }
 
-.capabilityContainerCollapse {
+.CapabilityContainerCollapse {
     height: 29px;
 }
 
-.capabilityHeader {
+.CapabilityHeader {
     display: flex;
     gap: 15px;
     align-items: center;
 }
 
-.capabilityTitle {
+.CapabilityTitle {
     color: #323232;
     font-family: Inter;
     font-size: 16px;
@@ -25,28 +25,28 @@
     line-height: 20px
 }
 
-.capabilityDetailsContainer {
+.CapabilityDetailsContainer {
     padding: 21px 20px;
 }
 
-.capabilityParamsBody {
+.CapabilityParamsBody {
     padding: 21px 20px;
 }
 
 
 
-.capabilityParamsHeader {
+.CapabilityParamsHeader {
     display: flex;
     gap: 15px;
     align-items: center;
 }
 
-.capabilityParamsTable {
+.CapabilityParamsTable {
     display: table;
 }
 
 
-.capabilityParamsTableHeader{
+.CapabilityParamsTableHeader{
     text-align: left;
     font-family: "Inter";
     text-transform: uppercase;
@@ -58,12 +58,12 @@
     
 }
 
-.capabilityParamsTable{
+.CapabilityParamsTable{
     width: 100%;
     cursor: pointer;
 }
 
-.capabilityParamsTableColumn {
+.CapabilityParamsTableColumn {
     color: var(--neural-1);
     font-family: "Inter";
     font-size: 14px;

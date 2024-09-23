@@ -71,7 +71,7 @@ export default function ChatDropdownMenu({ handleNavigateChatContext = () => {},
                         </ul>
                         {Array.isArray(item.chatQuery) && item.chatQuery.length > 4 && index === 0 && (
                             <button
-                                className={style.seeMoreDropDown}
+                                className={style.SeeMoreDropDown}
                                 onClick={() => toggleVisibility(index, item.chatQuery)}
                             >
                                 <span style={{ paddingTop: '6px' }}>

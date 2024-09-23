@@ -61,19 +61,19 @@ Input::placeholder {
     color: #DDD;
 }
 
-.hasError {
+.HasError {
     border-color: #FF7F6D;
 }
 
-.hasError:hover {
+.HasError:hover {
     border-color: #FFB9AF;
 }
 
-.hasError:focus {
+.HasError:focus {
     border-color: #FF7F6D;
 }
 
-.errorMessage {
+.ErrorMessage {
     color: #FF7F6D;
     font-family: Inter;
     font-size: 12px;
@@ -83,10 +83,10 @@ Input::placeholder {
     margin-left: 4px;
 }
 
-.hasError:hover ~ .errorMessage {
+.hasError:hover ~ .ErrorMessage {
     color: #FFB9AF;
 }
 
-.hasError:focus ~ .errorMessage {
+.hasError:focus ~ .ErrorMessage {
     color: #FF7F6D;
 }
