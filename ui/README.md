@@ -21,6 +21,13 @@ Install dependencies
   npm install
 ```
 
+
+Create a .env file add the following env variables
+
+```env
+    VITE_BACKEND_URL=${BACKENN_URL}
+```
+
 Start the server
 
 ```bash
