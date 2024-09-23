@@ -11,8 +11,8 @@ export default function RouteTab({className, TabName="", Deployroutes, TabStyle,
                     {Deployroutes.map((item, index) => (
                         <div style={TabStyle}
                             key={index}
-                            className={`${style.TabNavBarLinkActive} ${activeTab === item.path ? style.active : ''}`}
-                            onClick={() => setActiveTab(item.path)}
+                            className={`${style.TabNavBarLinkActive} ${activeTab === item.path ? style.active : ''} ${item.disabled? style.TabDisable : ""}`}
+                            onClick={() => item.disabled ? ()=>{} : setActiveTab(item.path)}
                         >
                             {item.title}
                         </div>

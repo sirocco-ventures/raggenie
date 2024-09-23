@@ -38,3 +38,8 @@
     display: block;
 }
 
+
+.TabDisable {
+    cursor: not-allowed;
+    /* pointer-events: none; */
+}
