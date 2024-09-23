@@ -2,13 +2,13 @@
 import { Routes, Route } from "react-router-dom"
 import DashboardLayout from "src/layouts/dashboard/Dashboard"
 import routes from "src/config/routes"
+import Chat from "src/pages/Chat/Chat"
 
 const MainRoute = ()=>{
 
     return(
         <Routes>
-            {/* <Route path="/" element={<Chat/>} /> */}
-            {/* <Route path="*" element={<DashboardLayout/>} /> */}
+            <Route key={"index"} path="/:contextId/chat" element={<Chat/>} />
             <Route path='/' element={<DashboardLayout/>}>
                 {
                 routes.map((item, index)=>{
