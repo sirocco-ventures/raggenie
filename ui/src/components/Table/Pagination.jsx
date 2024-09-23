@@ -22,7 +22,7 @@ const Pagination = (props)=>{
 
     return(
         <>
-            <div className={style.pagination}>
+            <div className={style.Pagination}>
                 { totalButtons > 10  && (<>
                                     <button className={`${style.opPaginationButton} `} disabled={props.currentPage == 1}  style={{width: "auto"}} onClick={()=>props.onChangePage(1)}>First</button>
                                     <button className={`${style.opPaginationButton} `} disabled={props.currentPage == 1} style={{width: "auto"}} onClick={()=>props.onChangePage( props.currentPage - 1)}>Previous</button>

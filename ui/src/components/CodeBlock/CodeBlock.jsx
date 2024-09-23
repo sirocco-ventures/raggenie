@@ -1,9 +1,8 @@
-import React from 'react';
-import style from './CodeBlock.module.css'; // Import the CSS module
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'; // Prism highlighter
 import { solarizedlight } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import Button from '../Button/Button';
 import { PiCopySimpleBold } from 'react-icons/pi';
+import style from './CodeBlock.module.css'; // Import the CSS module
 
 const CodeBlock = ({ CopyText = () => {}, codeString = "", Codestyle }) => {
   const customTheme = {
@@ -22,7 +21,7 @@ const CodeBlock = ({ CopyText = () => {}, codeString = "", Codestyle }) => {
   };
 
   return (
-    <div className={style.codeBlockContainer} style={Codestyle}>
+    <div className={style.CodeBlockContainer} style={Codestyle}>
       <Button type="solid" className={`${style.LightButton}`}>
         <span>Copy Code</span>
         <span><PiCopySimpleBold size={18} /></span>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { default as DropdownSelect } from 'react-select';
 import style from './Select.module.css';
 

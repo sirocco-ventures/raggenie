@@ -1,4 +1,4 @@
-.tabNavBar {
+.TabNavBar {
     display: flex;
     padding: var(--4, 4px) 5px;
     gap: 10px;
@@ -7,7 +7,7 @@
     flex-direction: row;
 }
 
-.tabNavBarLinkActive {
+.TabNavBarLinkActive {
     flex-grow: 1;
     background-color: aquamarine;
     padding: 15px 10px;
@@ -20,19 +20,19 @@
     font-style: normal;
     font-weight: 500;
     line-height: 20px; /* 125% */
-background: #F9F9F9;
-cursor: pointer;
+    background: #F9F9F9;
+    cursor: pointer;
     /* 125% */
 }
 
-.tabNavBarLinkActive.active{
+.TabNavBarLinkActive.active{
     background: #F0F0F0;
 }
-.tabNavBarLinkActive:hover{
+.TabNavBarLinkActive:hover{
     background: white;
 }
 
-.tabContent {
+.TabContent {
     background-color: #FFF;
     padding: 47px 13px;
     display: block;

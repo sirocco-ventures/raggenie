@@ -4,27 +4,27 @@ import style from "./Dashboard.module.css"
 import raggenieLogo from "../../assets/logo/logo.svg"
 import userIcon from "../../assets/icons/header-user-avatar.svg"
 import downArrowIcon from "../../assets/icons/chevron-right.svg"
-import { Link, NavLink } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 const SideMenu = ()=>{
 
     return(
         <div className={style.SideMenu}>
-            <div className={style.logoContainer}>
-                <img src={raggenieLogo} className={style.appLogo}/>
+            <div className={style.LogoContainer}>
+                <img src={raggenieLogo} className={style.AppLogo}/>
             </div>
-            <div className={style.profileContainer}>
-                <div className={style.profilePanel}>
+            <div className={style.ProfileContainer}>
+                <div className={style.ProfilePanel}>
                     <div>
                         <img src={userIcon} />
                     </div>
-                    <div className={style.usernameDiv}>Ashmil Hussian</div>
+                    <div className={style.UsernameDiv}>Ashmil Hussian</div>
                     <div>
                         <img src={downArrowIcon} />
                     </div>
                 </div>
             </div>
-            <div className={style.menuContainer}>
-                <ul className={style.menuList}>
+            <div className={style.MenuContainer}>
+                <ul className={style.MenuList}>
                     {SideMenuRoutes.map((menu, index)=>{
                         return(<NavLink key={index} to={menu.path}>
                                     <li className={style.menu}>

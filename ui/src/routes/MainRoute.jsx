@@ -1,7 +1,5 @@
 
 import { Routes, Route } from "react-router-dom"
-import Chat from "src/pages/Chat/Chat"
-import DashboardRoute from "./DashboardRoute"
 import DashboardLayout from "src/layouts/dashboard/Dashboard"
 import routes from "src/config/routes"
 

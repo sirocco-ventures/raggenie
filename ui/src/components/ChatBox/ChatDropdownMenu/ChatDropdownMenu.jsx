@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import {useEffect, useState } from 'react';
 import style from './ChatDropdownMenu.module.css';
 import arrowDown from '../assets/arrow-down.svg';
 import arrowUp from '../assets/arrow-up.svg';
-import { useNavigate } from 'react-router-dom';
 
 export default function ChatDropdownMenu({ handleNavigateChatContext = () => {}, data = [], showDropdownArrow = true }) {
     const [openDropdown, setOpenDropdown] = useState([]);
@@ -28,7 +27,6 @@ export default function ChatDropdownMenu({ handleNavigateChatContext = () => {},
     }
 
     const toggleVisibility = (index, chatQuery = []) => {
-        console.log(chatQuery.length);
         if (index === 0) {
             if (isExpanded) {
                 setShowUpto(4); 

@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
+import close from './assets/close-modal-icon.svg'
 import style from './ChatBox.module.css'
 
-import close from './assets/close-modal-icon.svg'
-
-
-function Feedback({ onSubmit=()=>{}, message={}, onFeedBackClose = ()=>{}, ...props }) {
-
+function Feedback({ onSubmit=()=>{}, message={}, onFeedBackClose = ()=>{}}) {
 
   const [inputValue,setInputValue] = useState()
   const feedBackPredefinedComment = ["Incorrect", "Confusing", "Incomplete", "Unclear"]
@@ -13,7 +10,6 @@ function Feedback({ onSubmit=()=>{}, message={}, onFeedBackClose = ()=>{}, ...pr
   const handleSuggestClick = (e, item) => {
     setInputValue(item)
   }
-
 
 
   return (
@@ -36,7 +32,5 @@ function Feedback({ onSubmit=()=>{}, message={}, onFeedBackClose = ()=>{}, ...pr
     </>
   )
 }
-
-
 
 export default Feedback

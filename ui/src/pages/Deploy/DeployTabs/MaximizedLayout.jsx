@@ -1,10 +1,10 @@
-import React from 'react'
+
 import CodeBlock from 'src/components/CodeBlock/CodeBlock'
 import TitleDescription from 'src/components/TitleDescription/TitleDescription'
 import style from './DeployTabs.module.css'
 import Screenshot from "src/assets/images/screen_shot.svg"
 
-const MaximizedLayout = (       { Codestyle }) => {
+const MaximizedLayout = () => {
     return (
         <>
             <TitleDescription showOrder={false} title='Copy code for Maximized Layout' description='Experience a rich view environment with the minimized view' />

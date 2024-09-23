@@ -10,6 +10,7 @@ import PieChart from "../Chart/PieChart/PieChart"
 import LineChart from "../Chart/LineChart/LineChart"
 import AreaChart from "../Chart/AreaChart/AreaChart"
 import Summary from "./Summary"
+import Markdown from "react-markdown"
 const Message = ({
     message = {},
     onLike = ()=>{}, 
@@ -49,15 +50,16 @@ const Message = ({
                 <div className={message.isBot == false ? style.UserMessageContainer : style.BotMessageContainer}>
                     {message.isBot && <div> <img src={botIcon} className={style.MessageAvatar} /></div>}
                     <div>
-                        <div className={`${style.MessageContainer}  ${message.isBot == false ? style.UserMessage : style.BotMessage}`}>{message.message}
-                        {message.isBot == true &&  <Time onLike={handleOnLikeClick} onDisLike={handleOnDislikeClick} onSummaryClick={handleOnSummaryOpen} summaryOpen ={showChatSummary}  time={"Today 12:30pm"} message={message}/>}
+                        <div className={`${style.MessageContainer}  ${message.isBot == false ? style.UserMessage : style.BotMessage}`}>
+                            <Markdown>{message.message}</Markdown>
+                            {message.isBot == true &&  <Time onLike={handleOnLikeClick} onDisLike={handleOnDislikeClick} onSummaryClick={handleOnSummaryOpen} summaryOpen ={showChatSummary}  time={"Today 12:30pm"} message={message}/>}
                         </div>
                     </div>
                 </div>
             </div>
             <div style={{marginLeft: "52px", marginBottom: "40px"}}>
                  {/* {showFeedback && message.isBot && <Feedback onSubmit={onFeedbackSubmit} onFeedBackClose={handleOnFeedbackClose} message={message} /> } */}
-                 {/* {showChatSummary && message.isBot && <Summary onSummaryClose={handleOnSummaryClose} message={message} /> } */}
+                 {showChatSummary && message.isBot && <Summary onSummaryClose={handleOnSummaryClose} message={message} /> }
                  
                  
                  { (message.kind == "list" || message.kind == "table" || message.kind == "single" || message.kind == "none") && <Table data={message.data.chart.data} />}

@@ -18,7 +18,7 @@
     text-decoration: none;
 }
 
-.sourceContainer {
+.SourceContainer {
     display: flex;
     width: 294px;
     align-items: center;
@@ -39,7 +39,7 @@
     /* pointer-events: none; */
 }
 
-.sourceContainer:hover {
+.SourceContainer:hover {
     background-color: #F4F4F4;
 }
 

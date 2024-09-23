@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Input from 'src/components/Input/Input';
 import Tab from 'src/components/Tab/Tab';
 import Tabs from 'src/components/Tab/Tabs';
@@ -6,17 +6,12 @@ import Textarea from 'src/components/Textarea/Textarea';
 import DashboardBody from 'src/layouts/dashboard/DashboadBody';
 import style from './ChatConfiguration.module.css';
 import { useForm, Controller } from "react-hook-form"
-import makeAnimated from 'react-select/animated';
 import Button from "src/components/Button/Button"
 import { FaArrowLeft } from 'react-icons/fa6';
-import { RiRestartLine } from "react-icons/ri";
 import { FiCheckCircle, FiXCircle} from "react-icons/fi"
-
 import { GoPlus } from "react-icons/go"
 import { FaRegArrowAltCircleRight } from 'react-icons/fa';
-import PostService from 'src/utils/http/PostService';
-import { API_URL, BACKEND_SERVER_URL } from 'src/config/const';
-import GetService from 'src/utils/http/GetService';
+import { BACKEND_SERVER_URL } from 'src/config/const';;
 import Select from 'src/components/Select/Select';
 import { toast } from 'react-toastify';
 import { v4  as uuid4} from "uuid"
@@ -24,6 +19,7 @@ import Capability from './Capability/Capability';
 import Modal from 'src/components/Modal/Modal';
 import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src/services/Capability';
 import { getBotConfiguration, getLLMProviders, saveBotConfiguration, saveBotInferene } from 'src/services/BotConfifuration';
+import { useNavigate } from 'react-router-dom';
 
 
 const BotConfiguration = () => {
@@ -38,7 +34,6 @@ const BotConfiguration = () => {
     const [activeTab, setActiveTab] = useState("configuration")
     
 
-    const [capability, setCapability] = useState()
     const [selectedProvider, setSelectedProvider] = useState()
 
     const [capabalities, setCapabalities] = useState([])
@@ -47,8 +42,7 @@ const BotConfiguration = () => {
 
     const [editCapabilityIndexRef, setEditCapabilityIndexRef] = useState("")
     const [editParamsIdRef, setEditParamsIdRef] = useState("")
-    // const editCapabilityIndexRef = useRef("");
-    // const editParamsIdRef = useRef("");
+   
     const editParamsNameRef = useRef("");
     const editParamsDesc = useRef("")
 
@@ -56,9 +50,8 @@ const BotConfiguration = () => {
     let [currentEditParamsNameError, setCurrentEditParamsNameError] = useState({hasError: false, errorMessage: ""})
     let [currentEditParamsDescError, setCurrentEditParamsDescError] = useState({hasError: false, errorMessage: ""})
 
-    const animatedComponents = makeAnimated();
 
-
+    const navigate = useNavigate()
 
     const customSelect = {
         control: (provided) => ({
@@ -144,34 +137,27 @@ const BotConfiguration = () => {
     };
 
 
+    const { register: configRegister, setValue: configSetValue, handleSubmit : configHandleSubmit, formState: configFormState, setError: configSetError, clearErrors: configClearErrors, watch: configWatch } = useForm({mode : "all"})
+    const { errors: configFormError, } = configFormState
 
-
-
-    const { register: configRegister, getValues: configGetValues, setValue: configSetValue, handleSubmit : configHandleSubmit, formState: configFormState, control: configController, setError: configSetError, clearErrors: configClearErrors, watch: configWatch } = useForm({mode : "all"})
-    const { errors: configFormError, isValid: isConfigFormValid } = configFormState
-
-    const { register: inferenceRegister, getValues: inferenceGetValues, setValue: inferenceSetValue, handleSubmit : inferenceHandleSubmit, formState: inferenceFormState, control: inferenceController, setError: inferenceSetError, clearErrors: inferenceClearErrors, watch: inferenceWatch } = useForm({mode : "all"})
-    const { errors: inferenceFormError, isValid: isInferenceFormValid } = inferenceFormState
+    const { register: inferenceRegister, setValue: inferenceSetValue, handleSubmit : inferenceHandleSubmit, formState: inferenceFormState, control: inferenceController } = useForm({mode : "all"})
+    const { errors: inferenceFormError } = inferenceFormState
 
 
     const onBotConfigSave = (data) => {
-
-        
-       
         saveBotConfiguration(currentConfigID, data ).then(response => {
                 setActiveInferencepiontTab(false)
                 setCurrentConfigID(response.data.data.configuration.id)
                 toast.success("Configuration saved successfully:")
                 setActiveTab("inferenceendpoint")
         })
-        .catch(error => {
+        .catch(() => {
             toast.error("Configuration faild to save")
         });
     }
 
     const getCurrentConfig = ()=>{
         
-
         getBotConfiguration().then(response=>{
             let configs = response.data?.data?.configurations
             if(configs?.length > 0){
@@ -197,9 +183,6 @@ const BotConfiguration = () => {
                 }else{
                     setCapabalities(configs[0].capabilities)
                 }
-
-               
-
 
                 if(configs[0].inference[0]?.id){
                     let inference = configs[0].inference[0];
@@ -230,7 +213,7 @@ const BotConfiguration = () => {
 
             let llmList = []
             llmProviders.map(item=>{
-                llmList.push({ value: item.unique_name, label: <div className={style.alignDropdownOptions}><img src={`${BACKEND_SERVER_URL}${item.icon}`} alt={item.display_name} />{item.display_name}</div> },)
+                llmList.push({ value: item.unique_name, label: <div className={style.AlignDropdownOptions}><img src={`${BACKEND_SERVER_URL}${item.icon}`} alt={item.display_name} />{item.display_name}</div> },)
             })
 
             setllmModels(llmList)
@@ -250,10 +233,10 @@ const BotConfiguration = () => {
 
 
        
-        saveBotInferene(currentConfigID, currentInferenceID, data, selectedProvider.value).then(response => {
+        saveBotInferene(currentConfigID, currentInferenceID, data, selectedProvider.value).then(() => {
             toast.success("Inference saved successfully")
         })
-        .catch(error => {
+        .catch(() => {
             toast.error("Inference saved failed")
         });
     }
@@ -307,9 +290,6 @@ const BotConfiguration = () => {
                 toast.error("Capability update failed")
             })
         }
-       
-
-       
 
     }
 
@@ -396,8 +376,6 @@ const BotConfiguration = () => {
     }
 
 
-   
-
 
     useEffect(() => {
         getCurrentConfig()
@@ -412,15 +390,15 @@ const BotConfiguration = () => {
                
                 {/* ==============first tab==================*/}
                 <Tab title="Configuration" tabKey="configuration">
-                    <h3 className={style.configHeading}>Bot Configuration details</h3>
-                    <p className={style.configDescription}>Provide your database connection details and database data description can make your application more efficient.</p>
+                    <h3 className={style.ConfigHeading}>Bot Configuration details</h3>
+                    <p className={style.ConfigDescription}>Provide your database connection details and database data description can make your application more efficient.</p>
                     <form onSubmit={configHandleSubmit(onBotConfigSave)}>
                         <div>
                             <Input label="Bot Configuration Name" maxLength={50} value={configWatch("botName")} hasError={configFormError["botName"]?.message ? true : false} errorMessage={configFormError["botName"]?.message}  {...configRegister("botName", { required: "This field is required", maxLength: 50})} />
                             <Input label="Bot Short Description" placeholder="brief detail about the use case of the bot" minLength={20} maxLength={200} value={configWatch("botShortDescription")} hasError={configFormError["botShortDescription"]?.message ? true : false} errorMessage={configFormError["botShortDescription"]?.message}  {...configRegister("botShortDescription", { required: "This field is required", minLength: {value: 20, message : "minimun length is 20"}, maxLength: {value: 200, message: "maximum length is 200"}})}  />
                             <Textarea label="Bot Long Description" placeholder="detailed information about the bot, including its full use case and functionalities" rows={10} minLength={100} maxLength={400} value={configWatch("botLongDescription")} hasError={configFormError["botLongDescription"]?.message ? true : false} errorMessage={configFormError["botLongDescription"]?.message}  {...configRegister("botLongDescription", { required: "This field is required", minLength:{value: 100, message: "minimun length is 100"}, maxLength: {value: 400, message: "maximum length is 400"}})} />
                             
-                            <div className={`${style.configSaveContainer} ${style.saveConfigContainer}`}>
+                            <div className={`${style.ConfigSaveContainer} ${style.SaveConfigContainer}`}>
                                 <div>
                                     <Button buttonType="submit" className="icon-button">  Save & Continue <FaRegArrowAltCircleRight /></Button>
                                 </div>
@@ -440,7 +418,7 @@ const BotConfiguration = () => {
                                 <Controller
                                     control={inferenceController}
                                     name='inferenceProvider'
-                                    render={({ onChange, value, name, ref }) => (
+                                    render={() => (
                                             <Select label={"LLM Provider"} placeholder={llmModels[0]?.label} options={llmModels} value={selectedProvider} onChange={setSelectedProvider} />
                                         )}
                                 />
@@ -451,7 +429,7 @@ const BotConfiguration = () => {
                             <Input label="Endpoint" hasError={inferenceFormError["inferenceEndpoint"]?.message ? true : false} errorMessage={inferenceFormError["inferenceEndpoint"]?.message}  {...inferenceRegister("inferenceEndpoint", { required: "This field is required"})}  />
                             <Input label="API Key" hasError={inferenceFormError["inferenceAPIKey"]?.message ? true : false} errorMessage={inferenceFormError["inferenceAPIKey"]?.message}  {...inferenceRegister("inferenceAPIKey", { required: "This field is required"})}  />
                         </div>
-                        <div className={`${style.saveConfigContainer} ${style.inferenceSaveContainer}`}>
+                        <div className={`${style.SaveConfigContainer} ${style.InferenceSaveContainer}`}>
                             <div style={{flexGrow: 1}}>
                                 <Button type="transparent" className="icon-button" onClick={()=>setActiveTab("configuration")} > <FaArrowLeft/> Back</Button>
                             </div>

@@ -1,5 +1,5 @@
 import {confirmAlert} from "react-confirm-alert"
-import 'react-confirm-alert/src/react-confirm-alert.css'; 
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 const defaultValue = {
     icon:<svg xmlns="http://www.w3.org/2000/svg" width="31" height="30" viewBox="0 0 31 30" fill="none">
@@ -94,34 +94,8 @@ const confirmDialogStyle = {
 }
 
 
-
 const  confirmDailog = (title, message,deleteButtonIconsvg, cancelButtonIconsvg, confirmButtonText = "Delete", onConfirm = ()=>{}, config = {} )=>{
-    const options = {
-        title: 'Title',
-        message: 'Message',
-        buttons: [
-          {
-            label: 'Yes',
-            onClick: () => alert('Click Yes')
-          },
-          {
-            label: 'No',
-            onClick: () => alert('Click No')
-          }
-        ],
-        closeOnEscape: true,
-        closeOnClickOutside: true,
-        keyCodeForClose: [8, 32],
-        willUnmount: () => {},
-        afterClose: () => {},
-        onClickOutside: () => {},
-        onKeypress: () => {},
-        onKeypressEscape: () => {},
-        overlayClassName: "overlay-custom-class-name"
-      };
-      
-    //   confirmAlert(options);
-
+   
     let allConfig = {...defaultValue, ...config}
     confirmAlert({
         closeOnEscape: true,

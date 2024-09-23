@@ -1,14 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import style from './ChatBox.module.css'
 
 import close from './assets/close-modal-icon.svg'
-
+import style from './ChatBox.module.css'
 
 function Summary({ onSummaryClose=()=>{}, message={}}) {
-
-
-
-
   return (
     <>
         <div className={`${style.SummaryContainer}`} >

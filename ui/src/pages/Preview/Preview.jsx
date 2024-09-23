@@ -1,5 +1,4 @@
 import DashboardBody from "src/layouts/dashboard/DashboadBody"
-import style from "./Preview.module.css"
 import ChatBox from "src/components/ChatBox/ChatBox"
 import {  useEffect, useState } from "react"
 import GetService from "src/utils/http/GetService"
@@ -8,7 +7,6 @@ import PostService from "src/utils/http/PostService"
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from "react-router-dom"
 import EmptyPreview from "./EmptyPreview"
-import { XAxis, YAxis } from "recharts"
 import { getConnectors } from "src/services/Connectors"
 import { getBotConfiguration } from "src/services/BotConfifuration"
 
@@ -84,11 +82,22 @@ const Preview = ()=>{
             const chats = response.data.data.chats
             let tempChat = [];
             let tempChatDetails = [];
-            console.log({chats})
+
             chats?.map(chat =>{ 
-                tempChat.push({ isBot:false, message: chat.chat_query, "chat_context_id": chat.chat_context_id, "chat_id": chat.chat_id, "feedback_status": 0, })
-                tempChat.push({ isBot:true, message: chat.chat_answer.content,  })
-         
+
+                let chatData =  { 
+                    chart: {
+                        data: chat.chat_answer.data,
+                        title: chat.chat_answer.title,
+                        xAxis: chat.chat_answer.x,
+                        yAxis: chat.chat_answer.y
+                    },
+                    query: chat.chat_answer.query
+                }
+
+
+                tempChat.push({ isBot:false, message: chat.chat_query, chat_context_id: chat.chat_context_id, chat_id: chat.chat_id, feedback_status: 0, })
+                tempChat.push({isBot: true, message: chat.chat_answer.content, entity: chat.chat_answer.main_entity, format: chat.chat_answer.main_format, kind: chat.chat_answer.kind, data: chatData })
             })
             setConversation(tempChat)
         })
@@ -110,10 +119,7 @@ const Preview = ()=>{
                 });
             });           
             setchatHistory(chatHistory);
-        }).catch(error => {
-            console.error("Error fetching chat history:", error)
-    
-        });
+        })
     }
 
     function generateContextUUID() {
@@ -174,7 +180,6 @@ const Preview = ()=>{
         .then(response => {
             setFeedbackStatus(response.data.feedback_status === 1 ? true : false );
         })
-        .catch(error => console.error("Feedback submission failed:", error));
     };
     
     useEffect(()=>{
@@ -198,10 +203,6 @@ const Preview = ()=>{
         }
      },[])
  
-
-     
-    
-
 
     return(
         <DashboardBody title="Preview" containerStyle={{padding: "0px 0px", height: "calc(100vh - 68px)"}}>

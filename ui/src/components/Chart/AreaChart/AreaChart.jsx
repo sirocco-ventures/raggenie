@@ -1,6 +1,5 @@
-import React from 'react';
 import style from "../style.module.css";
-import { AreaChart as ReAreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart as ReAreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 function AreaChart({ title = "Area Chart", data = [], xAxis = "name", yAxis = "value"},  dataLength = 12) {
   return (

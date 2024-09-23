@@ -1,5 +1,4 @@
-import React, { useRef, useState } from 'react'
-import Input from 'src/components/Input/Input'
+import { useRef } from 'react'
 import style from './DeployTabs.module.css'
 import { PiCopySimpleBold } from "react-icons/pi";
 import Button from 'src/components/Button/Button';
@@ -8,20 +7,17 @@ import preview from "src/assets/icons/preview-arrow.svg"
 
 
 const CopyURL = () => {
-    const[url,setUrl]= useState("https://www.raggenie.com/gshgadhsljvfsdggyeuhdjiaX")
 
+   
     const CopyUrlRef = useRef(null)
 
     const handleCopyUrl=()=>{
        try {
-        var copyText = CopyUrlRef.current.innerText;
-        if(copyText){
-        navigator.clipboard.writeText(copyText);
-        }
-       } catch (error) {
-        console.log(error);
-       }
-
+            var copyText = CopyUrlRef.current.innerText;
+            if(copyText){
+                navigator.clipboard.writeText(copyText);
+            }
+       } catch {}
     }
     return (
         <>
@@ -31,7 +27,7 @@ const CopyURL = () => {
             <div className={`${style.CopyContainer}`}>
                 <div className={`${style.CopyLinkContainer}`}>
                     <div className={`${style.CopyLinkInputBox}`}>
-                        <div ref={CopyUrlRef} contentEditable={false} className={`${style.CopyText}`}>{url}</div><span onClick={handleCopyUrl} className={`${style.CopyNow}`}><span >Copy URL</span><PiCopySimpleBold size={18} /></span>
+                        <div ref={CopyUrlRef} contentEditable={false} className={`${style.CopyText}`}>{"https://www.raggenie.com/gshgadhsljvfsdggyeuhdjiaX"}</div><span onClick={handleCopyUrl} className={`${style.CopyNow}`}><span >Copy URL</span><PiCopySimpleBold size={18} /></span>
                     </div>
                 </div>
                 <Button buttonType="submit" className={`${style.ButtonClass}`}>Preview<img src={preview} alt="previewIcon"/></Button>

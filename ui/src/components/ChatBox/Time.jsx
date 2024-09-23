@@ -1,7 +1,4 @@
-import React from 'react'
 import style from "./ChatBox.module.css"
-
-
 
 function Time({message={}, time= "", onLike = ()=>{}, onDisLike = ()=>{}, summaryOpen = false, onSummaryClick = ()=>{}}) {
   return (

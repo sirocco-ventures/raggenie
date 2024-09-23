@@ -16,7 +16,7 @@ const ConfigurationList = ({configurations = [], onPluginDelete})=>{
         
         {
             name: 'Name',
-            selector: row =><div className="inline-flex-align-center"><img  className={style.connectorIcon} src={`${BACKEND_SERVER_URL}${row.icon}`}/>  { row.connector_name} </div>,
+            selector: row =><div className="inline-flex-align-center"><img  className={style.ConnectorIcon} src={`${BACKEND_SERVER_URL}${row.icon}`}/>  { row.connector_name} </div>,
             // width: "400px"
         },
         {
@@ -32,7 +32,7 @@ const ConfigurationList = ({configurations = [], onPluginDelete})=>{
         {
             name: '',
             selector: row => <>
-                    <div className={style.connectorAction}>
+                    <div className={style.ConnectorAction}>
                         <span>
                             <Link to={`/plugins/${row.connector_type}/${row.connector_key}/${row.connector_id}/details`} ><GoPencil size={20} color="#3893FF" /> </Link>
                         </span>
@@ -49,7 +49,6 @@ const ConfigurationList = ({configurations = [], onPluginDelete})=>{
         }
     
 ]
-
 
 
     return(

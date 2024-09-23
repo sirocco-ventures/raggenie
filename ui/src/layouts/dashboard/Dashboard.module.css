@@ -14,16 +14,16 @@
     
 }
 
-.logoContainer {
+.LogoContainer {
     padding: 21px 20px;
 }
 
-.appLogo {
+.AppLogo {
     width: 80px;
     height: 18.127px;
 }
 
-.profileContainer {
+.ProfileContainer {
     cursor: pointer;
     padding: 0px 17px 0px 13px;
     margin: 7px 0px 17px 0px;
@@ -31,7 +31,7 @@
 
 
 
-.profilePanel {
+.ProfilePanel {
     display: flex;
     gap:6px;
     display: flex;
@@ -40,13 +40,13 @@
 
 }
 
-.profilePanel:hover {
+.ProfilePanel:hover {
     background-color: var(--neural-5);
     border-radius: 4px;
 }
 
 
-.usernameDiv{
+.UsernameDiv{
     flex-grow: 1;
     color: var(--neural-2);
     font-family: Inter;
@@ -58,11 +58,11 @@
 }
 
 
-.menuContainer {
+.MenuContainer {
     padding: 0px 17px;
 }
 
-.menuList {
+.MenuList {
     list-style: none;
     color: var(--neural-2);
     font-family: Inter;
@@ -73,16 +73,16 @@
     padding: 0px;
 }
 
-.menuList a {
+.MenuList a {
    text-decoration: none;
    
 }
 
-.menuList a[aria-current="page"] li {
+.MenuList a[aria-current="page"] li {
     background-color: var(--neural-5);
 }
 
-.menuList li {
+.MenuList li {
     color: var(--neural-2);
     font-family: Inter;
     font-size: 12px;
@@ -99,7 +99,7 @@
     margin-bottom: 4px
 }
 
-.menuList li:hover {
+.MenuList li:hover {
     background-color: var(--neural-5);
 }
 

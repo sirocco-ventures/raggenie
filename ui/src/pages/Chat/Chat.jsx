@@ -15,11 +15,7 @@ const Chat = ()=>{
     const [isChatLoading, setIsChatLoading] = useState(false) 
     const [contextId, setContextId] = useState("")
     const [enableChatbox, setEnableChatbox] = useState(0)
-    const checkBasicConfig = ()=>{
-
-    }
-
-
+   
     const onChatBoyKeyDown = (e)=>{
         if(e.keyCode  == 13){
             e.preventDefault()
@@ -38,12 +34,7 @@ const Chat = ()=>{
                 let res = response.data
                 let chatFormat = response.format
                 let chatKind = res.response.main_format
-                let chatData = res.response.data
-                
-                let tempTableData = [
-                    {name: "sethu", age: "28", companay: "abc company"},
-                ]
-
+                let chatData = res.response.data            
 
                 setCurrentChat({isBot: true, message: res.response.content, format: chatFormat, kind: chatKind, data: chatData })
                 setIsChatLoading(false)
@@ -93,13 +84,10 @@ const Chat = ()=>{
     }
     
     useEffect(()=>{
-       //getChatContexts()
+       getChatContexts()
        setContextId(uuid4())
        hasConfiguruated()
     },[])
-
-
-    
 
 
     return(

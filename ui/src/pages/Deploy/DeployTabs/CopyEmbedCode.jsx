@@ -1,8 +1,6 @@
-import React from 'react'
 import RouteTab from 'src/components/RouteTab/RouteTab'
 import TitleDescription from 'src/components/TitleDescription/TitleDescription'
 import { ChatBotEmbeddedCodeTabs } from '../deployTabRoutes'
-import style from './DeployTabs.module.css'
 
 const CopyEmbedCode = () => {
     return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import RouteTab from 'src/components/RouteTab/RouteTab';
 import DashboardBody from 'src/layouts/dashboard/DashboadBody';
 import TitleDescription from 'src/components/TitleDescription/TitleDescription';
@@ -6,7 +6,6 @@ import TitleDescriptionContainer from 'src/components/TitleDescription/TitleDesc
 import Button from 'src/components/Button/Button';
 import style from "./Deploy.module.css"
 import rightArraow from "src/assets/icons/arrow-right-icon.svg"
-import reload from "src/assets/icons/refresh.svg"
 import { deployTabroutes } from './deployTabRoutes';
 import { RiRestartLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
@@ -41,7 +40,7 @@ const Deploy = () => {
     }
 
   const generateYMAL = ()=>{
-    PostService(API_URL + `/connector/createyaml/${currentConfigID}`,{},{loaderText: "Restating Chatbot"}).then(response=>{
+    PostService(API_URL + `/connector/createyaml/${currentConfigID}`,{},{loaderText: "Restating Chatbot"}).then(()=>{
         toast.success("Chatbot Restarted")
     }).catch(()=>{
         toast.error("Failed to restart bot")

@@ -2,112 +2,115 @@
 
 /* Chatbox.jsx */
 
-    .ChatBoxContainer {
-        display: flex;
-        height: 100%;
-        overflow: hidden;
-        /* background-color: red; */
-    }
-    .chatMessagesContainer{
-        flex-grow: 1;
-        padding-left: 39px;
-        padding-right: 39px;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
+.ChatBoxContainer {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+    /* background-color: red; */
+}
+.chatMessagesContainer{
+    flex-grow: 1;
+    padding-left: 39px;
+    padding-right: 39px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
 
+.chatMessageContainer {
+    flex-grow: 1;
+    /* background-color: blue; */
+    overflow: scroll;
+}
+
+.chatMessageContainer p {
+    margin: 0px;
+}
+
+
+.chatMessageContainer::-webkit-scrollbar {
+    display: none;
+    }
+    
     .chatMessageContainer {
-        flex-grow: 1;
-        /* background-color: blue; */
-        overflow: scroll;
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
     }
 
+.ChatBoxTextContainer {
+    display: flex;
+    /* height: 70px; */
+    padding: 8px 8px;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+    border-radius: 180px;
+    border: 1px solid #E0E0E0;
+    background: #FFF;
+    outline: none;
+    margin-bottom: 22px;
+}
 
 
-    .chatMessageContainer::-webkit-scrollbar {
-        display: none;
-      }
+.ChatBoxTextBox {
+    flex-grow: 1;
+    padding: 0px 10px;
+    max-height: 54px;
+    overflow: scroll;
+    overflow: hidden;
+    color: #888787;
+    text-overflow: ellipsis;
+
+    /* Presets/Body2 */
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px; /* 150% */
+    /* max-width: calc(100vw - 618px); */
+}
+
+.ChatBoxTextBox::-webkit-scrollbar {
+    display: none;
+}
       
-      .chatMessageContainer {
-        -ms-overflow-style: none;  
-        scrollbar-width: none;  
-      }
+.ChatBoxTextBox {
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
+}
 
-    .ChatBoxTextContainer {
-        display: flex;
-        /* height: 70px; */
-        padding: 8px 8px;
-        align-items: center;
-        gap: 16px;
-        flex-shrink: 0;
-        border-radius: 180px;
-        border: 1px solid #E0E0E0;
-        background: #FFF;
-        outline: none;
-        margin-bottom: 22px;
-    }
+.ChatBoxTextBox:focus{
+    outline: none;
+}
 
+.ChatBoxTextContainer:has(.ChatBoxTextBox:hover) {
+    border-color: #3893FF;
+}
 
-    .ChatBoxTextBox {
-        flex-grow: 1;
-        padding: 0px 10px;
-        max-height: 54px;
-        overflow: scroll;
-        overflow: hidden;
-color: #888787;
-text-overflow: ellipsis;
-
-/* Presets/Body2 */
-font-family: Inter;
-font-size: 16px;
-font-style: normal;
-font-weight: 400;
-line-height: 24px; /* 150% */
-        /* max-width: calc(100vw - 618px); */
-    }
-
-    .ChatBoxTextBox::-webkit-scrollbar {
-        display: none;
-      }
-      
-      .ChatBoxTextBox {
-        -ms-overflow-style: none; 
-        scrollbar-width: none;
-      }
-
-    .ChatBoxTextBox:focus{
-        outline: none;
-    }
-
-    .ChatBoxTextContainer:has(.ChatBoxTextBox:hover) {
-        border-color: #3893FF;
-    }
-
-    .ChatBoxSendIcon {
-        background: url(/src/components/ChatBox/assets/send-icon.svg);
-        width: 42px;
-        height: 42px;
-        background-repeat: no-repeat;
-        background-color: #F9F9F9;
-        border-radius: 180px;
-        background-position: 12px 10px;
-        cursor: pointer;
-    }
+.ChatBoxSendIcon {
+    background: url(/src/components/ChatBox/assets/send-icon.svg);
+    width: 42px;
+    height: 42px;
+    background-repeat: no-repeat;
+    background-color: #F9F9F9;
+    border-radius: 180px;
+    background-position: 12px 10px;
+    cursor: pointer;
+}
 
    
-    .ChatBoxTextBox:hover  + div .ChatBoxSendIcon{
-        background-color: #ECF5FF !important;
-        background: url(/src/components/ChatBox/assets/send-icon-active.svg);
-        background-repeat: no-repeat;
-        background-position: 12px 10px;
-    }
+.ChatBoxTextBox:hover  + div .ChatBoxSendIcon{
+    background-color: #ECF5FF !important;
+    background: url(/src/components/ChatBox/assets/send-icon-active.svg);
+    background-repeat: no-repeat;
+    background-position: 12px 10px;
+}
 
 
-    .ChatBottomMessage {
-        text-align:center;
-        margin-bottom: 29px; 
-    }
+.ChatBottomMessage {
+    text-align:center;
+    margin-bottom: 29px; 
+}
 
 
 /* Message.jsx */
@@ -278,42 +281,41 @@ line-height: 24px; /* 150% */
 }
 
 
-    .DislikeButton {
-        outline: none;
-        display: flex;
-        width: auto;
-        justify-content: center;
-        align-items: center;
-        gap: 6px;
-        padding-left: 3px;
-        padding-right: 3px;
-        border-radius: 4px;
-        background: #F0F0F0;
-        border: none;
-        cursor: pointer;
-        position: relative; 
-    }
+.DislikeButton {
+    outline: none;
+    display: flex;
+    width: auto;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-radius: 4px;
+    background: #F0F0F0;
+    border: none;
+    cursor: pointer;
+    position: relative; 
+}
 
-    .DislikeButton.ActiveDisliked{
-        background: #ECF5FF;
-    }
+.DislikeButton.ActiveDisliked{
+    background: #ECF5FF;
+}
 
-    .DislikeButton:hover{
-        background: #ECF5FF;
+.DislikeButton:hover{
+    background: #ECF5FF;
+}
     
-    }
-    
-    .DislikeButton::before {
-        content: url('./assets/dislke-icon.svg');
-    }
-    
-    .DislikeButton:hover::before {
-        content: url('./assets/dislike-hover.svg');
-    }
+.DislikeButton::before {
+    content: url('./assets/dislke-icon.svg');
+}
 
-    .DislikeButton.ActiveDisliked::before {
-        content: url('./assets/dislike-hover.svg');
-    }
+.DislikeButton:hover::before {
+    content: url('./assets/dislike-hover.svg');
+}
+
+.DislikeButton.ActiveDisliked::before {
+    content: url('./assets/dislike-hover.svg');
+}
 
 
 
@@ -631,9 +633,8 @@ line-height: 150%; /* 24px */
 }
 
 .historyArrowButton:hover{
-border: 1px #3893FF;
-
-background: #3893FF;
+    border: 1px #3893FF;
+    background: #3893FF;
 }
 
 .historyArrowButton img{
@@ -661,12 +662,10 @@ background: #3893FF;
 }
 
 .SummaryClose {
-   
     content: url('./assets/summary-down.svg');
 }
 
 .SummaryOpen {
-    
     content: url('./assets/summary-up.svg');
 }
 
@@ -701,7 +700,6 @@ background: #3893FF;
 
 
 .SummaryContainer{
-    /* position: absolute; */
     display: block;
     width: 401px;
     height: auto;

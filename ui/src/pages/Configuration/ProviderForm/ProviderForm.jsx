@@ -34,23 +34,19 @@ const ProviderForm = ()=>{
 
     const [disableConnectorSave, setDisableConnectorSave] = useState(true);
     
-
- 
     let [documentationError, setDocumentationError] = useState({hasError: false, errorMessage: ""})
 
     let configDocRef = useRef(null)
 
 
-    let [searchParams, setSearchParams] = useSearchParams();
+    let [searchParams] = useSearchParams();
 
     
     const { register, getValues, handleSubmit, trigger, setValue , formState  } = useForm({mode : "all"})
     const { errors } = formState
 
 
-    
-    
-    const {providerId, providerName, connectorId} = useParams()
+    const {providerId, connectorId} = useParams()
     const navigate = useNavigate()
 
 
@@ -108,11 +104,11 @@ const ProviderForm = ()=>{
     const rowExpandComponent = (row)=>{
         let tempTableDetails =  JSON.parse(window.localStorage.getItem("dbschema")) 
         return(<>
-                <div className={style.expandRowContainer}>
+                <div className={style.ExpandRowContainer}>
                     {row?.data?.columns?.map((column, index)=>{
                         return(
-                            <div key={index} className={style.expandRowDiv}>
-                                <div className={`inline-flex-align-center ${ style.expandRowCol}`}> <FiTable color="#BEBEBE"/> <span style={{fontSize: "13px"}}>{column.column_name}</span> </div> 
+                            <div key={index} className={style.ExpandRowDiv}>
+                                <div className={`inline-flex-align-center ${ style.ExpandRowCol}`}> <FiTable color="#BEBEBE"/> <span style={{fontSize: "13px"}}>{column.column_name}</span> </div> 
                                 <div style={{cursor: "pointer", zIndex: "10000", flexGrow: 1}}>
                                     <div className="child-textarea-container" style={{width: "100%", height: "22px"}}>
                                         <div style={{display: "flex", alignItems: "center"}}>
@@ -135,7 +131,7 @@ const ProviderForm = ()=>{
         </>)
     }
 
-    const onRowExpand = (expandState, row)=>{
+    const onRowExpand = (expandState)=>{
        
         if(expandState == true){
             setTimeout(()=>{
@@ -145,7 +141,7 @@ const ProviderForm = ()=>{
                     
                     let targetElem = elem[index].parentElement.parentElement
 
-                    targetElem.addEventListener("click",(event)=>{
+                    targetElem.addEventListener("click",()=>{
                         targetElem.querySelector(".textarea").addEventListener("focusout", (event) => {
                             targetElem.querySelector(".textarea").style.display = "none"
                             targetElem.querySelector(".span").style.display = "block"
@@ -177,9 +173,6 @@ const ProviderForm = ()=>{
     }
 
 
-  
-   
-
     const getProviderDetails = ()=>{
 
         getProviderInfo(providerId).then(response=>{
@@ -206,7 +199,6 @@ const ProviderForm = ()=>{
             let connectorConfig = response.data.data.connector.connector_config
 
            
-
             setValue("pluginName", connectorData.connector_name )
             setValue("pluginDescription", connectorData.connector_description )
 
@@ -215,10 +207,9 @@ const ProviderForm = ()=>{
             }
 
             configDocRef.current.value = connectorData.connector_docs
-            setProviderSchema(connectorData.schema_config)
+            setProviderSchema(connectorData.schema_config ?? [])
 
 
-            
             let tempSaveTableDetails = {}
             connectorData.schema_config?.map(item=>{
                 if(!tempSaveTableDetails[item.table_id]){
@@ -234,7 +225,7 @@ const ProviderForm = ()=>{
                 
             })
 
-            console.log({tempSaveTableDetails})
+    
 
           
             window.localStorage.setItem("dbschema", JSON.stringify(tempSaveTableDetails))
@@ -242,10 +233,6 @@ const ProviderForm = ()=>{
         })
     }
 
-
-
-
-  
 
     const getConfigFormData = async ()=>{
         let slugs = await providerConfig.map(item=>item.slug)
@@ -278,14 +265,14 @@ const ProviderForm = ()=>{
                         case 4: return <Input key={index} type="url" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />  
                         case 5: return <Input key={index} type="email" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />  
                         case 6: return (
-                            <div className={style.selectDropDown}>
-                                <label className={style.selectDropDownLabel}>{item.name}</label>
-                                <select key={index} className={`${errors[item.slug]?.message ? style.selectHasError : ""}`} {...register(item.slug, {required: "This is required"})}>
+                            <div className={style.SelectDropDown}>
+                                <label className={style.SelectDropDownLabel}>{item.name}</label>
+                                <select key={index} className={`${errors[item.slug]?.message ? style.SelectHasError : ""}`} {...register(item.slug, {required: "This is required"})}>
                                     {item.value?.map((val, valIndex)=>{
                                         return <option key={valIndex} value={val.value}>{val.label}</option>
                                     })}
                                 </select>
-                                {errors[item.slug]?.message != "" && <label className={style.selectErrorMessage}>{errors[item.slug]?.message}</label>}
+                                {errors[item.slug]?.message != "" && <label className={style.SelectErrorMessage}>{errors[item.slug]?.message}</label>}
                             </div>
                         )
                         case 7: return <Textarea key={index} rows="5" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />  
@@ -429,7 +416,7 @@ const ProviderForm = ()=>{
                 event.stopPropagation()
                 const target = event.target.parentElement.parentElement
                 
-                target.querySelector(".textarea").addEventListener("focusout", (event) => {
+                target.querySelector(".textarea").addEventListener("focusout", () => {
                     target.querySelector(".textarea").style.display = "none"
                     target.querySelector(".span").style.display = "block"
                     target.querySelector(".span").innerText = target.querySelector(".textarea").value
@@ -454,7 +441,7 @@ const ProviderForm = ()=>{
         let elem = document.querySelectorAll(".textarea-container");
         for (let index = 0; index < elem.length; index++) {
           elem[index].removeEventListener("click",()=>{});
-          elem[index].querySelector(".textarea").removeEventListener("focusout", (event) => {});
+          elem[index].querySelector(".textarea").removeEventListener("focusout", () => {});
         }
        };
 
@@ -468,7 +455,7 @@ const ProviderForm = ()=>{
         }
     },[])
 
-//
+
     return (
         <>
             <DashboardBody title={providerDetails.name}>

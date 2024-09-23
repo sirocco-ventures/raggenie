@@ -2,8 +2,6 @@ import { API_URL } from "src/config/const";
 import GetService from "src/utils/http/GetService";
 import PostService from "src/utils/http/PostService";
 
-
-
 export const getSamples = ()=>{
     return GetService(API_URL + "/sql/list")
 }

@@ -1,16 +1,13 @@
-import { forwardRef, useEffect, useRef, useState } from "react"
+import { forwardRef, useEffect, useRef } from "react"
 import style from "./ChatBox.module.css"
 import Message from "./Message"
-import sendIcon from "./assets/send-icon.svg"
-import Feedback from "./Feedback"
+
 import Loader from "./Loader"
 
 import ChatHistorySideBar from "./ChatHistorySideBar"
 
 
 const ChatBox = forwardRef(({handleNavigateChatContext=()=>{}, onCreateNewChat=()=>{}, chatHistory=[], isLoading = false, onFeedBackSubmit=()=>{}, conversations = [], onKeyDown = ()=>{}, onKeyUp = ()=>{}, onLike = ()=>{} , onDisLike = ()=>{} }, ref)=>{
-
-
 
     const chatListRef = useRef(null)
    

@@ -12,8 +12,6 @@ const Configuration = ()=>{
 
     const [configurationList, setConfigurationList] = useState([])
 
-
-
     const loadConnectors = ()=>{
        getConnectors().then(response=>{
             setConfigurationList(response.data.data.connectors ?? [])
@@ -23,7 +21,6 @@ const Configuration = ()=>{
 
     const onConnectorDelete = (connectorId)=>{
         deleteConnector(connectorId).then(response=>{
-            console.log({response})
             if(response.data.status == true){
                 toast.success("Plugin Deleted")
                 loadConnectors()
@@ -34,17 +31,11 @@ const Configuration = ()=>{
     }
 
 
-   
-
-
     useEffect(()=>{
         loadConnectors()
     }, [])
 
     
-
-
-
     return(
         <DashboardBody title="Plugin List">
                 {configurationList?.length === 0  && <EmptyConfiguration/>}

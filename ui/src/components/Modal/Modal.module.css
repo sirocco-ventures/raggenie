@@ -1,5 +1,5 @@
 
-.modal {
+.Modal {
     height: 85vh;
     width: 460px;
     position: fixed;
@@ -12,17 +12,17 @@
     display: none;
 }
 
-.modalShow {
+.ModalShow {
     display: block;
 }
 
 
-.modalHeader {
+.ModalHeader {
     display: flex;
     margin-bottom: 41px;
 }
 
-.modalTitle {
+.ModalTitle {
     flex-grow: 1;
     color: #323232;
     font-family: Inter;
@@ -32,6 +32,6 @@
     line-height: 20px;
 }
 
-.closeIconContainer{ 
+.CloseIconContainer{ 
     cursor: pointer;
 }

@@ -25,13 +25,14 @@
     margin-bottom: 44px;
     display: flex;
 }
-.connectorAction {
+
+.ConnectorAction {
     display: flex;
     align-items: center;
     gap: 23px;
 }
 
-.connectorIcon {
+.ConnectorIcon {
     width: 24px;
     height: 24px;
     margin-right: 8px;

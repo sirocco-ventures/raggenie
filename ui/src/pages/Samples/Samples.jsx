@@ -1,5 +1,4 @@
 import DashboardBody from "src/layouts/dashboard/DashboadBody"
-import style from "./Samples.module.css"
 import EmptySample from "./EmptySample"
 import Modal from "src/components/Modal/Modal"
 import { useEffect, useState } from "react"
@@ -16,7 +15,6 @@ const Samples = ()=>{
 
     const  getAllSamples = ()=>{
         getSamples().then(response=>{
-            console.log({response})
             setSampleList(response.data?.data?.sql ?? [])
         })
     }

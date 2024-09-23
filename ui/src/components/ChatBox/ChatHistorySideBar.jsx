@@ -1,13 +1,10 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import style from "./ChatBox.module.css"
 import plusIcon from "./assets/plus-image.svg"
-import message from "./assets/message-history.svg"
 import arrowRight from "./assets/arrow-right.svg"
 import ChatHistoryButton from "src/components/ChatBox/ChatHistoryButton"
 import Clock from "./assets/time-lap.svg"
 import ChatDropdownMenu from './ChatDropdownMenu/ChatDropdownMenu'
-import { useNavigate } from 'react-router-dom'
-
 
 
 function ChatHistorySideBar({handleNavigateChatContext=()=>{}, onCreateNewChat=()=>{}, onClick=()=> {}, chatHistory }) {
@@ -25,11 +22,9 @@ function ChatHistorySideBar({handleNavigateChatContext=()=>{}, onCreateNewChat=(
   };
 
 
-
-
 const formattedData = chatHistory.reduce((acc, chat) => {
   
-    const { chatContextId, chatSummary, chatQuery, date } = chat;
+    const { chatContextId, chatQuery, date } = chat;
 
     // Format the date to "MONTH YEAR"
     const formattedDate = formatDate(date);
@@ -47,8 +42,6 @@ const formattedData = chatHistory.reduce((acc, chat) => {
         contextId: chatContextId,
         message: chatQuery
     });
-
-
 
     return acc;
 }, {});

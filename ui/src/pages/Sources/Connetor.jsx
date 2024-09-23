@@ -11,7 +11,7 @@ const  Connector = ({connectorId, image, title, description, enabled, plugInkey}
     return(
         <>
             <Link className={style.ConnectLink} to={enabled == true ? `/plugins/${connectorId}/${plugInkey}` : "" }>
-                <div className={style.sourceContainer}>
+                <div className={style.SourceContainer}>
                     {enabled == false && <div className={style.sourceOverlay}></div>}
                     <div className={style.ConnectorImageContainer}>
                         <img src={`${BACKEND_SERVER_URL}${image}`}/>

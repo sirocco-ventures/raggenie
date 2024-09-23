@@ -48,7 +48,6 @@ const SampleList = ({data, onCreate=()=>{}, onEdit = ()=>{}})=>{
             <div>
                 <Table columns={tableColums} data={data} expandableRows={true} expandableRowsComponent={rowExpandComponent} />
             </div>
-            
         </div>
     )
 

@@ -32,4 +32,4 @@ const BUTTON_VARIANT = {
 
 
 export default Button
-export { BUTTON_TYPE }
+export { BUTTON_TYPE, BUTTON_VARIANT}

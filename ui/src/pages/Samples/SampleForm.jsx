@@ -15,11 +15,8 @@ const SampleForm = ({ sample = {}, afterCreate = ()=>{}, onCancel = ()=>{}})=>{
     const [connectors, setConnectors] = useState([])
     // const [sampleId, setSampleId] = use
 
-    const { register, getValues, handleSubmit, trigger, setValue , control, formState , reset: resetForm } = useForm({mode : "all"})
+    const { register, handleSubmit, setValue , control, formState , reset: resetForm } = useForm({mode : "all"})
     const { errors, isValid: isFormValid } = formState
-
-
-
 
 
     const getAllConnectors = ()=>{
@@ -43,7 +40,7 @@ const SampleForm = ({ sample = {}, afterCreate = ()=>{}, onCancel = ()=>{}})=>{
         }).then(response=>{
             toast.success("Sample saved successfully")
             afterCreate(response.data?.data)
-        }).catch(err=>{
+        }).catch(()=>{
             toast.error("Sample saved failed")
         })
     }

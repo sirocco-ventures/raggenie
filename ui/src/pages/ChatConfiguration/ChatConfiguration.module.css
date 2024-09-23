@@ -6,30 +6,30 @@
 }
 
 
-.configHeading{
+.ConfigHeading{
     color: #323232;
-font-feature-settings: 'liga' off, 'clig' off;
-font-family: Inter;
-font-size: 16px;
-font-style: normal;
-font-weight: 500;
-line-height: 20px; /* 125% */
-margin: 0;
-margin-bottom: 10px;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px; /* 125% */
+    margin: 0;
+    margin-bottom: 10px;
 }
 
-.configDescription{
+.ConfigDescription{
     color: #888787;
-font-feature-settings: 'liga' off, 'clig' off;
-font-family: Inter;
-font-size: 14px;
-font-style: normal;
-font-weight: 400;
-line-height: 20px; /* 142.857% */
-margin-bottom: 30px;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; /* 142.857% */
+    margin-bottom: 30px;
 }
 
-.saveConfigContainer {
+.SaveConfigContainer {
     bottom: 20px;
     border-radius: var(--8, 8px);
     background: #F9F9F9;
@@ -40,19 +40,19 @@ margin-bottom: 30px;
     justify-content: space-between;
 }
 
-.configSaveContainer{
+.ConfigSaveContainer{
     text-align: right;  
 }
 
-.inferenceSaveContainer {
+.InferenceSaveContainer {
     display: flex;
 }
 
-.backButton{
+.BackButton{
     font-size: 14px;
 }
 
-.dropdownHead{
+.DropdownHead{
     color: #323232;
     font-family: Inter;
     font-size: 14px;
@@ -63,7 +63,7 @@ margin-bottom: 30px;
     display: block;
 }
 
-.alignDropdownOptions{
+.AlignDropdownOptions{
     display: flex;
     align-items: center;
     justify-items: center;

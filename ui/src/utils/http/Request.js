@@ -8,15 +8,12 @@ const defaultConfig = {
 
 const defaultAxiosConfig = { }
 
-
 const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig = {} )=>{
     let allConfig = {...defaultConfig, ...config}
     let allAxiosConfig = {...defaultAxiosConfig, ...axiosConfig}
 
     let loaderContainer = document.querySelector(".dashboard-loader-container")
     let loaderTextPara = document.querySelector(".dashboard-loader-message")
-
-    // console.log({allAxiosConfig})
 
     if(allConfig.showLoader){
         loaderContainer.style.display = "block"
@@ -40,16 +37,12 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
         ...allAxiosConfig
     }
 
-    // console.log({requestConfig})
-
-
     return axios.request(requestConfig).then(response=>{
         loaderContainer.style.display = "none"
-        return new Promise((resolve, reject)=>resolve(response))
+        return new Promise((resolve)=>resolve(response))
 
     }).catch(error=>{
         loaderContainer.style.display = "none"
-        console.log({error})
         return new Promise((resolve, reject)=>reject(error))
     })
 }

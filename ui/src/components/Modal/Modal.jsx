@@ -9,10 +9,10 @@ const Modal = ({title = "", show = "", onClose=()=>{}, children})=>{
 
 
     return(
-        <div className={`${style.modal} ${show == false ? "": style.modalShow} `}>
-            <div className={style.modalHeader}>
-                <div className={style.modalTitle}>{title}</div>
-                <div className={style.closeIconContainer} onClick={()=>onClose()}><img src={closeIcon}/></div>
+        <div className={`${style.Modal} ${show == false ? "": style.ModalShow} `}>
+            <div className={style.ModalHeader}>
+                <div className={style.ModalTitle}>{title}</div>
+                <div className={style.CloseIconContainer} onClick={()=>onClose()}><img src={closeIcon}/></div>
             </div>
             <div>
                 {children}

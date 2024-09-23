@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import style from './RouteTab.module.css';
 
 export default function RouteTab({className, TabName="", Deployroutes, TabStyle, ContainerStyle, ...props }) {
@@ -7,11 +7,11 @@ export default function RouteTab({className, TabName="", Deployroutes, TabStyle,
     return (
         <>
             <nav>
-                <div className={`${style.tabNavBar} ${className}`} style={ContainerStyle}{...props}>
+                <div className={`${style.TabNavBar} ${className}`} style={ContainerStyle}{...props}>
                     {Deployroutes.map((item, index) => (
                         <div style={TabStyle}
                             key={index}
-                            className={`${style.tabNavBarLinkActive} ${activeTab === item.path ? style.active : ''}`}
+                            className={`${style.TabNavBarLinkActive} ${activeTab === item.path ? style.active : ''}`}
                             onClick={() => setActiveTab(item.path)}
                         >
                             {item.title}
@@ -19,7 +19,7 @@ export default function RouteTab({className, TabName="", Deployroutes, TabStyle,
                     ))}
                 </div>
             </nav>
-            <div className={`${style.tabContent}`}>
+            <div className={`${style.TabContent}`}>
                 {Deployroutes.map((item, index) => (
                     activeTab === item.path && (
                         <div key={index}>
