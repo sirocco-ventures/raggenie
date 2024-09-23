@@ -75,7 +75,7 @@ const Deploy = () => {
 
         </div>
         
-        <div>
+        <div style={{padding: "0px 30px"}}>
           <RouteTab Deployroutes={deployTabroutes} />
         </div>
       </div>
