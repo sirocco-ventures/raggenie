@@ -82,22 +82,50 @@ Comprehensive documentation is available to help you get the most out of RAGGENI
 
 #### Installing dependencies
 
-* Installation: To install the required dependencies, run:
-```bash
-pip install -r requirements.txt
-```
+* **Using `requirements.txt`**
+
+  To install the required dependencies with `pip`, run:
+  
+  ```bash
+  pip install -r requirements.txt
+  ```
+
+* **Using Poetry**
+
+  First, install Poetry:
+  
+  ```bash
+  curl -sSL https://install.python-poetry.org | python3 -
+  ```
+  
+  Then, to install the dependencies, run:
+  
+  ```bash
+  poetry install
+  ```
+
 
 #### Running RAGGENIE
 
-* In API mode
-To run raggenie API specify the config file to use
+To run **RAGGENIE** in API mode, specify the config file to use by running the following command:
+
 ```bash
-python main.py --config ./config/config.yaml llm
+python main.py --config ./config.yaml llm
 ```
-* Using Docker
-```bash
-Docker Compose up
+
+Below is a sample configuration for the vector database setup in `config.yaml`:
+
+```yaml
+vector_db:
+  name: "chroma"
+  params:
+    path: "./vector_db"
+    embeddings:
+      provider: "chroma_default"
 ```
+
+This configuration ensures that the RAGGENIE system connects to the `chroma` vector database and uses the default embeddings provided by Chroma.
+
 
 ## 🚧 Feature Pipeline
 These are the planned features and improvements that are in the pipeline for future releases.
