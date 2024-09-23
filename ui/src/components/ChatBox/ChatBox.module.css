@@ -8,7 +8,7 @@
     overflow: hidden;
     /* background-color: red; */
 }
-.chatMessagesContainer{
+.ChatMessagesContainer{
     flex-grow: 1;
     padding-left: 39px;
     padding-right: 39px;
@@ -17,29 +17,28 @@
     height: 100%;
 }
 
-.chatMessageContainer {
+.ChatMessageContainer {
     flex-grow: 1;
     /* background-color: blue; */
     overflow: scroll;
 }
 
-.chatMessageContainer p {
+.ChatMessageContainer p {
     margin: 0px;
 }
 
 
-.chatMessageContainer::-webkit-scrollbar {
+.ChatMessageContainer::-webkit-scrollbar {
     display: none;
-    }
+}
     
-    .chatMessageContainer {
+.ChatMessageContainer {
     -ms-overflow-style: none;  
     scrollbar-width: none;  
-    }
+}
 
 .ChatBoxTextContainer {
     display: flex;
-    /* height: 70px; */
     padding: 8px 8px;
     align-items: center;
     gap: 16px;
@@ -60,14 +59,11 @@
     overflow: hidden;
     color: #888787;
     text-overflow: ellipsis;
-
-    /* Presets/Body2 */
     font-family: Inter;
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
-    line-height: 24px; /* 150% */
-    /* max-width: calc(100vw - 618px); */
+    line-height: 24px;
 }
 
 .ChatBoxTextBox::-webkit-scrollbar {
@@ -219,14 +215,14 @@
 }
 .Timelabel{
     font-family: Inter;
-        font-size: 12px;
-        font-weight: 400;
-        line-height: 18px;
-        text-align: left;
-        color: #C8C8C8;
-        width: 87px;
-        height: 18px;
-        gap: 0px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: left;
+    color: #C8C8C8;
+    width: 87px;
+    height: 18px;
+    gap: 0px;
 }
 
 .Timecontainer{
@@ -316,8 +312,6 @@
 .DislikeButton.ActiveDisliked::before {
     content: url('./assets/dislike-hover.svg');
 }
-
-
 
 
 
@@ -437,18 +431,17 @@
     width:auto;
     cursor: pointer;
     display: flex;
-padding: 20px 13px;
-align-items: center;
-gap: 6px;
-flex-shrink: 0;
-border-radius: var(--12, 12px) 0px 0px var(--12, 12px);
-background: #3893FF;
+    padding: 20px 13px;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    border-radius: var(--12, 12px) 0px 0px var(--12, 12px);
+    background: #3893FF;
 }
 
 .ButtonContainer:hover{
     background: #84BCFF;
     color: var(--white-100, #FFF);
-    
 }
 
 .BotMessageContainer:focus{
@@ -458,12 +451,12 @@ background: #3893FF;
 .chatHistoryText{
     display: none;
     color: #FFF;
-/* Small text */
-font-family: Inter;
-font-size: 16px;
-font-style: normal;
-font-weight: 500;
-line-height: 150%; /* 24px */
+    /* Small text */
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%; /* 24px */
 }
 
 .ButtonContainer:hover .chatHistoryText{
@@ -520,7 +513,7 @@ line-height: 150%; /* 24px */
 
 
 
-.chatNavBar {
+.ChatNavBar {
     padding-right: 20px;
     padding-left: 20px;
     padding-top: 14px;
@@ -531,7 +524,7 @@ line-height: 150%; /* 24px */
     border-bottom: 1px solid #F0F0F0;
 }
 
-.chatNavBar h3 {
+.ChatNavBar h3 {
     color: #000;
     font-family: Inter;
     font-size: 16px;
@@ -541,7 +534,7 @@ line-height: 150%; /* 24px */
     /* 24px */
 }
 
-.chatNavBar button:last-child {
+.ChatNavBar button:last-child {
     cursor: pointer;
     border-radius: var(--4, 4px);
     background: #ECF5FF;
@@ -565,21 +558,21 @@ line-height: 150%; /* 24px */
     /* 24px */
 }
 
-.chatNavBar button:last-child:hover {
+.ChatNavBar button:last-child:hover {
     background-color: #CDE5FF;
     color: #3893FF;
 }
 
-.chatNavBar button:last-child img {
+.ChatNavBar button:last-child img {
     margin-top: 7px;
 }
 
-.chatBarStyle {
+.ChatBarStyle {
     background-color: #FFFFFF;
 
 }
 
-.chatHistoryContent {
+.ChatHistoryContent {
     min-width: 93%;
     height: calc(100vh - 150px);
     overflow-y: scroll;
@@ -590,7 +583,7 @@ line-height: 150%; /* 24px */
 
 
 
-.chatHistoryHeading {
+.ChatHistoryHeading {
     color: #5B5B5B;
     font-family: Inter;
     font-size: 16px;
@@ -601,14 +594,14 @@ line-height: 150%; /* 24px */
     margin-bottom: 18px;
 }
 
-.recentChats{
+.RecentChats{
     background: #FFF;
     display: inline-flex;
     width: 100%;
     gap: 10px;
 }
 
-.recentMessage {
+.RecentMessage {
     color: #858585;
     font-family: Inter;
     font-size: 14px;
@@ -617,7 +610,7 @@ line-height: 150%; /* 24px */
     line-height: 150%;
 }
 
-.historyArrowButton{
+.HistoryArrowButton{
     width: 20px;
     padding-top: 3px;
     padding-left: 2px;
@@ -632,12 +625,12 @@ line-height: 150%; /* 24px */
     left: -12px;
 }
 
-.historyArrowButton:hover{
+.HistoryArrowButton:hover{
     border: 1px #3893FF;
     background: #3893FF;
 }
 
-.historyArrowButton img{
+.HistoryArrowButton img{
     width: 16px;
 }
 

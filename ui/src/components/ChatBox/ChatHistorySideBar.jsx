@@ -52,18 +52,18 @@ const resultArray = Object.values(formattedData);
   return (
     <>
     <div className={isHidden ? `${style.toggleContainer}` : `${style.chatHistoryContainer}`} ref={toggleHistoryRef}>
-      <div className={style.chatBarStyle}>
-        <div className={style.chatNavBar}>
-          {isHidden ? <></> : (<div className={style.historyArrowButton} onClick={(e) => {showHideSideHistory(e) }}>
+      <div className={style.ChatBarStyle}>
+        <div className={style.ChatNavBar}>
+          {isHidden ? <></> : (<div className={style.HistoryArrowButton} onClick={(e) => {showHideSideHistory(e) }}>
             <img src={arrowRight} />
           </div>)}
 
           <h3>Chat History</h3>
           <button onClick={(e)=>{onCreateNewChat(e)}}>NewChat<span><img src={plusIcon} /></span></button>
         </div>
-        <div className={style.chatHistoryContent}>
+        <div className={style.ChatHistoryContent}>
           <div className={style.RecentChat}>
-            <div className={style.recentChats}>
+            <div className={style.RecentChats}>
             <ChatDropdownMenu handleNavigateChatContext={handleNavigateChatContext} data={resultArray}/>
             </div>
           </div>

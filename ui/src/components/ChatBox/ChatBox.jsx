@@ -31,8 +31,8 @@ const ChatBox = forwardRef(({handleNavigateChatContext=()=>{}, onCreateNewChat=(
     return(
         <>  
             <div className={style.ChatBoxContainer}>
-                <div className={style.chatMessagesContainer}>
-                    <div className={style.chatMessageContainer}>
+                <div className={style.ChatMessagesContainer}>
+                    <div className={style.ChatMessageContainer}>
                         <div id="messageBody" ref={chatListRef} className={style.chatList}>
                             {
                                 conversations.map((message, index) => {
