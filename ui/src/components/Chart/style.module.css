@@ -1,0 +1,95 @@
+.ChartContainer{
+    padding: 24px 24px;
+    border-radius: 10px;
+    background: #F5FAFF;
+    width: fit-content;
+    
+}
+
+.ChartTitle {
+    display: block;
+    color: #1C1C1C;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px; 
+    margin-bottom: 20px;
+}
+
+.BarChartResponsive {
+    margin-left: -25px;
+}
+
+.PieChartContainer{
+    padding: 24px;
+        width: fit-content;
+        height: auto;
+        flex-shrink: 0;
+        border-radius: 10px;
+        background: #F5FAFF;
+}
+.PieChartTitle{
+    color: #1C1C1C;
+    font-feature-settings: 'ss01' on, 'cv01' on, 'cv11' on;
+    font-family: Inter;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; /* 142.857% */
+}
+
+.PieLegend{
+    display: flex;
+    color: #888787;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; /* 166.667% */
+    margin-right: 100px;
+    margin-bottom: 10px;
+}
+
+
+/* table style */
+
+.ChartTableContainer {
+    width: 500px;
+    overflow: scroll;
+}
+
+
+.ChatTable tr th, .ChatTable tr th td{
+    padding: 5.5px 12px;
+    font-family: Inter;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 600;
+}
+
+.ChatTable tr th{
+    background: #84BCFF;
+    color: #FFFFFF;
+    text-transform: uppercase;
+}
+
+.ChatTable tr th:nth-child(1) {
+    border-radius: 10px 0px 0px 0px;
+}
+.ChatTable, tr th:last-child {
+    border-radius: 0px 10px 0px 0px;
+}
+
+.ChatTable tr td {
+    background-color: #F5FAFF;
+    color: #323232;
+    padding-left: 10px;
+    border-bottom: 1px #EFEFEF solid;
+    padding: 9px 10px;
+}
+
+
+.ChatTable tr:last-child td {
+    border-bottom: 0px;
+}

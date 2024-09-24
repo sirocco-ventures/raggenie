@@ -1,0 +1,92 @@
+.InputContainer{
+    margin-bottom: 24px;
+}
+
+.InputLabel {
+    color: #323232;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    margin-bottom: 5px;
+    margin-left: 4.23px;
+    display: block;
+}
+
+
+.InputHintContainer{
+    display: flex;
+}
+
+.InputHint {
+    flex-grow: 1;
+}
+
+.InputHintMessage {
+    color: #C8C8C8;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+
+.Input {
+    color: #888787;
+    border-radius: 6px;
+    border: 0.5px solid #F0F0F0;
+    background: var(--white-100, #FFF);
+    padding: 10px 16px;
+    width: 100%;
+    box-sizing: border-box;
+     -webkit-box-sizing: border-box;
+     -moz-box-sizing:  border-box;
+     font-family: "Inter";
+}
+
+.Input:hover {
+    border: 1px solid #DBEBFF;
+}
+
+.Input:focus {
+    outline: none;
+    border: 1px solid #3893FF;
+}
+
+Input::placeholder {
+    color: #DDD;
+}
+
+.HasError {
+    border-color: #FF7F6D;
+}
+
+.HasError:hover {
+    border-color: #FFB9AF;
+}
+
+.HasError:focus {
+    border-color: #FF7F6D;
+}
+
+.ErrorMessage {
+    color: #FF7F6D;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px; /* 133.333% */
+    margin-left: 4px;
+}
+
+.HasError:hover ~ .ErrorMessage {
+    color: #FFB9AF;
+}
+
+.HasError:focus ~ .ErrorMessage {
+    color: #FF7F6D;
+}

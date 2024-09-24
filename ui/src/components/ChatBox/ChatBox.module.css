@@ -1,0 +1,755 @@
+
+
+/* Chatbox.jsx */
+
+.ChatBoxContainer {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+    /* background-color: red; */
+}
+.ChatMessagesContainer{
+    flex-grow: 1;
+    padding-left: 39px;
+    padding-right: 39px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.ChatMessageContainer {
+    flex-grow: 1;
+    /* background-color: blue; */
+    overflow: scroll;
+}
+
+.ChatMessageContainer p {
+    margin: 0px;
+}
+
+
+.ChatMessageContainer::-webkit-scrollbar {
+    display: none;
+}
+    
+.ChatMessageContainer {
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+}
+
+.ChatBoxTextContainer {
+    display: flex;
+    padding: 8px 8px;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+    border-radius: 180px;
+    border: 1px solid #E0E0E0;
+    background: #FFF;
+    outline: none;
+    margin-bottom: 22px;
+}
+
+
+.ChatBoxTextBox {
+    flex-grow: 1;
+    padding: 0px 10px;
+    max-height: 54px;
+    overflow: scroll;
+    overflow: hidden;
+    color: #888787;
+    text-overflow: ellipsis;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+}
+
+.ChatBoxTextBox::-webkit-scrollbar {
+    display: none;
+}
+      
+.ChatBoxTextBox {
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
+}
+
+.ChatBoxTextBox:focus{
+    outline: none;
+}
+
+.ChatBoxTextContainer:has(.ChatBoxTextBox:hover) {
+    border-color: #3893FF;
+}
+
+.ChatBoxSendIcon {
+    background: url(/src/components/ChatBox/assets/send-icon.svg);
+    width: 42px;
+    height: 42px;
+    background-repeat: no-repeat;
+    background-color: #F9F9F9;
+    border-radius: 180px;
+    background-position: 12px 10px;
+    cursor: pointer;
+}
+
+   
+.ChatBoxTextBox:hover  + div .ChatBoxSendIcon{
+    background-color: #ECF5FF !important;
+    background: url(/src/components/ChatBox/assets/send-icon-active.svg);
+    background-repeat: no-repeat;
+    background-position: 12px 10px;
+}
+
+
+.ChatBottomMessage {
+    text-align:center;
+    margin-bottom: 29px; 
+}
+
+
+/* Message.jsx */
+ .MessageContainer {
+    border-radius: 10px;
+    padding: 12px 16px; 
+    margin: 15px 0px;
+    color: #151414;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.UserMessageContainer {
+    display: flex;
+    justify-content: end;
+    gap: 12px;
+}
+
+.BotMessageContainer {
+    display: flex;
+    justify-content: start;
+    gap: 8px;
+}
+
+.UserMessage {
+    border-radius: 10px;
+    background: #F1F1F1;;
+    color: #323232;
+}
+
+.BotMessage {
+    border-radius: 10px;
+}
+
+.BotMessage p {
+    color: #323232;
+    font-size: 14px;
+}
+
+.MessageAvatar {
+    margin-top: 20px;
+}
+
+
+/* loader */
+
+.Loader {
+    text-align: center;   
+    width: fit-content; 
+    margin-left: 10px;
+    padding-bottom: 10px;
+
+}
+.Loader span {
+    display: inline-block;
+    vertical-align: middle;
+    width: 10px;
+    height: 10px;
+    background: grey;
+    border-radius: 50px;
+    -webkit-animation: loader 0.5s infinite alternate;
+    -moz-animation: loader 0.5s infinite alternate;
+    margin-right: 4px;
+}
+.Loader span:nth-of-type(2) {
+    -webkit-animation-delay: 0.2s;
+    -moz-animation-delay: 0.2s;
+}
+.Loader span:nth-of-type(3) {
+    -webkit-animation-delay: 0.3s;
+    -moz-animation-delay: 0.3s;
+}
+@-webkit-keyframes loader {
+  0% {
+  
+    height: 10px;
+    opacity: 0.9;
+    -webkit-transform: translateY(0);
+  }
+  100% {
+
+    opacity: 0.3;
+    -webkit-transform: translateY(-11px);
+  }
+}
+@-moz-keyframes loader {
+  0% {
+    width: 10px;
+    height: 10px;
+    opacity: 0.9;
+    -moz-transform: translateY(0);
+  }
+  100% {
+    width: 24px;
+    height: 24px;
+    opacity: 0.3;
+    -moz-transform: translateY(-11px);
+  }
+}
+
+/*  Time CSS  */
+
+
+.MessageExtraInfo{
+    margin-top: 3px;
+    margin-left: 0px;
+
+}
+.Timelabel{
+    font-family: Inter;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: left;
+    color: #C8C8C8;
+    width: 87px;
+    height: 18px;
+    gap: 0px;
+}
+
+.Timecontainer{
+    display: flex;
+    justify-items: center;
+    align-items: center;
+}
+.LikeIcon{
+    display: flex;
+    width: Fixed (18px)px;
+    height: auto;
+    padding: 3px 13px 3px 13px;
+    gap: 6px;
+    border-radius: 4px 0px 0px 0px;
+    opacity: 0px;    
+}
+
+.LikeButton {
+    outline: none;
+    display: flex;
+    width: auto;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 0 3px; 
+    border-radius: 4px;
+    background: #F0F0F0;
+    border: none;
+    cursor: pointer;
+    position: relative; 
+}
+
+.LikeButton.Activeliked {
+    background: #ECF5FF;
+}
+
+.LikeButton:hover {
+    background: #ECF5FF;
+}
+
+.LikeButton::before {
+    content: url('./assets/like-icon.svg');
+    transition: content 0.3s; 
+}
+
+.LikeButton.Activeliked::before {
+    content: url('./assets/like-hover.svg'); 
+}
+
+.LikeButton:hover::before {
+    content: url('./assets/like-hover.svg');
+}
+
+
+.DislikeButton {
+    outline: none;
+    display: flex;
+    width: auto;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-radius: 4px;
+    background: #F0F0F0;
+    border: none;
+    cursor: pointer;
+    position: relative; 
+}
+
+.DislikeButton.ActiveDisliked{
+    background: #ECF5FF;
+}
+
+.DislikeButton:hover{
+    background: #ECF5FF;
+}
+    
+.DislikeButton::before {
+    content: url('./assets/dislke-icon.svg');
+}
+
+.DislikeButton:hover::before {
+    content: url('./assets/dislike-hover.svg');
+}
+
+.DislikeButton.ActiveDisliked::before {
+    content: url('./assets/dislike-hover.svg');
+}
+
+
+
+/*  Feedback popup  */
+
+
+.FeedbackCommet{
+    /* position: absolute; */
+    display: block;
+    width: 401px;
+    height: auto;
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    flex-shrink: 0;
+    border-radius: var(--4, 4px);
+    border: 1px solid #F0F0F0;
+    background: var(--white-100, #FFF);
+    margin-top: 20px;
+}
+
+.FeedbackCommetShow {
+    display: block;
+}
+
+.FeedbackCommet h2{
+    color: #323232;
+    font-family: Lato;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;    font-family: Lato;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin-top: 5px;
+}
+
+.TitleHead{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.imageBgRemove{
+    backface-visibility: hidden;
+    
+}
+
+.CloseIconBtn{
+    background: none;
+    outline: none;
+    border: none;
+    outline: navajowhite;
+    cursor: pointer;
+}
+.SuggestedComment{
+    display: flex;
+    gap: 8px;
+}
+
+.SuggestedComment > span{
+    /* display: flex; */
+    width: auto;
+    height: 17px;
+    padding: var(--4, 4px) var(--8, 8px);
+    justify-content: center;
+    align-items: center;
+    gap: var(--8, 8px);
+    border-radius: var(--4, 4px);
+    border: 0px solid #64A25E;
+    background: #ECF5FF;
+    color: #74B3FF;
+    font-family: Inter;
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px; /* 222.222% */
+    cursor: pointer;
+}
+
+.FeedbackTextarea{
+    margin-top: 11px;
+    margin-bottom: 6px;
+    outline: none;
+    resize: none;
+}
+
+.FeedbackButton {
+    display: inline-flex;
+    padding: 3px 13px;
+    align-items: center;
+    gap: 6px;
+    display: inline-flex;
+    padding: 3px 13px;
+    align-items: center;
+    gap: 6px;
+    border-radius: var(--4, 4px);
+    background: #3893FF;
+    color: var(--white-100, #FFF);
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    /* 18px */
+    border: none;
+    outline: none;
+}
+
+
+/* =======CHAT HISTORY======= */
+
+.ButtonContainer{
+    width:auto;
+    cursor: pointer;
+    display: flex;
+    padding: 20px 13px;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    border-radius: var(--12, 12px) 0px 0px var(--12, 12px);
+    background: #3893FF;
+}
+
+.ButtonContainer:hover{
+    background: #84BCFF;
+    color: var(--white-100, #FFF);
+}
+
+.BotMessageContainer:focus{
+    background: #84BCFF;
+}
+
+.ChatHistoryText{
+    display: none;
+    color: #FFF;
+    /* Small text */
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%; /* 24px */
+}
+
+.ButtonContainer:hover .ChatHistoryText{
+    display: flex;
+}
+
+.ButtonContainer:hover .ChatHistoryIcon {
+    animation: rotateIcon 1s ease-in-out forwards;
+}
+
+@keyframes rotateIcon {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(20deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+
+.ChatHistoryIcon{
+    margin-top: 5px;
+}
+
+
+/* ===========CHAT HISTORY SIDEBAR=========== */
+.chatHistoryContainer {
+    min-width: 356px; /* Start with the sidebar visible */
+    padding-right: 16px; /* Adjust padding as needed */
+    position: relative;
+    box-sizing: border-box;
+    background-color: #FFFFFF;
+    border-left: 1px solid #F0F0F0;
+}
+
+.toggleContainer {
+    animation: toggleDiv 0.8s forwards; 
+}
+
+@keyframes toggleDiv {
+    from {
+        min-width: 356px;
+        padding-right: 16px;
+    }
+    to {
+        width: 0;
+        padding-right: 0;
+    }
+}
+
+
+
+
+.ChatNavBar {
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.ChatNavBar h3 {
+    color: #000;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    /* 24px */
+}
+
+.ChatNavBar button:last-child {
+    cursor: pointer;
+    border-radius: var(--4, 4px);
+    background: #ECF5FF;
+    padding: 3px 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    outline: none;
+    border: none;
+    border-radius: var(--4, 4px);
+    background: #ECF5FF;
+
+    color: #3893FF;
+
+    /* Small text */
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    /* 24px */
+}
+
+.ChatNavBar button:last-child:hover {
+    background-color: #CDE5FF;
+    color: #3893FF;
+}
+
+.ChatNavBar button:last-child img {
+    margin-top: 7px;
+}
+
+.ChatBarStyle {
+    background-color: #FFFFFF;
+
+}
+
+.ChatHistoryContent {
+    min-width: 93%;
+    height: calc(100vh - 150px);
+    overflow-y: scroll;
+    padding: 27px 20px 20px 20px;
+}
+
+
+
+
+
+.ChatHistoryHeading {
+    color: #5B5B5B;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    /* 24px */
+    margin-bottom: 18px;
+}
+
+.RecentChats{
+    background: #FFF;
+    display: inline-flex;
+    width: 100%;
+    gap: 10px;
+}
+
+.RecentMessage {
+    color: #858585;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.HistoryArrowButton{
+    width: 20px;
+    padding-top: 3px;
+    padding-left: 2px;
+    border-radius: 40px;
+    text-align: center;
+    height: 20px;
+    cursor: pointer;
+    border: 1px #84BCFF;
+
+    background: #84BCFF;
+    position: absolute;
+    left: -12px;
+}
+
+.HistoryArrowButton:hover{
+    border: 1px #3893FF;
+    background: #3893FF;
+}
+
+.HistoryArrowButton img{
+    width: 16px;
+}
+
+
+/* Chat Summary */
+
+
+.SummaryMenuContainer {
+    display: flex;
+    gap: 13px;
+    align-items: center;
+    cursor: pointer;
+}
+
+.Summarylabel {
+    color: #C8C8C8;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+.SummaryClose {
+    content: url('./assets/summary-down.svg');
+}
+
+.SummaryOpen {
+    content: url('./assets/summary-up.svg');
+}
+
+
+.SummaryImgContainer {
+    border-radius: 4px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.SummaryCloseImgContainer  {
+    background: #F0F0F0;
+}
+
+.SummaryOpenImgContainer{
+    background: #ECF5FF;
+}
+
+
+.SummaryTitle {
+    color: #C8C8C8;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+
+
+.SummaryContainer{
+    display: block;
+    width: 401px;
+    height: auto;
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    flex-shrink: 0;
+    margin-top: 20px;
+
+    border-radius: var(--4, 4px);
+    border: 1px solid #F5FAFF;
+    background: #F5FAFF;
+    margin-bottom: 20px;
+}
+
+
+
+.SummartyHeading{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+
+.SummaryCloseButton{
+    background: none;
+    outline: none;
+    border: none;
+    outline: navajowhite;
+    cursor: pointer;
+}
+
+.ChatSummay {
+    border-radius: 5px;
+    border: 1px solid var(--white-100, #FFF);
+    background: var(--white-100, #FFF);
+    padding: 16px;
+}
+
+.ChatSummay .ChatSQLQuery, .ChatDataSummary {
+    color: #828282;
+    font-family: Lato;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.ChatSummay .ChatDataSummary {
+    font-weight: bolder;
+}
+
+
+/* Chat Summary */

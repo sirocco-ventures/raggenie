@@ -1,0 +1,18 @@
+.ChatBody {
+    height: calc(100vh - 67px);
+}
+
+.ChatHeader {
+    background: #FFF;
+    border-bottom: 1px solid #F0F0F0;
+    padding: 18px 26px;
+}
+
+.ChatHeaderTitle {
+    color: var(--neural-1);
+    font-family: Inter;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%; 
+}

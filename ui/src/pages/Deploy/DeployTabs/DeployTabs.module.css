@@ -1,0 +1,73 @@
+.CopyLinkInputBox {
+    flex-grow: 1;
+    display: flex;
+    border-radius: 6px;
+    border: 0.5px #F9F9F9;
+    outline: none;
+    background: #F9F9F9;
+    padding: 10px 3.84px 10px 16px;
+}
+
+.CopyLinkInputBox:focus {
+    border: 0.5px solid #3893FF;
+    outline: none;
+}
+
+.CopyNow {
+    color: #3893FF;
+    cursor: pointer;
+    border-radius: var(--4, 4px);
+    background: #ECF5FF;
+    font-family: Inter;
+    font-size: 16px;
+    padding: 4px 13px;
+    margin-right: 4px;
+    display: inline-flex;
+    font-style: normal;
+    gap: 6px;
+}
+
+.CopyText {
+    outline: none;
+    flex-grow: 1;
+    color: #888787;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    /* 142.857% */
+    display: inline-flex;
+    align-content: center;
+    align-items: center;
+    outline: n;
+}
+
+.CopyLinkContainer {
+    flex-grow: 1;
+
+}
+
+.CopyContainer{
+    max-width: 900px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.ButtonClass {
+    border-radius: var(--4, 4px);
+}
+
+.MiniMaxContainer{
+    display: flex;
+    justify-items: start;
+    align-content: flex-end;
+    align-items: flex-end;
+
+}
+
+.SubContents{
+    width: 50%;
+}

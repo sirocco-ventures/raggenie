@@ -1,0 +1,225 @@
+.DashboardLayout {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.SideMenuContainer {
+    background-color: var(--neural-7);
+    min-width: 296px;
+    height: 100vh;
+}
+
+.SideMenu {
+    
+}
+
+.LogoContainer {
+    padding: 21px 20px;
+}
+
+.AppLogo {
+    width: 80px;
+    height: 18.127px;
+}
+
+.ProfileContainer {
+    cursor: pointer;
+    padding: 0px 17px 0px 13px;
+    margin: 7px 0px 17px 0px;
+}
+
+
+
+.ProfilePanel {
+    display: flex;
+    gap:6px;
+    display: flex;
+    gap: 6px;
+    padding: 10px 10px 6px 10px;
+
+}
+
+.ProfilePanel:hover {
+    background-color: var(--neural-5);
+    border-radius: 4px;
+}
+
+
+.UsernameDiv{
+    flex-grow: 1;
+    color: var(--neural-2);
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 150%;
+    margin-top: -2px;
+}
+
+
+.MenuContainer {
+    padding: 0px 17px;
+}
+
+.MenuList {
+    list-style: none;
+    color: var(--neural-2);
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 150%; 
+    padding: 0px;
+}
+
+.MenuList a {
+   text-decoration: none;
+   
+}
+
+.MenuList a[aria-current="page"] li {
+    background-color: var(--neural-5);
+}
+
+.MenuList li {
+    color: var(--neural-2);
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 150%;
+
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px
+}
+
+.MenuList li:hover {
+    background-color: var(--neural-5);
+}
+
+
+/* DashboardBody style */
+
+.DashboardBodyContainer {
+    flex-grow: 1;
+    width: calc(100vw - 245px);
+}
+
+.DashboardChildrenBody {
+    padding: 26px;
+    overflow: scroll;
+    height: calc(100vh - 120px);
+    /* width: calc(100vw - 348px); */
+}
+
+
+
+.DashboardChildrenBody::-webkit-scrollbar {
+    display: none;
+}
+
+.DashboardChildrenBody {
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+
+.DashboardHeader {
+    display: flex;
+    padding: 19px 26px 18px 26px;
+    border-bottom: 1px solid var(--neural-5);
+    align-items: center;
+    gap: 10px;
+}
+
+.DashboardTitleContainer {
+    flex-grow: 1;
+}
+
+.DashboardTitle {
+    color: var(--neural-1);
+    font-family: Inter;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+}
+
+.DashboardHeaderIcon {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+}
+
+.LoaderContainer {
+    background-color: #aea9a9;
+    width: calc(100% - 296px);
+    height: calc(100% - 69px);
+    opacity: 0.5;
+    position: absolute;
+    z-index: 1000;
+    display: none;
+}
+
+.Loader {
+    width: 48px;
+    height: 48px;
+    border: 3px dotted #3c3c3c;
+    border-style: solid solid dotted dotted;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    box-sizing: border-box;
+    animation: rotation 2s linear infinite;
+    margin: auto;
+    display: block;
+    margin-top: 45vh;
+
+}
+  .Loader::after {
+    content: '';  
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    border: 3px dotted #3992f7;
+    border-style: solid solid dotted;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    animation: rotationBack 1s linear infinite;
+    transform-origin: center center;
+  }
+      
+  @keyframes rotation {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  } 
+  @keyframes rotationBack {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(-360deg);
+    }
+  } 
+
+
+  .LoaderMessage {
+    text-align: center;
+    color: black;
+  }
+/* End of DashboardBody style */
+

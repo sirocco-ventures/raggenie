@@ -1,0 +1,43 @@
+.rdt_Table{
+    font-family:  Inter;
+}
+
+.rdt_TableHeadRow {
+    height: 58px;
+    background-color: red;
+    border-bottom-color: #EFEFEF !important;
+}
+
+
+
+.rdt_TableHeadRow  {
+    background-color: #F9F9F9 !important;
+    text-transform: uppercase;
+    color: #888787;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px
+}
+
+.rdt_TableRow {
+    height: 58px;
+    background-color: #F9F9F9 !important;
+    border-bottom-color: #EFEFEF !important;
+    cursor: pointer;
+}
+
+.rdt_TableRow:hover {
+    background-color: #FFF !important;
+}
+
+
+
+.rdt_TableRow:has(+ .rdt_ExpanderRow)  {
+    background-color: #FFF !important;
+    border: 0px !important;
+}
+
+.rdt_TableRow button[data-testid]:hover, .rdt_TableRow button[data-testid]:focus {
+    background-color: transparent !important;
+}

@@ -1,0 +1,9 @@
+.rdt_TableBody div[data-column-id="2"]{
+    /* background-color: red */
+}
+
+
+.rdt_TableBody div[data-column-id="2"] div{
+    /* background-color: blue; */
+    width: 138%;
+}

@@ -1,0 +1,49 @@
+.TitleContainer{
+    display: flex;
+    gap:10px
+}
+.CountNumber{
+    width: 26px;
+    height: 26px;
+    border-radius: 15px;
+    background: #F0F0F0;
+    text-align: center;
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    justify-content: center;
+    color: #323232;
+    font-family: Inter;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.NoCount{
+    display: none;
+}
+
+
+.Title{
+    margin: 0;
+    padding: 0;
+    color: #323232;
+    /* Small text */
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%; /* 24px */
+}
+
+.Description{
+    margin: 0;
+    margin-top: 10px;
+    color: #888787;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; 
+    padding-bottom: 30px;/* 142.857% */
+}
