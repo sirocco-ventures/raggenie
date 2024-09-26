@@ -14,12 +14,10 @@ def test_inference_provider_connection(inference):
         "endpoint": inference.endpoint,
         "kind" : inference.llm_provider,
     }]
-    logger.info(f"model_configs:{model_configs}")
     inference_model = BaseLoader(model_configs= model_configs).load_model(inference.name)
     output, response_metadata = inference_model.do_inference(
             "hi", []
     )
-    logger.info(f"output:{output}")
     if "error" in output:
         return None, output['error']
     return True, "Test Credentials successfully completed"
