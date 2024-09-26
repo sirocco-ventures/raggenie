@@ -38,7 +38,10 @@ class OpenAiModelLoader(ModelLoader, LoaderMetadataMixin):
             choice = message["choices"][0]
             if "message" in choice:
                 return choice["message"]["content"]
-
+        elif 'error' in message:
+            error = message['error']
+            if 'message' in error:
+                return {"error" : error['message']}
         return ""
 
     def get_response_metadata(self, prompt, response, out) -> dict:

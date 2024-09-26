@@ -135,6 +135,31 @@ def getllmproviders(request: Request):
         error=None,
     )
 
+@router.post("/{inference_id}/test-inference-credentials", response_model=resp_schemas.CommonResponse)
+def test_inference_connections(inference_id: int, db: Session = Depends(get_db)):
+    """
+    Tests the credentials for a specific llm provider by its ID.
+    Args:
+        inference_id (int): The ID of the llm provider for which to test credentials.
+        db (Session): Database session dependency.
+    Returns:
+        CommonResponse: A response indicating the success or failure of the credential test.
+    """
+    success, message = svc.test_inference_credentials(inference_id, db)
+    if not success:
+        return resp_schemas.CommonResponse(
+            status=False,
+            status_code=422,
+            message=message,
+            error=message,
+        )
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message=message,
+        error=None,
+    )
+
 @sample.get("/list", response_model=resp_schemas.CommonResponse)
 def list_sql(db: Session = Depends(get_db)):
 

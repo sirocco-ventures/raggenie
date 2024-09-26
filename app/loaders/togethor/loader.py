@@ -42,7 +42,10 @@ class TogethorModelLoader(ModelLoader, LoaderMetadataMixin):
                 return choice["message"]["content"]
             elif "text" in choice:
                 return choice["text"]
-
+        elif 'error' in message:
+            error = message['error']
+            if 'message' in error:
+                return {"error" : error['message']}
         return ""
 
     def get_response_metadata(self, prompt, response, out) -> dict:

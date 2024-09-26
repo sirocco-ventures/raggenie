@@ -44,6 +44,13 @@ def get_provider_by_id(provider_id: int, db: Session):
         return provider, False
     except SQLAlchemyError as e:
         return e, True
+    
+def get_llm_inference_by_id(inference_id: int, db: Session):
+    try:
+        llm_provider = db.query(conn_model.Inference).options(joinedload(conn_model.Inference.inference_mapping)).filter(conn_model.Inference.id == inference_id).first()
+        return llm_provider, False
+    except SQLAlchemyError as e:
+        return e, True
 
 def get_config_types(provider_id: int, db:Session):
     try:
