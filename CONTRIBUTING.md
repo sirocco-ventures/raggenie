@@ -2,16 +2,16 @@
 
 ## 🪜 Steps to Contribute
 
-To make a contribution, follow the following steps:
+To contribute to this project, please follow these steps:
 
 1. Fork and clone this repository
-2. Do the changes on your fork
-3. If you modified the code (new feature or bug-fix), please add tests for it
-4. Check the linting [see below](https://github.com/sirocco-ventures/raggenie/blob/main/CONTRIBUTING.md#-Linting)
-5. Ensure that all tests pass [see below](https://github.com/sirocco-ventures/raggenie/blob/main/CONTRIBUTING.md#-Testing)
+2. Make your changes on your fork.
+3. If you modify the code (for a new feature or bug fix), please add corresponding tests.
+4. Check for linting issues [see below](https://github.com/sirocco-ventures/raggenie/blob/main/CONTRIBUTING.md#-Linting)
+5. Ensure all tests pass [see below](https://github.com/sirocco-ventures/raggenie/blob/main/CONTRIBUTING.md#-Testing)
 6. Submit a pull request
 
-For more details about pull requests, please read [GitHub's guides](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
+For more detailed information about pull requests, please refer to [GitHub's guides](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
 
 ## 📦 Package manager
 
