@@ -25,7 +25,7 @@ Install dependencies
 Create a .env file add the following env variables
 
 ```env
-    VITE_BACKEND_URL=${BACKENN_URL}
+    VITE_BACKEND_URL=${BACKEND_URL}
 ```
 
 Start the server
