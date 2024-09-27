@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 import app.repository.provider as repo
 import app.schemas.provider as schemas
-from app.services.connector_details import test_plugin_connection, test_inference_provider_connection
+from app.services.connector_details import test_plugin_connection
+from app.loaders.base_loader import BaseLoader
 from app.repository import connector as conn_repo
 from fastapi import Request
 from app.utils.module_reader import get_plugin_providers
@@ -9,36 +10,36 @@ from app.models.provider import Provider, ProviderConfig
 from loguru import logger
 from app.utils.module_reader import get_llm_providers
 
-def test_inference_credentials(inference_id: int, db: Session):
+def test_inference_credentials(config: schemas.TestCredentials):
 
     """
     Tests the connection credentials for a specific LLM inference based on its provider.
 
     Args:
-        inference_id (int): Unique identifier for the LLM inference to be tested.
-        db (Session): Database session used for performing transactions.
+        config (schemas.TestCredentials): Configuration object containing the provider details for testing the credentials.
 
     Returns:
-        (Optional[schemas.Inference], str): 
-            - Inference object if found, otherwise None.
-            - Status message indicating the result of the operation:
-                - "Inference Not Found" if the inference could not be found or an error occurred.
-                - "Unsupported Inference" if the LLM provider is not recognized.
+        (bool, str): 
+            - True if the test credentials are successfully completed.
+            - "Unsupported Inference" if the LLM provider is not recognized.
+            - None and an error message if there was an error during inference.
     """
+    provider_config = config.provider_config
+    model_configs = [{
+        "unique_name": provider_config["name"],
+        "name": provider_config["model"],
+        "api_key": provider_config["apikey"],
+        "endpoint": provider_config["endpoint"],
+        "kind" : provider_config["llm_provider"],
+    }]
+    inference_model = BaseLoader(model_configs= model_configs).load_model(provider_config["name"])
+    output, response_metadata = inference_model.do_inference(
+            "hi", []
+    )
+    if "error" in output:
+        return None, output['error']
+    return True, "Test Credentials successfully completed"
 
-    inference, is_error = repo.get_llm_inference_by_id(inference_id, db)
-    if inference is None or is_error:
-        return inference, "Inference Not Found"
-    match inference.llm_provider:
-        case 'openai':
-            return test_inference_provider_connection(inference)
-        case 'togethor':
-            return test_inference_provider_connection(inference)
-        case 'ai71':
-            return test_inference_provider_connection(inference)
-        case _:
-            return None, "Unsupported Inference"
-    return None, "Unsupported Inference"
 
 def initialize_plugin_providers(db:Session):
 

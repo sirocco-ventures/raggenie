@@ -61,8 +61,9 @@ class MetadataGenerator(AbstractHandler):
         output, response_metadata = infernce_model.do_inference(
                             prompt, chat_history
                     )
-        parsed = markdown_parse_llm_response(output)
+        response["inference"] = {}
+        if 'content' in output:
+            response["inference"] = markdown_parse_llm_response(output['content'])
 
-        response["inference"]  = parsed
         response["summary"] = ""
         return super().handle(response)

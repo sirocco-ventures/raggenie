@@ -1,26 +1,9 @@
 from typing import  Any
 from app.plugins.loader import DSLoader
-from app.loaders.base_loader import BaseLoader
 from loguru import logger
 
 from app.repository import connector as repo
 from sqlalchemy.orm import Session
-
-def test_inference_provider_connection(inference):
-    model_configs = [{
-        "unique_name": inference.name,
-        "name": inference.model,
-        "api_key": inference.apikey,
-        "endpoint": inference.endpoint,
-        "kind" : inference.llm_provider,
-    }]
-    inference_model = BaseLoader(model_configs= model_configs).load_model(inference.name)
-    output, response_metadata = inference_model.do_inference(
-            "hi", []
-    )
-    if "error" in output:
-        return None, output['error']
-    return True, "Test Credentials successfully completed"
 
 
 def test_plugin_connection(db_configs, config, provider_class):

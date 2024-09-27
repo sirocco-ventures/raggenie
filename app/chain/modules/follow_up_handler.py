@@ -103,8 +103,9 @@ class FollowupHandler(AbstractHandler):
         output, response_metadata = infernce_model.do_inference(
                             prompt, contexts
                     )
-
-        response["inference"] = parse_llm_response(output)
+        response["inference"] = {}
+        if 'content' in output:
+            response["inference"] = parse_llm_response(output['content'])
         response["capability"] = capability
         return super().handle(response)
 

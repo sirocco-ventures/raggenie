@@ -50,9 +50,8 @@ class Generator(AbstractHandler):
                 output, response_metadata = infernce_model.do_inference(
                         prompt, contexts
                 )
-
-
-                parsed = parse_llm_response(output)
-                response["inference"]  = parsed
+                response["inference"] = {}
+                if 'content' in output:
+                        response["inference"] = parse_llm_response(output['content'])
 
                 return super().handle(response)

@@ -123,7 +123,10 @@ class IntentExtracter(AbstractHandler):
         output, response_metadata = infernce_model.do_inference(
                             prompt, contexts
                     )
-        response["intent_extractor"] = parse_llm_response(output)
+        response["intent_extractor"] = {}
+        if 'content' in output:
+            response["intent_extractor"] = parse_llm_response(output['content'])
+
         response["available_intents"] = capability_names
         response["rag_filters"] = {
              "datasources" : [response["intent_extractor"]['intent']] if 'intent_extractor' in response else [],
