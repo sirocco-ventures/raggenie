@@ -32,7 +32,12 @@ def test_inference_credentials(config: schemas.TestCredentials):
         "endpoint": provider_config["endpoint"],
         "kind" : provider_config["llm_provider"],
     }]
-    inference_model = BaseLoader(model_configs= model_configs).load_model(provider_config["name"])
+    
+    try:
+        inference_model = BaseLoader(model_configs= model_configs).load_model(provider_config["name"])
+    except Exception as e:
+        return None, "Test Credentials Failed"
+    
     output, response_metadata = inference_model.do_inference(
             "hi", []
     )
