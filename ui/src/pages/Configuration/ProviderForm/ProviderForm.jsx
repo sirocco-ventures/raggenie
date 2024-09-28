@@ -294,7 +294,7 @@ const ProviderForm = ()=>{
                 </div>
                 <div>
                     <Input label="Plugin Name" placeholder="Plugin Name" maxLength={20} hasError={errors["pluginName"]?.message ? true : false} errorMessage={errors["pluginName"]?.message}  {...register("pluginName", {required: "This is required"})} />
-                    <Textarea label="Plugin Description" placeholder="Describe the plugin's purpose and content in a detailed and informative manner, emphasizing its key features and functionality." rows={8} maxLength={200} hasError={errors["pluginDescription"]?.message ? true : false} errorMessage={errors["pluginDescription"]?.message}  {...register("pluginDescription", {required: "This is required", minLength: {value: 100, message: "mininum length is 100"}})} />
+                    <Textarea label="Plugin Description" placeholder="Describe the plugin's purpose and content in a detailed and informative manner, emphasizing its key features and functionality." rows={8} maxLength={200} hasError={errors["pluginDescription"]?.message ? true : false} errorMessage={errors["pluginDescription"]?.message}  {...register("pluginDescription", {required: "This is required", minLength: {value: 20, message: "minimum length is 20"}})} />
                     {generateConfig()}
                 </div>
             </>
