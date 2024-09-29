@@ -265,7 +265,7 @@ const ProviderForm = ()=>{
                         case 4: return (
                             <>
                             <Input key={index} type="url" label={item.name} placeholder="https://www.raggenie.com" hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />
-                            <span className={style.Hint} > Include http or https int the url . </span>
+                            <span className={style.Hint} > Include http or https in the url . </span>
                             </>
                         )
                           
