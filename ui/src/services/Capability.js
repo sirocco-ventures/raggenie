@@ -1,30 +1,23 @@
-import { API_URL } from "src/config/const"
-import DeleteService from "src/utils/http/DeleteService"
-import PostService from "src/utils/http/PostService"
+import React from "react";
+import Button from "src/components/Button/Button";
+import { saveBotCapability } from "src/services/capabilityService";
 
-export const saveBotCapability = async (configurationId, capabilityName, capabilityDescription, params = {}) => {
-    
-    let saveData = {
-        config_id: configurationId,
-        name: capabilityName,
-        description: capabilityDescription,
-        requirements : params,
-    }
+const CapabilityForm = () => {
+    const handleSave = async () => {
+        const capabilityName = "Sample Capability"; // replace with actual input
+        const capabilityDescription = "This is a description"; // replace with actual input
+        const params = {}; // replace with actual params
+        const configurationId = "123"; // replace with actual configuration ID
 
-    return  PostService(`${API_URL}/capability/create`, saveData, {loaderText : "Saving Capability"})
-}
+        await saveBotCapability(configurationId, capabilityName, capabilityDescription, params);
+    };
 
-export const updateBotCapability = async (capabilityId, configurationId, capabilityName, capabilityDescription, params = {}) => {
-    let updateData = {
-        config_id: configurationId,
-        name: capabilityName,
-        description: capabilityDescription,
-        requirements : params,
-    }
-
-    return PostService(`${API_URL}/capability/update/${capabilityId}`, updateData, {loaderText : "Updating Capability"})
-}
-
-export const deleteBotCapability = async (capabilityId) => {
-    return DeleteService(`${API_URL}/capability/delete/${capabilityId}`,{},{loaderText: "Deleting Capability"})
-}
+    return (
+        <div>
+            {/* Other form elements */}
+            <Button onClick={handleSave}>Save</Button>
+            {/* Finish button has been removed */}
+        </div>
+    );
+};
+// REMOVED FINISH BUTTON AND NEW CHANGES MADE
