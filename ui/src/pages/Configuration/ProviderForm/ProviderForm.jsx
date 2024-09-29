@@ -262,7 +262,7 @@ const ProviderForm = ()=>{
                         case 1: return <Input key={index} type="text" label={item.name} placeholder={item.description}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />     
                         case 2: return <Input key={index} type="password" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message}  {...register(item.slug, {required: "This is required"})} />  
                         case 3: return <Input key={index} type="number" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />  
-                        case 4: return <Input key={index} type="url" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />  
+                        case 4: return <Input key={index} type="url" label={item.name} placeholder="https://www.raggenie.com" hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />  
                         case 5: return <Input key={index} type="email" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />  
                         case 6: return (
                             <div className={style.SelectDropDown}>
@@ -296,6 +296,7 @@ const ProviderForm = ()=>{
                     <Input label="Plugin Name" placeholder="Plugin Name" maxLength={20} hasError={errors["pluginName"]?.message ? true : false} errorMessage={errors["pluginName"]?.message}  {...register("pluginName", {required: "This is required"})} />
                     <Textarea label="Plugin Description" placeholder="Describe the plugin's purpose and content in a detailed and informative manner, emphasizing its key features and functionality." rows={8} maxLength={200} hasError={errors["pluginDescription"]?.message ? true : false} errorMessage={errors["pluginDescription"]?.message}  {...register("pluginDescription", {required: "This is required", minLength: {value: 100, message: "mininum length is 100"}})} />
                     {generateConfig()}
+                    <span className={style.Hint}> Include http or https in the URL. </span>
                 </div>
             </>
         )

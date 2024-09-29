@@ -145,7 +145,6 @@ tzlocal==5.2
 uptrace==1.26.0
 urllib3==2.2.3
 uvicorn==0.25.0
-uvloop==0.20.0
 watchfiles==0.20.0
 websocket-client==1.8.0
 websockets==13.0.1
