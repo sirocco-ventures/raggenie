@@ -1,6 +1,0 @@
-vector_db:
-  name: "chroma"
-  params:
-    path: "./vector_db"
-    embeddings:
-      provider: "chroma_default"
