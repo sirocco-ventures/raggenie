@@ -161,3 +161,4 @@ pre-commit==3.8.0
 codespell==2.3.0
 flake8==7.1.1
 pep8-naming==0.14.1
+uvloop==0.20.0; sys_platform != 'win32'
