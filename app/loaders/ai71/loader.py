@@ -35,10 +35,10 @@ class Ai71ModelLoader(ModelLoader, LoaderMetadataMixin):
         if "choices" in message and len(message["choices"]) > 0:
             choice = message["choices"][0]
             if "message" in choice:
-                return choice["message"]
-        elif 'detail' in message:
-            return {"error" : message['detail']}
-        return {"content" : ""}
+                return {"content" : choice["message"]["content"], "error" : None}
+        elif "detail" in message:
+            return {"content" : "", "error" : message["detail"]}
+        return {"content" : "", "error" : None}
 
     def get_response_metadata(self, prompt, response, out) -> dict:
 

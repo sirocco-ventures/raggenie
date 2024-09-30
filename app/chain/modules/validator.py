@@ -52,6 +52,6 @@ class Validator(AbstractHandler):
                 result = validator.validate(formated_sql)
                 if result:
                     logger.critical(f"Generated Query Validation Issue: {result}")
-                    return Formatter.format(result)
+                    return Formatter.format(result,"")
 
         return super().handle(response)

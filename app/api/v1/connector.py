@@ -4,6 +4,7 @@ import app.schemas.connector as schemas
 import app.schemas.common as resp_schemas
 from app.utils.database import get_db
 import app.services.connector as svc
+import app.services.provider as provider_svc
 from starlette.requests import Request
 
 from app.chain.chains.capability_chain import CapabilityChain
@@ -547,6 +548,9 @@ def create_inference(inference: schemas.InferenceBase, db: Session = Depends(get
     Returns:
         dict: A dictionary indicating the success of the operation and the created inference details or error message.
     """
+    success, message = provider_svc.test_inference_credentials(inference)
+    if not success:
+        return commons.is_error_response("Test Credentials Failed", message, {"inference": {}})
 
     result, error = svc.create_inference(inference, db)
 
@@ -576,6 +580,9 @@ def update_inference(inference_id: int, inference: schemas.InferenceBaseUpdate, 
     Returns:
         dict: A dictionary with the status of the update operation and the updated inference details or error message, if any.
     """
+    success, message = provider_svc.test_inference_credentials(inference)
+    if not success:
+        return commons.is_error_response("Test Credentials Failed", message, {"inference": {}})
 
     result, error = svc.update_inference(inference_id, inference, db)
 

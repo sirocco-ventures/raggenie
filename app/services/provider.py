@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 import app.repository.provider as repo
 import app.schemas.provider as schemas
+import app.schemas.connector as conn_schemas
 from app.services.connector_details import test_plugin_connection
 from app.loaders.base_loader import BaseLoader
 from app.repository import connector as conn_repo
@@ -10,38 +11,38 @@ from app.models.provider import Provider, ProviderConfig
 from loguru import logger
 from app.utils.module_reader import get_llm_providers
 
-def test_inference_credentials(config: schemas.TestCredentials):
-
+def test_inference_credentials(inference: conn_schemas.InferenceBase):
     """
     Tests the connection credentials for a specific LLM inference based on its provider.
 
     Args:
-        config (schemas.TestCredentials): Configuration object containing the provider details for testing the credentials.
+        inference (conn_schemas.InferenceBase): 
+            A configuration object containing the provider details for testing the credentials.
 
     Returns:
-        (bool, str): 
-            - True if the test credentials are successfully completed.
-            - "Unsupported Inference" if the LLM provider is not recognized.
-            - None and an error message if there was an error during inference.
+        Tuple[bool, str]: 
+            - (True, "Test Credentials successfully completed") if the credentials are valid and the test is successful.
+            - (None, error_message) if there was an error during the test or inference.
+            - (False, "Unsupported Inference") if the LLM provider is not recognized or unsupported.
     """
-    provider_config = config.provider_config
+    
     model_configs = [{
-        "unique_name": provider_config["name"],
-        "name": provider_config["model"],
-        "api_key": provider_config["apikey"],
-        "endpoint": provider_config["endpoint"],
-        "kind" : provider_config["llm_provider"],
+        "unique_name": inference.name,
+        "name": inference.model,
+        "api_key": inference.apikey,
+        "endpoint": inference.endpoint,
+        "kind" : inference.llm_provider,
     }]
 
     try:
-        inference_model = BaseLoader(model_configs= model_configs).load_model(provider_config["name"])
+        inference_model = BaseLoader(model_configs= model_configs).load_model(inference.name)
     except Exception as error:
         return None, str(error)
     
     output, response_metadata = inference_model.do_inference(
             "hi", []
     )
-    if "error" in output:
+    if output['error'] is not None:
         return None, output['error']
     return True, "Test Credentials successfully completed"
 

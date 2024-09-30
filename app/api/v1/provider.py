@@ -5,6 +5,7 @@ import app.schemas.provider as schemas
 from app.utils.database import get_db
 import app.services.provider as svc
 import app.api.v1.commons as commons
+import app.schemas.connector as conn_schemas
 from fastapi import Request
 
 router = APIRouter()
@@ -136,28 +137,29 @@ def getllmproviders(request: Request):
     )
 
 @router.post("/test-inference-credentials", response_model=resp_schemas.CommonResponse)
-def test_inference_connections(config: schemas.TestCredentials):
+def test_inference_connections(inference: conn_schemas.InferenceBase):
     """
     Tests the inference connections by validating the credentials for a specific LLM provider.
 
     Args:
-        config (schemas.TestCredentials): Configuration object containing the provider details for testing the connections.
+        inference (conn_schemas.InferenceBase): 
+            Configuration object containing the provider details, including model name, API key, and endpoint, for testing the connections.
 
     Returns:
         resp_schemas.CommonResponse: 
             - Response object containing:
-                - status (bool): Indicates the success of the operation.
-                - status_code (int): HTTP status code representing the outcome (200 for success, 422 for failure).
-                - message (str): Status message indicating the result of the operation.
-                - error (Optional[str]): Error message if the operation failed, otherwise None.
+                - status (bool): Indicates whether the credentials validation was successful.
+                - status_code (int): HTTP status code (200 for success, 422 for failure).
+                - message (str): A message providing the outcome of the credentials test.
+                - error (Optional[str]): Error message if the credentials test failed, otherwise None.
     """
 
-    success, message = svc.test_inference_credentials(config)
+    success, message = svc.test_inference_credentials(inference)
     if not success:
         return resp_schemas.CommonResponse(
             status=False,
             status_code=422,
-            message=message,
+            message="Test Credentials Failed",
             error=message,
         )
     return resp_schemas.CommonResponse(

@@ -5,6 +5,8 @@ from app.providers.config import configs
 from app.loaders.base_loader import BaseLoader
 from string import Template
 from app.utils.parser import markdown_parse_llm_response
+from app.chain.formatter.general_response import Formatter
+
 
 
 class MetadataGenerator(AbstractHandler):
@@ -61,9 +63,10 @@ class MetadataGenerator(AbstractHandler):
         output, response_metadata = infernce_model.do_inference(
                             prompt, chat_history
                     )
-        response["inference"] = {}
-        if 'content' in output:
-            response["inference"] = markdown_parse_llm_response(output['content'])
+        if output["error"] is not None:
+            return Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
+
+        response["inference"] = markdown_parse_llm_response(output['content'])
 
         response["summary"] = ""
         return super().handle(response)

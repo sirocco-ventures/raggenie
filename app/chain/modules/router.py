@@ -73,11 +73,11 @@ class Router(AbstractHandler):
             elif intent in request.get("available_intents", []) and intent != "out_of_context":
                 return super().handle(self.capability_handler.invoke(request))
             else:
-                response = Formatter.format("Sorry, I can't help you with that. Is there anything i can help you with ?")
+                response = Formatter.format("Sorry, I can't help you with that. Is there anything i can help you with ?","")
                 return self.fallback_handler.handle(response)
 
         else:
             logger.info("No intents detected")
-            response = Formatter.format("Sorry, I can't help you with that. Is there anything i can help you with ?")
+            response = Formatter.format("Sorry, I can't help you with that. Is there anything i can help you with ?","")
             return self.fallback_handler.handle(response)
 
