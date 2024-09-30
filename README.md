@@ -126,6 +126,21 @@ vector_db:
 
 This configuration ensures that the RAGGENIE system connects to the `chroma` vector database and uses the default embeddings provided by Chroma.
 
+## ⛔️ Troubleshooting
+
+If you encounter an error while running Python, please check the following
+
+- `Your system has an unsupported version of sqlite3. Chroma requires sqlite3 >= 3.35.0`
+    
+    This issue arises when the system is running a version of SQLite that is below 3.35. Chroma requires SQLite version 3.35 or higher.
+   
+   Please use the follwing links for suggested solutions
+
+   - https://docs.trychroma.com/troubleshooting#sqlite
+   - https://discuss.streamlit.io/t/issues-with-chroma-and-sqlite/47950/4
+   - https://gist.github.com/defulmere/8b9695e415a44271061cc8e272f3c300
+
+   
 
 ## 🚧 Feature Pipeline
 These are the planned features and improvements that are in the pipeline for future releases.

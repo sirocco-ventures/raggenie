@@ -171,7 +171,6 @@ pre-commit = "^3.8.0"
 codespell = "^2.3.0"
 flake8 = "^7.1.1"
 pep8-naming = "^0.14.1"
-pysqlite3-binary = "^0.5.3.post1"
 
 
 [build-system]
