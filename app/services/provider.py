@@ -1,13 +1,50 @@
 from sqlalchemy.orm import Session
 import app.repository.provider as repo
 import app.schemas.provider as schemas
+import app.schemas.connector as conn_schemas
 from app.services.connector_details import test_plugin_connection
+from app.loaders.base_loader import BaseLoader
 from app.repository import connector as conn_repo
 from fastapi import Request
 from app.utils.module_reader import get_plugin_providers
 from app.models.provider import Provider, ProviderConfig
 from loguru import logger
 from app.utils.module_reader import get_llm_providers
+
+def test_inference_credentials(inference: conn_schemas.InferenceBase):
+    """
+    Tests the connection credentials for a specific LLM inference based on its provider.
+
+    Args:
+        inference (conn_schemas.InferenceBase): 
+            A configuration object containing the provider details for testing the credentials.
+
+    Returns:
+        Tuple[bool, str]: 
+            - (True, "Test Credentials successfully completed") if the credentials are valid and the test is successful.
+            - (None, error_message) if there was an error during the test or inference.
+            - (False, "Unsupported Inference") if the LLM provider is not recognized or unsupported.
+    """
+    
+    model_configs = [{
+        "unique_name": inference.name,
+        "name": inference.model,
+        "api_key": inference.apikey,
+        "endpoint": inference.endpoint,
+        "kind" : inference.llm_provider,
+    }]
+
+    try:
+        inference_model = BaseLoader(model_configs= model_configs).load_model(inference.name)
+    except Exception as error:
+        return None, str(error)
+    
+    output, response_metadata = inference_model.do_inference(
+            "hi", []
+    )
+    if output['error'] is not None:
+        return None, output['error']
+    return True, "Test Credentials successfully completed"
 
 
 def initialize_plugin_providers(db:Session):

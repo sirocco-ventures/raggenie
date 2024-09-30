@@ -63,4 +63,4 @@ class IntentChain:
             return self.handler.handle(user_request)
         except Exception as e:
             logger.error(f"An error occurred: {e}")
-            return Formatter.format("Oops! Something went wrong. Try Again!")
+            return Formatter.format("Oops! Something went wrong. Try Again!","")

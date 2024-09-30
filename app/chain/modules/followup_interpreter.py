@@ -42,13 +42,13 @@ class FollowupInterpreter(AbstractHandler):
             if inference["completed"] == True or inference["completed"] == "true":
                 logger.info("Intent completed, trigger the action")
 
-            response = Formatter.format(inference["message"])
+            response = Formatter.format(inference["message"],"")
             response["summary"] = request["inference"]["summary"]
             response["question"] = request["question"]
             response["context_id"] = request["context_id"]
         else:
             logger.info("No intents detected")
-            response = Formatter.format("Sorry, I didn't get that")
+            response = Formatter.format("Sorry, I didn't get that","")
 
         return super().handle(response)
 

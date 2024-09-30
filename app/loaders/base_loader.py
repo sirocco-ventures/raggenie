@@ -20,10 +20,10 @@ class BaseLoader:
                     case "ai71":
                         loader = Ai71ModelLoader(model_config = model)
                     case _ :
-                        raise ValueError(f"Model with unique name '{unique_name}' not found.")
+                        raise ValueError(f"Model with the inference provider '{model['kind']}' with the unique name '{unique_name}' was not found")
                 return loader
 
-        raise ValueError(f"Model with unique name '{unique_name}' not found.")
+        raise ValueError(f"Model with unique name '{unique_name}' not found")
 
     def load_model_config(self, unique_name):
         for model in self.model_configs:

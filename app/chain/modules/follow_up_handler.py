@@ -5,6 +5,7 @@ from app.providers.config import configs
 from app.loaders.base_loader import BaseLoader
 from string import Template
 from app.utils.parser import parse_llm_response
+from app.chain.formatter.general_response import Formatter
 
 class FollowupHandler(AbstractHandler):
     """
@@ -103,8 +104,11 @@ class FollowupHandler(AbstractHandler):
         output, response_metadata = infernce_model.do_inference(
                             prompt, contexts
                     )
+        
+        if output["error"] is not None:
+            return Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
 
-        response["inference"] = parse_llm_response(output)
+        response["inference"] = parse_llm_response(output['content'])
         response["capability"] = capability
         return super().handle(response)
 
