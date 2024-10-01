@@ -25,7 +25,7 @@ class FeedbackCorrectionRequest(BaseModel):
 
 
 class ConnectionArgument(BaseModel):
-    type: Literal[1,2,3,4,6,7]
+    type: Literal[1,2,3,4,6,7, 8]
     generic_name: str
     description: str
     order: int
