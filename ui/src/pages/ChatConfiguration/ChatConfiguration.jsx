@@ -238,7 +238,7 @@ const BotConfiguration = () => {
             toast.success("Inference saved successfully")
         })
         .catch(() => {
-            toast.error("Inference saved failed")
+            toast.error("Failed to save inference")
         });
     }
 
