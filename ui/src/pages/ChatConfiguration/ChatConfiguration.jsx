@@ -396,7 +396,24 @@ const BotConfiguration = () => {
                     <p className={style.ConfigDescription}>Provide your database connection details and database data description can make your application more efficient.</p>
                     <form onSubmit={configHandleSubmit(onBotConfigSave)}>
                         <div>
-                            <Input label="Bot Configuration Name" maxLength={50} value={configWatch("botName")} hasError={configFormError["botName"]?.message ? true : false} errorMessage={configFormError["botName"]?.message}  {...configRegister("botName", { required: "This field is required", maxLength: 50})} />
+                        <Input 
+  label="Bot Configuration Name" 
+  maxLength={50} 
+  value={configWatch("botName")} 
+  hasError={configFormError["botName"]?.message ? true : false} 
+  errorMessage={configFormError["botName"]?.message}  
+  {...configRegister("botName", { 
+    required: "This field is required", 
+    maxLength: {
+      value: 50,
+      message: "The maximum length is 50 characters"
+    },
+    minLength: {
+      value: 10,
+      message: "The minimum length is 20 characters"
+    }
+  })} 
+/>
                             <Input label="Bot Short Description" placeholder="brief detail about the use case of the bot" minLength={20} maxLength={200} value={configWatch("botShortDescription")} hasError={configFormError["botShortDescription"]?.message ? true : false} errorMessage={configFormError["botShortDescription"]?.message}  {...configRegister("botShortDescription", { required: "This field is required", minLength: {value: 20, message : "minimun length is 20"}, maxLength: {value: 200, message: "maximum length is 200"}})}  />
                             <Textarea label="Bot Long Description" placeholder="detailed information about the bot, including its full use case and functionalities" rows={10} minLength={50} maxLength={400} value={configWatch("botLongDescription")} hasError={configFormError["botLongDescription"]?.message ? true : false} errorMessage={configFormError["botLongDescription"]?.message}  {...configRegister("botLongDescription", { required: "This field is required", minLength:{value: 50, message: "minimun length is 50"}, maxLength: {value: 400, message: "maximum length is 400"}})} />
                             
