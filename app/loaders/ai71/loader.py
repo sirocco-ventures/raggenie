@@ -31,6 +31,19 @@ class Ai71ModelLoader(ModelLoader, LoaderMetadataMixin):
 
         return response, usage
 
+    def get_response(self, message) -> dict:
+        if "choices" in message and len(message["choices"]) > 0:
+            choice = message["choices"][0]
+            if "message" in choice:
+                return {"content" : choice["message"]["content"], "error" : None}
+        elif "error" in message:
+            error = message["error"]
+            if "message" in error:
+                return {"content" : "", "error" : error["message"]}
+        elif "detail" in message:
+            return {"content" : "", "error" : message["detail"]}
+        return {"content" : "", "error" : "Empty Response from LLM Provider"}
+
     def get_response_metadata(self, prompt, response, out) -> dict:
 
         return{

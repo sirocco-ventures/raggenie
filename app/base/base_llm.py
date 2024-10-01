@@ -45,12 +45,9 @@ class BaseLLM(LLM):
         try:
             r = requests.post(self.url,  json=self.body,headers=self.headers)
             model_out = json.loads(r.content)
-        except Exception as error:
-            logger.error(error)
-            model_out = {
-                'error' : {"content" : "", "message" : str(error)}
-                }
-
+        except Exception as e:
+            logger.error(e)
+            model_out = {}
 
         return model_out
 
