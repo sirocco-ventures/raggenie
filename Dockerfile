@@ -15,4 +15,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8080
 
 # Run the application
-CMD ["python", "main.py", "--config", "./config.yaml", "llm"]
+CMD ["python", "main.py", "llm"]
