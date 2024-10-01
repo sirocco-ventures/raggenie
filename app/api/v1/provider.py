@@ -5,6 +5,7 @@ import app.schemas.provider as schemas
 from app.utils.database import get_db
 import app.services.provider as svc
 import app.api.v1.commons as commons
+import app.schemas.connector as conn_schemas
 from fastapi import Request
 
 router = APIRouter()
@@ -132,6 +133,39 @@ def getllmproviders(request: Request):
         status_code=200,
         message="LLM providers found",
         data=result,
+        error=None,
+    )
+
+@router.post("/test-inference-credentials", response_model=resp_schemas.CommonResponse)
+def test_inference_connections(inference: conn_schemas.InferenceBase):
+    """
+    Tests the inference connections by validating the credentials for a specific LLM provider.
+
+    Args:
+        inference (conn_schemas.InferenceBase): 
+            Configuration object containing the provider details, including model name, API key, and endpoint, for testing the connections.
+
+    Returns:
+        resp_schemas.CommonResponse: 
+            - Response object containing:
+                - status (bool): Indicates whether the credentials validation was successful.
+                - status_code (int): HTTP status code (200 for success, 422 for failure).
+                - message (str): A message providing the outcome of the credentials test.
+                - error (Optional[str]): Error message if the credentials test failed, otherwise None.
+    """
+
+    success, message = svc.test_inference_credentials(inference)
+    if not success:
+        return resp_schemas.CommonResponse(
+            status=False,
+            status_code=422,
+            message="Test Credentials Failed",
+            error=message,
+        )
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message=message,
         error=None,
     )
 

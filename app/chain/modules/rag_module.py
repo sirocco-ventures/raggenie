@@ -62,7 +62,7 @@ class RagModule(AbstractHandler):
             })
 
             if out is None:
-                return Formatter.format("Sorry, It is out of my context to answer!")
+                return Formatter.format("Sorry, It is out of my context to answer!","")
 
             if 'rag' in response:
                 response["rag"].update(out["rag"])

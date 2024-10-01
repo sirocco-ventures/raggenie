@@ -109,3 +109,10 @@
 .SelectHasError:focus ~ .SelectErrorMessage {
     color: #FF7F6D;
 }
+.Hint {
+    font-size: 12px;
+    color:#6b7280;
+     
+    margin-bottom: 30px;
+    display: block;
+}

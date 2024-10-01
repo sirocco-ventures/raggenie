@@ -61,6 +61,6 @@ class IntentChain:
             self.common_context["chain_retries"] = 0
             self.common_context["context_id"] = user_request["context_id"]
             return self.handler.handle(user_request)
-        except Exception as e:
-            logger.error(f"An error occurred: {e}")
-            return Formatter.format("Oops! Something went wrong. Try Again!")
+        except Exception as error:
+            logger.error(f"An error occurred: {error}")
+            return Formatter.format("Oops! Something went wrong. Try Again!",error)

@@ -4,6 +4,7 @@ from loguru import logger
 from app.providers.config import configs
 from app.loaders.base_loader import BaseLoader
 from string import Template
+from app.chain.formatter.general_response import Formatter
 from app.utils.parser import parse_llm_response
 
 
@@ -123,7 +124,11 @@ class IntentExtracter(AbstractHandler):
         output, response_metadata = infernce_model.do_inference(
                             prompt, contexts
                     )
-        response["intent_extractor"] = parse_llm_response(output)
+        if output["error"] is not None:
+            return Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
+
+        response["intent_extractor"] = parse_llm_response(output['content'])
+
         response["available_intents"] = capability_names
         response["rag_filters"] = {
              "datasources" : [response["intent_extractor"]['intent']] if 'intent_extractor' in response else [],

@@ -2,6 +2,7 @@ from app.base.abstract_handlers import AbstractHandler
 from app.providers.config import configs
 from app.loaders.base_loader import BaseLoader
 from app.utils.parser import parse_llm_response
+from app.chain.formatter.general_response import Formatter
 from loguru import logger
 
 class Generator(AbstractHandler):
@@ -50,9 +51,9 @@ class Generator(AbstractHandler):
                 output, response_metadata = infernce_model.do_inference(
                         prompt, contexts
                 )
+                if output["error"] is not None:
+                        return Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
 
-
-                parsed = parse_llm_response(output)
-                response["inference"]  = parsed
+                response["inference"] = parse_llm_response(output['content'])
 
                 return super().handle(response)
