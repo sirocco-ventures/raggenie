@@ -262,14 +262,8 @@ const ProviderForm = ()=>{
                         case 1: return <Input key={index} type="text" label={item.name} placeholder={item.description}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />     
                         case 2: return <Input key={index} type="password" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message}  {...register(item.slug, {required: "This is required"})} />  
                         case 3: return <Input key={index} type="number" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />  
-                        case 4: return (
-                            <>
-                            <Input key={index} type="url" label={item.name} placeholder="https://www.raggenie.com" hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />
-                            <span className={style.Hint} > Include http or https in the url . </span>
-                            </>
-                        )
-                          
-                        case 5: return <Input key={index} type="email" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />  
+                        case 4: return <Input key={index} type="url" label={`${item.name} (Include http or https in the url)`} placeholder="https://www.raggenie.com" hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />
+                        case 5: return <Input key={index} type="email" label={`${item.name}  `} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} /> 
                         case 6: return (
                             <div className={style.SelectDropDown}>
                                 <label className={style.SelectDropDownLabel}>{item.name}</label>
