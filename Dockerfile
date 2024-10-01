@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image (Alpine-based)
-FROM python:3.11
+FROM python:3.11-bookworm
 
 # Set the working directory in the container
 WORKDIR /app
