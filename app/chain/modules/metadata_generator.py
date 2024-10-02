@@ -39,13 +39,14 @@ class MetadataGenerator(AbstractHandler):
             1. Use the provided schema and context to inform your answer.
             2. while listing tables and its columns strictly mention under which plugin name it is.
             3. Provide accurate information based on the available data.
-            4. If the question cannot be fully answered with the given information, explain what can be answered and what additional information might be needed.
-            5. Keep the explanation concise but informative, focusing on how the schema and context led to your answer.
-            6.Present the answer in a human-readable Markdown format, using appropriate Markdown syntax for headings, lists, emphasis, and other formatting as needed to enhance readability and structure.
+            4. Keep the answer concise and with minimal explanation
+            5. If the question cannot be fully answered with the given information, explain what can be answered and what additional information might be needed.
+            6. Present the answer in a human-readable Markdown format
+            7. Give only what user wants, don't hallucinate to give long answers
 
             Your task is to go through the chat history carefully to understand the user's context and instructions. Then, generate a response to the user query '$question' using the provided schema and metadata information. Format your response in the following JSON structure:
             {
-            "general_message": '''Provide a clear, structured, and human-readable answer in Markdown format to the user's question using the available plugin/database name information''
+            "general_message": "Provide a concise human-readable answer in Markdown format to the user's question using the available information",
             }
         """
 
