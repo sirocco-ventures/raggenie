@@ -72,7 +72,8 @@ This component will help you embed the chat widget into your UI with JavaScript.
 You can use RAGGENIE to create your own conversational chat feature for your application either by integrating it as a chatbot or by embedding it into your application. You can also use it to create different chatbots for different internal teams by tuning each chatbot for different tasks and using different knowledge base for different usecases.
 
 ### ☁️ Usage of RAGGENIE
-![demo video]()
+
+<video src="[https://www.youtube.com/watch?v=8h4bqqs5S3U](Demo Video)" width="320" height="240" controls></video>
 
 ### 📄 Documentation
 Comprehensive documentation is available to help you get the most out of RAGGENIE. The full documentation for RAGGENIE can be found [here]()
