@@ -79,52 +79,79 @@ Comprehensive documentation is available to help you get the most out of RAGGENI
 
 ### 📦 Installation and running
 
+#### Raggenie Backend
 
-#### Installing dependencies
+* Installing dependencies
 
-* **Using `requirements.txt`**
+  * **Using `requirements.txt`**
 
-  To install the required dependencies with `pip`, run:
-  
+    To install the required dependencies with `pip`, run:
+    
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+  * **Using Poetry**
+
+    First, install Poetry:
+    
+    ```bash
+    curl -sSL https://install.python-poetry.org | python3 -
+    ```
+    
+    Then, to install the dependencies, run:
+    
+    ```bash
+    poetry install
+    ```
+
+
+* Running RAGGENIE backend
+
+  To run **RAGGENIE** in API mode, specify the config file to use by running the following command:
+
   ```bash
-  pip install -r requirements.txt
+  python main.py --config ./config.yaml llm
   ```
 
-* **Using Poetry**
+  Below is a sample configuration for the vector database setup in `config.yaml`:
 
-  First, install Poetry:
-  
-  ```bash
-  curl -sSL https://install.python-poetry.org | python3 -
+  ```yaml
+  vector_db:
+    name: "chroma"
+    params:
+      path: "./vector_db"
+      embeddings:
+        provider: "chroma_default"
   ```
-  
-  Then, to install the dependencies, run:
-  
-  ```bash
-  poetry install
-  ```
-
-
-#### Running RAGGENIE
-
-To run **RAGGENIE** in API mode, specify the config file to use by running the following command:
-
-```bash
-python main.py --config ./config.yaml llm
-```
-
-Below is a sample configuration for the vector database setup in `config.yaml`:
-
-```yaml
-vector_db:
-  name: "chroma"
-  params:
-    path: "./vector_db"
-    embeddings:
-      provider: "chroma_default"
-```
 
 This configuration ensures that the RAGGENIE system connects to the `chroma` vector database and uses the default embeddings provided by Chroma.
+
+#### Raggenie Frontend
+
+* **Move into the ui folder.**
+  ```
+  cd ./ui
+  ```
+
+* Install dependencies
+  ```bash
+  npm install
+  ```
+
+* Running RAGGENIE Frontend
+
+  * To run **RAGGENIE** frontend, create a .env file and add the URL to backend as env variables
+    ```env
+    VITE_BACKEND_URL=${BACKEND_URL}
+    ```
+
+  * To start the server, run
+    ```bash
+    npm run dev
+    ```
+
+for more details visit [frontend readme](./ui/README.md)
 
 ## ⛔️ Troubleshooting
 
