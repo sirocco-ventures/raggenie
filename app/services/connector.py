@@ -542,6 +542,8 @@ def delete_capability(cap_id: int, db: Session):
 
 
 def update_datasource_documentations(db: Session, vector_store, datasources, id_name_mappings):
+        logger.info("Updating datasource documentations")
+        active_datsources = {}
         for key, datasource in datasources.items():
             connector_details = id_name_mappings.get(key, {})
             if "id" not in connector_details:
@@ -552,11 +554,13 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
             logger.info("mappings connector_details, id:{}".format(connector_details["id"]))
 
             datasource.connect()
-            success = datasource.healthcheck()
+            success, err = datasource.healthcheck()
             if not success:
-                logger.warning("Datasource health failed")
+                logger.error(f"Datasource health failed for {key}, cause: {err}")
+                logger.warning(f"skipping datasource initialization for {key}")
                 continue
 
+            active_datsources[key] = datasource
             logger.info("Pushing plugin metadata to vector store")
             sd = SourceDocuments([], [], [])
             queries = []
@@ -574,6 +578,7 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
             vector_store.prepare_data(key, chunked_document,chunked_schema, queries)
 
 
+        return active_datsources, None
 
 def get_inference_and_plugin_configurations(db: Session):
 

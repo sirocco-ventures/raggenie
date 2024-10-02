@@ -68,7 +68,7 @@ class Router(AbstractHandler):
                     logger.info("entered default workflow")
                     return super().handle(self.general_handler.invoke(request))
 
-            elif intent == "metadata_inquiry" and intent != "out_of_context":
+            elif intent == "metadata_inquiry":
                 return super().handle(self.metadata_handler.invoke(request))
             elif intent in request.get("available_intents", []) and intent != "out_of_context":
                 return super().handle(self.capability_handler.invoke(request))
