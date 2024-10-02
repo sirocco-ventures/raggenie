@@ -12,14 +12,14 @@ __category__ = 4
 
 # Connection arguments
 __connection_args__ = OrderedDict(
-    document_file= ConnectionArgument(
+    document_files= ConnectionArgument(
         type = 8,
-        generic_name= 'document file',
+        generic_name= 'document files',
         description = 'Supports only .pdf, .yaml, .txt, and .docx files.',
         order = 1,
         required = True,
         value = None,
-        slug = "document_file"
+        slug = "document_files"
     )
 )
 
@@ -27,27 +27,28 @@ __connection_args__ = OrderedDict(
 __prompt__ = Prompt(**{
         "base_prompt": "{system_prompt}{user_prompt}",
         "system_prompt": {
-            "template": """
-            You are an Chatbot designed to answer user questions based only on the context given to you.
-            Use the details enclosed in `[context][/context]` to generate answer
+        "template": """
+        You are a Chatbot designed to answer user questions based only on the context given to you.
+        Use the details enclosed in [context][/context] to generate answers.
+        [context]
+        {context}
+        [/context]
 
-            [context]
-            {context}
-            [/context]
-
-            Adhere to these rules while generating query:
-            - Deliberately go through the question and context word by word to appropriately answer the question
-            """
+        Adhere to these rules while generating answers:
+        - Carefully read through the question and context word by word to appropriately answer the question.
+        - Only use information provided in the context to answer questions.
+        - If the answer cannot be found in the context, state that you don't have enough information to answer.
+        """
         },
         "user_prompt":{
             "template": """
             User question is "$question"
-            generate a json in the following format without any formatting.
+            Generate a JSON response in the following format without any formatting:
             {
-                "explanation": "Explain how you finalized the sql query using the schemas and rules provided",
-                "operation_kind" : "none",
-                "general_message": "answer to user question based on the context",
-                "confidence" : "confidence in 100",
+                "explanation": "Explain how you determined the answer using the provided context",
+                "operation_kind": "none",
+                "general_message": "Answer to user question based on the context",
+                "confidence": "Confidence level from 0 to 100",
                 "main_entity": "document"
             }
             """
@@ -55,12 +56,12 @@ __prompt__ = Prompt(**{
         "regeneration_prompt": {
             "template": """
             User question is "$question"
-            generate a json in the following format without any formatting.
+            Generate a JSON response in the following format without any formatting:
             {
-                "explanation": "Explain how you finalized the sql query using the schemas and rules provided",
-                "operation_kind" : "none",
-                "general_message": "answer to user question based on the context",
-                "confidence" : "confidence in 100",
+                "explanation": "Explain how you determined the answer using the provided context",
+                "operation_kind": "answer_from_context",
+                "general_message": "Answer to user question based on the context",
+                "confidence": "Confidence level from 0 to 100",
                 "main_entity": "document"
             }
             """

@@ -14,15 +14,17 @@ class Document(BasePlugin, PluginMetadataMixin,DocumentDataPlugin,  Formatter):
     Document class for interacting with document data.
     """
 
-    def __init__(self, document_file:str):
+    def __init__(self, document_files:str):
         super().__init__(__name__)
 
         self.connection = {}
 
         # common
         self.params = {
-            'document_file': document_file,
+            'document_files': document_files,
         }
+
+        self.supported_types = {".pdf": "pdf", ".docx": "docx", ".txt": "text", ".yaml": "yaml"}
 
 
     def connect(self):
@@ -41,7 +43,7 @@ class Document(BasePlugin, PluginMetadataMixin,DocumentDataPlugin,  Formatter):
         :return: Tuple containing the health status (True/False) and error message (if any).
         """
         logger.info("health check for documentations")
-        
+
         try:
             data = self.fetch_data(params=None)
             if not data:
@@ -54,17 +56,16 @@ class Document(BasePlugin, PluginMetadataMixin,DocumentDataPlugin,  Formatter):
 
     def fetch_data(self, params=None):
         data = []
-        supported_types = {".pdf": "pdf", ".docx": "docx", ".txt": "txt", ".yaml": "yaml"}
 
-        for file_info in self.params.get("document_file", []):
+        for file_info in self.params.get("document_files", []):
             url = file_info.get("file_path")
             if url is None:
                 logger.error("URL is missing in the document file information.")
                 continue
-            
+
             file_type = None
-            
-            for ext, typ in supported_types.items():
+
+            for ext, typ in self.supported_types.items():
                 if url.endswith(ext):
                     file_type = typ
                     break
@@ -72,8 +73,6 @@ class Document(BasePlugin, PluginMetadataMixin,DocumentDataPlugin,  Formatter):
             if file_type is None:
                 logger.error(f"Unsupported file format: {url}")
                 continue
-
-                
             base_reader = BaseReader({
                 "type": file_type,
                 "path": [url]

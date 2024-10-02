@@ -122,7 +122,7 @@ async def fileValidation(file):
 
     if not file.filename.endswith((".pdf", ".txt", ".yaml", ".docx")):
         return "Invalid file format", None
-    
+
     content = await file.read()
     file_size = len(content)
 
@@ -131,7 +131,7 @@ async def fileValidation(file):
     max_file_size_bytes = 10 * 1024 * 1024
     if file_size > max_file_size_bytes:
         return "File size exceeds the limit", None
-    
+
     return None, file_size
 
 
@@ -157,7 +157,7 @@ async def upload_pdf(file):
         return {"file_path": file_path,"file_id":uuid_str}, None
     except Exception as e:
         return None, f"Failed to write file: {str(e)}"
-    
+
 
 def create_connector(connector: schemas.ConnectorBase, db: Session):
 
@@ -812,8 +812,7 @@ def formatting_datasource(connector, provider):
     elif provider.category_id == 4:
         return {
             'type': provider.key,
-            'params': connector.connector_config,
-            'documentations': [{'type': 'text', 'value': connector.connector_docs}]
+            'params': connector.connector_config
         }
     else:
         return None
