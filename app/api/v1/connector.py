@@ -482,8 +482,7 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     datasources = request.app.container.datasources()
 
     mappings = confyaml.get("mappings",{})
-    err = svc.update_datasource_documentations(db, vectore_store, datasources, mappings)
-
+    datasources, err = svc.update_datasource_documentations(db, vectore_store, datasources, mappings)
     if err:
         logger.error("Error updating")
 
