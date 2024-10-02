@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, status, BackgroundTasks
+from fastapi.encoders import jsonable_encoder
 from app.models.request import Chat, FeedbackCorrectionRequest
 from starlette.requests import Request
 from loguru import logger
@@ -42,7 +43,7 @@ def qna(query: Chat, request: Request, background_tasks: BackgroundTasks, db:Ses
         schemas.ChatHistoryCreate(
             chat_context_id=context_id,
             chat_query=query.content,
-            chat_answer= out,
+            chat_answer= jsonable_encoder(out),
             chat_summary=out.get("summary", query.content)
         ),
         db
