@@ -42,13 +42,12 @@ class BaseLLM(LLM):
 
         if prompt != "":
             self.body["prompt"] = prompt
-        r = requests.post(self.url,  json=self.body,headers=self.headers)
         try:
+            r = requests.post(self.url,  json=self.body,headers=self.headers)
             model_out = json.loads(r.content)
         except Exception as e:
             logger.error(e)
             model_out = {}
-
 
         return model_out
 

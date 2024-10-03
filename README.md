@@ -18,6 +18,9 @@ The project is in its early stages, and we are working on adding more capabiliti
 
 • Current focus: We are currently focused on making it easy to build RAG Application. Going forward we will be focusing on maintaince and monitoring of the RAG system as well cosidering how to help these applications to take from pilots to production.
 
+### RAGGENIE Demo
+[![Demo Video](https://img.youtube.com/vi/8h4bqqs5S3U/0.jpg)](https://www.youtube.com/watch?v=8h4bqqs5S3U)
+
 ## 🌎 Communities
 
 Join our communities for product updates, support, and to stay connected with the latest from RAGGENIE!
@@ -70,9 +73,6 @@ This component will help you embed the chat widget into your UI with JavaScript.
 
 ## 🛠️ Getting Started
 You can use RAGGENIE to create your own conversational chat feature for your application either by integrating it as a chatbot or by embedding it into your application. You can also use it to create different chatbots for different internal teams by tuning each chatbot for different tasks and using different knowledge base for different usecases.
-
-### ☁️ Usage of RAGGENIE
-![demo video]()
 
 ### 📄 Documentation
 Comprehensive documentation is available to help you get the most out of RAGGENIE. The full documentation for RAGGENIE can be found [here]()

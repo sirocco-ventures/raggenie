@@ -1,95 +1,100 @@
 from typing import Any
 from loguru import logger
+
+
 class Formatter:
+    def format(self, data: Any,input) -> (dict):
+        """
+        Main entry point for formatting the data based on the input parameters.
+        Handles different formatting strategies based on operation kind.
 
-    def format(self, data: Any,input:Any) -> (dict, Any):
+        :param data: The data to format.
+        :param input_params: Dictionary containing operation and formatting details.
+        :return: A dictionary containing the formatted response.
+        """
         response = {}
+        self.main_entity = input.get("main_entity")
+        self.kind = input.get("operation_kind", "").lower()
+        self.general_message = input.get("general_message")
+        self.empty_message = input.get("empty_message")
 
+        logger.info("Formatting output using inference for postgresql")
 
-        self.main_entity = input["main_entity"]
-        self.kind = input["operation_kind"]
-        self.visualisation = input["visualisation"] if "visualisation" in input else {}
-        self.general_message = input["general_message"]
-
-        logger.info("from postgres formatter module")
         if self.kind  == "list":
             response = self.basic_formatter(data, input)
         elif self.kind == "aggregation":
             response = self.aggregation_formatter(data, input)
-
-        response["main_entity"] = self.main_entity
-        response["main_format"] = self.kind
-        response["role"] = "assistant"
-        response["content"] = self.general_message
-
-        return response
-
-    def basic_formatter(self, data: Any, input:Any) -> dict :
-        logger.info("basic formatter")
-
-
-        response = {
-
-        }
-
-        if data is None or len(data) == 0:
-            response["data"] = []
-            response["kind"] = "none"
-        elif len(data) == 1:
-            response["data"] = data[0]
-            response["kind"] = "single"
         else:
             response["data"] = data
             response["kind"] = "list"
 
 
+        response.update({
+            "main_entity": self.main_entity,
+            "main_format": self.kind,
+            "role": "assistant",
+            "content": self.general_message,
+            "empty_message": self.empty_message,
+        })
+
+        return response
+
+    def basic_formatter(self, data: Any, input:Any) -> dict :
+        """
+        Formats data as a list, handling cases for none, single, and multiple entries.
+
+        :param data: The data to format.
+        :return: A dictionary containing the formatted list response.
+        """
+        logger.info("Formatting data as a list")
+
+        if data is None:
+            response = {"data": [], "kind": "none"}
+        elif len(data) == 1:
+            response = {"data": data, "kind": "single"}
+        else:
+            response = {"data": data, "kind": "list"}
+
         return response
 
 
     def aggregation_formatter(self, data:Any, input:Any) -> dict :
+        """
+        Formats data for aggregation visualisation, supporting table and chart formats.
+
+        :param data: The data to format.
+        :param visualisation: Dictionary containing visualisation details (e.g., x-axis, y-axis, chart type).
+        :return: A dictionary containing the formatted aggregation response.
+        """
+
+        logger.info("Formatting data as aggregation")
+
+        visualisation = input.get("visualisation", {})
         response = {}
 
+
         if data is None or len(data) == 0:
-            response["data"] = []
-            response["kind"] = "none"
-
+            response = {"data": [], "kind": "none"}
+        elif len(data) == 1:
+            response = {"data": data, "kind": "table"}
         else:
-            visualisaton = input["visualisation"]
-            if visualisaton["chart"] == "none":
-                response["kind"] = "table"
+            value_fields = visualisation.get("y-axis", [])
+            key_fields = visualisation.get("x-axis", [])
+            title = visualisation.get("title", "")
+
+            visualisaton_kind = visualisation["type"].replace(" ", "_") if visualisation["type"] is not None else "table"
+
+            if visualisaton_kind.lower() in ["bar_chart", "line_chart", "pie_chart"] and len(value_fields) > 0 and len(key_fields) > 0:
+                response["kind"] = visualisaton_kind
                 response["data"] = data
+                response["x"] = key_fields
+                response["y"] = value_fields
+                response["title"] = title
             else:
-
-                value_fileds = visualisaton["y-axis"]
-                key_fields = visualisaton["x-axis"]
-                visualisaton_kind = visualisaton["chart"].replace(" ", "_")
-
-
-                if visualisaton_kind in ["bar_chart", "line_chart", "pie_chart"]:
-                    processed_data = []
-
-                    for single in data:
-                        for value_field in value_fileds:
-
-                            labels = key_fields
-
-                            for k in single.keys():
-                                if k not in key_fields and k not in value_field:
-                                    labels.append(k)
-
-                            processed_data.append({
-                                "labels": {key:single[key] for key in  key_fields},
-                                "value" : single[value_field],
-                                "metric": value_field,
-                                })
-                    # if self.main_entity == "service":
-                    #     response["kind"] = "card_list"
-                    # else:
-                    #     response["kind"] = visualisaton_kind
-                    response["kind"] = visualisaton_kind
-                    response["data"] = processed_data
-                else:
-                    response["kind"] = "table"
-                    response["data"] = data
+                response = {"kind": "table", "data": data}
 
         return response
+
+
+
+

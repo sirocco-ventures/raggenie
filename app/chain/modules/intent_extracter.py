@@ -21,7 +21,7 @@ class IntentExtracter(AbstractHandler):
         model_configs (dict): Configuration settings for the model, including use case details and model paths.
     """
 
-    def __init__(self, common_context , model_configs) -> None:
+    def __init__(self, common_context , model_configs, datasources) -> None:
         """
         Initializes the IntentExtractor with common context and model configurations.
 
@@ -31,6 +31,7 @@ class IntentExtracter(AbstractHandler):
         """
         self.model_configs = model_configs
         self.common_context = common_context
+        self.datasources = datasources
 
     def handle(self, request: Any) -> str:
         """
@@ -52,7 +53,7 @@ class IntentExtracter(AbstractHandler):
         capabilities = use_case.get("capabilities", [])
 
         capability_description = ""
-        capability_names = ["out_of_context", "metadata_inquiry"]
+        capability_names = ["out_of_context"]
 
         for capability in capabilities:
             name = capability["name"]
@@ -64,13 +65,19 @@ class IntentExtracter(AbstractHandler):
         datasources = self.model_configs.get("datasources", [])
         datasource_names = []
         for datasource in datasources:
-            name = datasource["name"]
-            description = datasource["description"]
-            capability_names.append(name)
-            datasource_names.append(name)
-            capability_description += f"{name} : {description}\n"
+            if datasource["name"] in self.datasources:
+                if self.datasources[datasource["name"]].__category__ == 2:
+                    capability_names.append("metadata_inquiry")
+                name = datasource["name"]
+                description = datasource["description"]
+                capability_names.append(name)
+                datasource_names.append(name)
+                capability_description += f"{name} : {description}\n"
+                
         response["available_datasources"] = datasource_names
 
+        if "metadata_inquiry" in capability_names:
+            capability_description += "metadata_inquiry : queries about overview of available data, the structure of a database (including tables and columns), the meaning behind specific columns, and the purpose within a database context, eg: what kind of data you have? or list questions which can be asked?\n"
 
         contexts = request.get("context", [])
         contexts = contexts[-5:] if len(contexts) >= 5 else contexts
@@ -85,7 +92,6 @@ class IntentExtracter(AbstractHandler):
 
         Available intents are:
         -- Intent section ---
-        metadata_inquiry: queries about overview of available data, the structure of a database (including tables and columns), the meaning behind specific columns, and the purpose within a database context, eg: what kind of data you have? or list questions which can be asked?
         $capabilities
         out_of_context: If chat is irrelevant to chatbot context and its capabilities
         --- Intent section ---
