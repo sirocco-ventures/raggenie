@@ -71,7 +71,7 @@ class AuthMiddleware:
             key=COOKIE_NAME,
             value=new_token,
             httponly=True,
-            max_age=30,
+            max_age=3600,
             path="/",
             domain=AUTH_SERVER
         )

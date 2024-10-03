@@ -23,7 +23,7 @@ def login_user(response: Response, user: LoginData):
             key="auth_token",
             value=token,
             httponly=True,
-            max_age=30,
+            max_age=3600,
             path="/",
             domain=AUTH_SERVER
         )
