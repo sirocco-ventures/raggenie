@@ -1,18 +1,30 @@
-# Use an official Python runtime as a parent image (Alpine-based)
-FROM python:3.11-bookworm
+# Stage 1: Builder
+FROM python:3.11 AS builder
+
+# Improve performance and prevent generation of .pyc files
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Copy the requirements file into the container
+COPY requirements.txt .
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+# Create and activate a virtual environment, then install the dependencies
+RUN pip install virtualenv && \
+    virtualenv /opt/venv && \
+    . /opt/venv/bin/activate && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Make port 8080 available to the world outside this container
-EXPOSE 8080
+# Stage 2: Deployer
+FROM python:3.11-slim AS deployer
 
-# Run the application
-CMD ["python", "main.py", "llm"]
+# Copy the virtual environment from the builder stage
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy the rest of the application code
+COPY ./app ./commands ./assets ./main.py ./config.yaml ./
+
+EXPOSE 8001
