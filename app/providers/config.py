@@ -24,6 +24,12 @@ class Configs(BaseSettings):
     logging_enabled: bool = os.getenv("ENABLE_FILE_LOGGING", False)
     inference_llm_model:str = os.getenv("INFERENCE_LLM_MODEL", "gpt")
 
+    # Auth
+    AUTH_SERVER: str = os.getenv("AUTH_SERVER", "localhost")
+    USERNAME: str = os.getenv("USERNAME","admin")
+    PASSWORD: str = os.getenv("PASSWORD","password")
+    SECRET_KEY: str = os.getenv("SECRET_KEY","secret")
+    LOGIN_SERVER: str = os.getenv("LOGIN_SERVER","test")
 
     retry_limit:int = os.getenv("RETRY_LIMIT",0)
     application_port: int = os.getenv("APP_PORT", 8001)

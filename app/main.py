@@ -8,7 +8,7 @@ from app.api.v1.connector import cap_router as capabilityrouter
 from app.api.v1.connector import inference_router as inference_router
 from app.api.v1.connector import actions as actions
 from app.api.v1.provider import sample as sample_sql
-from app.api.v1.commons import login as login
+from app.api.v1.auth import login as login
 import app.services.connector_details as commonservices
 
 
@@ -114,9 +114,10 @@ def create_app(config):
         allow_headers=["*"],
     )
 
-    # setting instance of auth middleware
-    auth_middleware = AuthMiddleware()
-    app.middleware("http")(auth_middleware)
+    if configs.LOGIN_SERVER != "test":
+        # setting instance of auth middleware
+        auth_middleware = AuthMiddleware()
+        app.middleware("http")(auth_middleware)
 
     logger.info("setting chain, vector store into app context")
     app.config = config
