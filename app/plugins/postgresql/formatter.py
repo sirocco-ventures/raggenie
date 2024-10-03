@@ -82,7 +82,7 @@ class Formatter:
             key_fields = visualisation.get("x-axis", [])
             title = visualisation.get("title", "")
 
-            visualisaton_kind = visualisation["type"].replace(" ", "_") if visualisation["type"] is not None else visualisation["type"]
+            visualisaton_kind = visualisation["type"].replace(" ", "_") if visualisation["type"] is not None else "table"
 
             if visualisaton_kind.lower() in ["bar_chart", "line_chart", "pie_chart"] and len(value_fields) > 0 and len(key_fields) > 0:
                 response["kind"] = visualisaton_kind
