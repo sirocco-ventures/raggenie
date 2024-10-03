@@ -259,14 +259,14 @@ const ProviderForm = ()=>{
                 {providerConfig.map((item, index)=>{
                 
                     switch(item.config_type){
-                        case 1: return <Input key={index} type="text" label={item.name} placeholder={item.description}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />     
-                        case 2: return <Input key={index} type="password" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message}  {...register(item.slug, {required: "This is required"})} />  
-                        case 3: return <Input key={index} type="number" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />  
-                        case 4: return <Input key={index} type="url" label={`${item.name} (Include http or https in the url)`} placeholder="https://www.raggenie.com" hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />
-                        case 5: return <Input key={index} type="email" label={`${item.name}  `} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} /> 
+                        case 1: return <Input key={index} type="text" label={item.name} placeholder={item.description}  required={item.required}   hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ? "This is required": false})} />     
+                        case 2: return <Input key={index} type="password" label={item.name} placeholder={item.description}  required={item.required}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message}  {...register(item.slug, {required: item.required ? "This is required": false})} />  
+                        case 3: return <Input key={index} type="number" label={item.name} placeholder={item.description}  required={item.required}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ? "This is required": false})} />  
+                        case 4: return <Input key={index} type="url" label={ <> {item.name} <span style={{color: "#C8C8C8"}}>(Include http or https in the url)</span> </>} required={item.required} placeholder="https://www.raggenie.com" hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})} />
+                        case 5: return <Input key={index} type="email" label={`${item.name}  `}  required={item.required}  placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})} /> 
                         case 6: return (
                             <div className={style.SelectDropDown}>
-                                <label className={style.SelectDropDownLabel}>{item.name}</label>
+                                <label className={style.SelectDropDownLabel}>{item.name} {item.required && <span className="span-important"></span>} </label>
                                 <select key={index} className={`${errors[item.slug]?.message ? style.SelectHasError : ""}`} {...register(item.slug, {required: "This is required"})}>
                                     {item.value?.map((val, valIndex)=>{
                                         return <option key={valIndex} value={val.value}>{val.label}</option>
@@ -275,8 +275,8 @@ const ProviderForm = ()=>{
                                 {errors[item.slug]?.message != "" && <label className={style.SelectErrorMessage}>{errors[item.slug]?.message}</label>}
                             </div>
                         )
-                        case 7: return <Textarea key={index} rows="5" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />  
-                        default : return <Input key={index} type="text" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />     
+                        case 7: return <Textarea key={index} rows="5" label={item.name} required={item.required} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})} />  
+                        default : return <Input key={index} type="text" label={item.name} required={item.required} placeholder={item.description}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})} />     
                     }
                 
                 })}
@@ -293,8 +293,8 @@ const ProviderForm = ()=>{
                     <p>{providerDetails.description}</p>
                 </div>
                 <div>
-                    <Input label="Plugin Name" placeholder="Plugin Name" maxLength={20} hasError={errors["pluginName"]?.message ? true : false} errorMessage={errors["pluginName"]?.message}  {...register("pluginName", {required: "This is required" ,minLength: {value: 10, message: "minimum length is 10"}})} />
-                    <Textarea label="Plugin Description" placeholder="Describe the plugin's purpose and content in a detailed and informative manner, emphasizing its key features and functionality." rows={8} maxLength={200} hasError={errors["pluginDescription"]?.message ? true : false} errorMessage={errors["pluginDescription"]?.message}  {...register("pluginDescription", {required: "This is required", minLength: {value: 20, message: "minimum length is 20"}})} />
+                    <Input label="Plugin Name" placeholder="Plugin Name" maxLength={20} required hasError={errors["pluginName"]?.message ? true : false} errorMessage={errors["pluginName"]?.message}  {...register("pluginName", {required: "This is required" ,minLength: {value: 10, message: "minimum length is 10"}})} />
+                    <Textarea label="Plugin Description" placeholder="Describe the plugin's purpose and content in a detailed and informative manner, emphasizing its key features and functionality." required rows={8} maxLength={200} hasError={errors["pluginDescription"]?.message ? true : false} errorMessage={errors["pluginDescription"]?.message}  {...register("pluginDescription", {required: "This is required", minLength: {value: 20, message: "minimum length is 20"}})} />
                     {generateConfig()}
                      
                 </div>
