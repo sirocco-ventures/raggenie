@@ -8,9 +8,11 @@ from app.api.v1.connector import cap_router as capabilityrouter
 from app.api.v1.connector import inference_router as inference_router
 from app.api.v1.connector import actions as actions
 from app.api.v1.provider import sample as sample_sql
+from app.api.v1.commons import login as login
 import app.services.connector_details as commonservices
 
 
+from app.utils.authlogin import AuthMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.chain.chains.intent_chain import IntentChain
 from app.chain.chains.capability_chain import CapabilityChain
@@ -112,6 +114,10 @@ def create_app(config):
         allow_headers=["*"],
     )
 
+    # setting instance of auth middleware
+    auth_middleware = AuthMiddleware()
+    app.middleware("http")(auth_middleware)
+
     logger.info("setting chain, vector store into app context")
     app.config = config
     app.container = container
@@ -129,6 +135,7 @@ def create_app(config):
     app.include_router(inference_router, prefix="/api/v1/inference")
     app.include_router(actions, prefix="/api/v1/actions")
     app.include_router(sample_sql, prefix="/api/v1/sql")
+    app.include_router(login, prefix="/api/v1/login")
 
     curr_schema = app.openapi()
     curr_schema["info"]["title"] = "Rag genie Chat API"
