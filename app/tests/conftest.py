@@ -17,6 +17,7 @@ from app.api.v1.connector import actions as actions
 from app.api.v1.main_router import MainRouter
 from app.api.v1.provider import sample as sample_sql
 
+# Function to initialize the FastAPI application with all necessary routers
 def start_application() -> FastAPI:
     app = FastAPI()
     app.include_router(MainRouter, prefix="/api/v1/query")
@@ -30,30 +31,36 @@ def start_application() -> FastAPI:
 
     return app
 
+# Database URL for testing with SQLite
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
+# Create a SQLAlchemy engine for testing
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# Fixture to create a fresh database for each test case
 @pytest.fixture(scope="function")
 def app() -> Generator[FastAPI, None, None]:
     """
     Create a fresh database on each test case.
     """
-    Base.metadata.create_all(engine)  # Create tables in the test database
-    _app = start_application()
-    yield _app
-    Base.metadata.drop_all(engine)  # Optionally drop tables after tests
+    Base.metadata.create_all(engine)  # Create the database tables
+    _app = start_application()  # Initialize the FastAPI application
+    yield _app  # Yield the application instance for use in tests
+    Base.metadata.drop_all(engine)  # Drop the database tables after tests
 
+# Fixture to manage database sessions for tests
 @pytest.fixture(scope="function")
 def db_session(app: FastAPI) -> Generator[Session, None, None]:
+    # Connect to the database and begin a transaction for testing
     connection = engine.connect()
     transaction = connection.begin()
-    session = SessionTesting(bind=connection)
-    yield session
-    session.close()
-    transaction.rollback()
-    connection.close()
+    session = SessionTesting(bind=connection)  # Create a new session
+    yield session  # Yield the session for use in tests
+    session.close()  # Close the session after tests
+    transaction.rollback()  # Roll back the transaction to maintain isolation
+    connection.close()  # Close the database connection
 
+# Fixture to create a FastAPI TestClient for sending requests in tests
 @pytest.fixture(scope="function")
 def client(app: FastAPI, db_session: Session) -> Generator[TestClient, None, None]:
     """
@@ -61,18 +68,21 @@ def client(app: FastAPI, db_session: Session) -> Generator[TestClient, None, Non
     the `get_db` dependency that is injected into routes.
     """
 
+    # Override the get_db dependency to use the test database session
     def _get_test_db():
         try:
-            yield db_session
+            yield db_session  # Yield the test database session
         finally:
             pass
 
-    app.dependency_overrides[get_db] = _get_test_db
+    app.dependency_overrides[get_db] = _get_test_db  # Apply the dependency override
     with TestClient(app) as client:
-        yield client
+        yield client  # Yield the TestClient for use in tests
 
+# Fixture to create a sample Provider for testing
 @pytest.fixture
 def provider_fixture(db_session: Session) -> Provider:
+    # Sample provider data for creating a Provider instance
     provider_data = {
         "name": "postgres Provider",
         "description": "Provider for postgres connectors",
@@ -81,8 +91,8 @@ def provider_fixture(db_session: Session) -> Provider:
         "category_id": 2,
         "key": "postgres",
     }
-    new_provider = Provider(**provider_data)
-    db_session.add(new_provider)
-    db_session.commit()
-    db_session.refresh(new_provider)
-    return new_provider
+    new_provider = Provider(**provider_data)  # Create a new Provider instance
+    db_session.add(new_provider)  # Add the provider to the session
+    db_session.commit()  # Commit the session to save the provider
+    db_session.refresh(new_provider)  # Refresh the provider instance to get updated data
+    return new_provider  # Return the created Provider instance

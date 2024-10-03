@@ -98,3 +98,6 @@ class SampleSQLUpdate(BaseModel):
 
 class SampleSQLResponse(SampleSQLBase):
     id: int
+
+class CredentialsHelper(BaseModel):
+    provider_config: Dict[str, Any]

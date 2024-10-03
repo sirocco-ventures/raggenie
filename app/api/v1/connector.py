@@ -217,7 +217,7 @@ def list_configurations(db: Session = Depends(get_db)):
 
     result, error = svc.list_configurations(db)
 
-    if error and not result:
+    if error:
         return commons.is_error_response("DB error", result, {"configurations": []})
 
     if not result:
@@ -347,7 +347,7 @@ def get_all_capabilities(db: Session = Depends(get_db)):
 
 
     if not result:
-        return commons.is_none_reponse("Configuration Not Found", {"capabilities": []})
+        return commons.is_none_reponse("Capabilities Not Found", {"capabilities": []})
 
 
     return resp_schemas.CommonResponse(
@@ -381,7 +381,7 @@ def update_capability(cap_id: int, capability: schemas.CapabilitiesUpdateBase, d
 
 
     if not result:
-        return commons.is_none_reponse("Configuration Not Found", {"capability": {}})
+        return commons.is_none_reponse("Capability Not Found", {"capability": {}})
 
 
     return resp_schemas.CommonResponse(
@@ -413,7 +413,7 @@ def delete_capability(cap_id: int, db: Session = Depends(get_db)):
 
 
     if not result:
-        return commons.is_none_reponse("Configuration Not Found", {"capability": {}})
+        return commons.is_none_reponse("Capability Not Found", {"capability": {}})
 
 
     return resp_schemas.CommonResponse(
