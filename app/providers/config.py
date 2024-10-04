@@ -25,11 +25,11 @@ class Configs(BaseSettings):
     inference_llm_model:str = os.getenv("INFERENCE_LLM_MODEL", "gpt")
 
     # Auth
-    AUTH_SERVER: str = os.getenv("AUTH_SERVER", "localhost")
-    USERNAME: str = os.getenv("USERNAME","admin")
-    PASSWORD: str = os.getenv("PASSWORD","password")
-    SECRET_KEY: str = os.getenv("SECRET_KEY","secret")
-    LOGIN_SERVER: str = os.getenv("LOGIN_SERVER","test")
+    auth_server: str = os.getenv("AUTH_SERVER", "localhost")
+    username: str = os.getenv("USERNAME","admin")
+    password: str = os.getenv("PASSWORD","password")
+    secret_key: str = os.getenv("SECRET_KEY","secret")
+    auth_enabled: bool = os.getenv("AUTH_ENABLED",True)
 
     retry_limit:int = os.getenv("RETRY_LIMIT",0)
     application_port: int = os.getenv("APP_PORT", 8001)

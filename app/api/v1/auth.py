@@ -9,10 +9,8 @@ login = APIRouter()
 
 @login.post("/")
 def login_user(response: Response, user: LoginData):
-    print(user.username, user.password)
-    print(os.getenv("USERNAME"), os.getenv("PASSWORD"))
-    if user.username == configs.USERNAME and user.password == configs.PASSWORD:
-        auth =  AuthMiddleware()
+    if user.username == configs.username and user.password == configs.password:
+        auth =  AuthMiddleware(configs.secret_key, "HS256", "auth_token", configs.auth_server)
         token = auth.create_access_token(data={"sub": user.username})
         response.set_cookie(
             key="auth_token",
@@ -20,7 +18,7 @@ def login_user(response: Response, user: LoginData):
             httponly=True,
             max_age=3600,
             path="/",
-            domain=configs.AUTH_SERVER
+            domain=configs.auth_server
         )
         return {
             "status": True,

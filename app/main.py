@@ -114,9 +114,8 @@ def create_app(config):
         allow_headers=["*"],
     )
 
-    if configs.LOGIN_SERVER != "test":
-        # setting instance of auth middleware
-        auth_middleware = AuthMiddleware()
+    if configs.auth_enabled:
+        auth_middleware = AuthMiddleware(configs.secret_key, "HS256", "auth_token", configs.auth_server)
         app.middleware("http")(auth_middleware)
 
     logger.info("setting chain, vector store into app context")

@@ -10,11 +10,11 @@ from app.providers.config import configs
 
 
 class AuthMiddleware:
-    def __init__(self):
-        self.SECRET_KEY = configs.SECRET_KEY
-        self.ALGORITHM = "HS256"
-        self.COOKIE_NAME = "auth_token"
-        self.AUTH_SERVER = configs.AUTH_SERVER
+    def __init__(self, secret_key,algorithm, cookie_name,auth_server):
+        self.SECRET_KEY = secret_key
+        self.ALGORITHM = algorithm
+        self.COOKIE_NAME = cookie_name
+        self.AUTH_SERVER = auth_server
 
         if not self.SECRET_KEY:
             raise ValueError("SECRET_KEY is missing from environment variables")
