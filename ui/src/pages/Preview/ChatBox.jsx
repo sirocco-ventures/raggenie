@@ -220,7 +220,6 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
 
     return(
         <>
-            {/* <ChatBox feedbackStatus={feedbackStatus}  conversations={conversations} onKeyDown={onDivKeyDown} onLike={onFeedback} onFeedBackSubmit={onFeedback} /> */}
             {enableChatbox ? <ChatBox messageBoxRef={messageBoxRef} handleNavigateChatContext={handleNavigateChatContext} onCreateNewChat={onCreateNewChat} chatHistory={chatHistory} isLoading={isChatLoading} conversations={conversations} onKeyDown={onChatBoyKeyDown} onSendClick={onSendClick}  /> : <EmptyPreview message={messageBoxText} url={emptyURL} buttonText={messageBoxButtonText} />} 
         </>
     )
