@@ -12,7 +12,7 @@ from app.api.v1.auth import login as login
 import app.services.connector_details as commonservices
 
 
-from app.providers.middleware import AuthMiddleware
+# from app.providers.middleware import AuthMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.chain.chains.intent_chain import IntentChain
 from app.chain.chains.capability_chain import CapabilityChain
@@ -113,10 +113,6 @@ def create_app(config):
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
-    if configs.auth_enabled:
-        auth_middleware = AuthMiddleware(configs.secret_key, "HS256", "auth_token", configs.auth_server)
-        app.middleware("http")(auth_middleware)
 
     logger.info("setting chain, vector store into app context")
     app.config = config

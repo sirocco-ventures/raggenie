@@ -3,6 +3,7 @@ import os
 from fastapi import APIRouter, Response
 from app.providers.config import configs
 from app.utils.jwt import JWTUtils
+from app.schemas.common import CommonResponse
 
 login = APIRouter()
 
@@ -20,18 +21,18 @@ def login_user(response: Response, user: LoginData):
             path="/",
             domain=configs.auth_server
         )
-        return {
-            "status": True,
-            "status_code": 200,
-            "message": "Login Successful",
-            "data": {"token": token},
-            "error": None
-        }
+        return CommonResponse(
+            status=True,
+            status_code=200,
+            message="Login Successful",
+            data={"token": token},
+            error=None
+        )
     else:
-        return {
-            "status": False,
-            "status_code": 401,
-            "message": "Invalid credentials",
-            "data": {"token": {}},
-            "error": "Invalid credentials"
-        }
+        return CommonResponse(
+            status=False,
+            status_code=401,
+            message="Invalid credentials",
+            data=None,
+            error=None,
+        )
