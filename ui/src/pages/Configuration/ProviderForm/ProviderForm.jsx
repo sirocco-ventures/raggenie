@@ -392,7 +392,7 @@ const onRemoveFile = (fileId) => {
                                 {errors[item.slug]?.message != "" && <label className={style.SelectErrorMessage}>{errors[item.slug]?.message}</label>}
                             </div>
                         )
-                        case 7: return <Textarea key={index} rows="5" label={item.name}  required={item.required} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ? "This is required": false})} />  
+                        case 7: return <Textarea key={index} rows="5" label={item.name}  required={item.required} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ?  "This is required" : false})} />  
                         case 8: return(
                             <FileUpload
                             pdfUploadRef={pdfUploadRef}
@@ -411,7 +411,7 @@ const onRemoveFile = (fileId) => {
                             multipleFileSupport={false}
                           />
                         )
-                        default : return <Input key={index} type="text" label={item.name} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: "This is required"})} />     
+                        default : return <Input key={index} type="text" label={item.name} required={item.required} placeholder={item.description}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})} />     
                     }
                 
                 })}
