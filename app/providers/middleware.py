@@ -9,22 +9,16 @@ from app.providers.config import configs
 
 
 
+from app.utils.jwt import JWTUtils
+
 class AuthMiddleware:
-    def __init__(self, secret_key,algorithm, cookie_name,auth_server):
-        self.SECRET_KEY = secret_key
-        self.ALGORITHM = algorithm
+    def __init__(self, secret_key, algorithm, cookie_name, auth_server):
+        self.jwt_utils = JWTUtils(secret_key, algorithm)
         self.COOKIE_NAME = cookie_name
         self.AUTH_SERVER = auth_server
 
-        if not self.SECRET_KEY:
+        if not secret_key:
             raise ValueError("SECRET_KEY is missing from environment variables")
-
-    def create_access_token(self, data: dict, expires_delta: timedelta = timedelta(minutes=30)):
-        to_encode = data.copy()
-        expire = datetime.now() + expires_delta
-        to_encode.update({"exp": expire})
-        encoded_jwt = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
-        return encoded_jwt
 
     async def __call__(self, request: Request, call_next):
         if request.url.path.startswith("/api/v1/login/") or request.url.path.startswith("/api/v1/query/") or request.url.path in ["/docs", "/docs#", "/openapi.json", "/redoc"]:
@@ -44,18 +38,8 @@ class AuthMiddleware:
                 ).model_dump()
             )
 
-        try:
-            payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
-            username = payload.get("sub")
-            if username is None:
-                return resp_schemas.CommonResponse(
-                    status=False,
-                    status_code=401,
-                    message="Invalid token",
-                    data={},
-                    error="Username missing from token"
-                )
-        except PyJWTError:
+        payload = self.jwt_utils.decode_access_token(token)
+        if payload is None or "sub" not in payload:
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 content=resp_schemas.CommonResponse(
@@ -67,7 +51,8 @@ class AuthMiddleware:
                 ).model_dump()
             )
 
-        new_token = self.create_access_token(data={"sub": username})
+        username = payload["sub"]
+        new_token = self.jwt_utils.create_access_token(data={"sub": username})
         response = await call_next(request)
         response.set_cookie(
             key=self.COOKIE_NAME,
@@ -78,3 +63,4 @@ class AuthMiddleware:
             domain=self.AUTH_SERVER
         )
         return response
+

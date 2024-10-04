@@ -12,7 +12,7 @@ from app.api.v1.auth import login as login
 import app.services.connector_details as commonservices
 
 
-from app.utils.authlogin import AuthMiddleware
+from app.providers.middleware import AuthMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.chain.chains.intent_chain import IntentChain
 from app.chain.chains.capability_chain import CapabilityChain
