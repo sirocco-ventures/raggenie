@@ -255,55 +255,49 @@ const ProviderForm = ()=>{
         })
     }
 
+
+    
     const onSaveFiles = (file) => {
-        return new Promise((resolve, reject) => {
-            const uploadUrl = API_URL + `/connector/upload/datasource`;
-            const formData = new FormData();
-            formData.append('file', file);
-            setShowProgressBar(true);
+        const uploadUrl = API_URL + `/connector/upload/datasource`;
+        const formData = new FormData();
+        formData.append('file', file);
+        setShowProgressBar(true);
     
-            // Call API
-            UploadFile(uploadUrl, formData, (percentage, estimatedTime) => {
-                setProgressPrecentage(percentage);
-                setProgressTime(estimatedTime);
-            })
-            .then(response => {
-                // Save responses
-                const fileData = response.data.data.file;
-                const fileDetails = {
-                    file_path: fileData.file_path,
-                    file_name: fileData.file_name,
-                    file_size: fileData.file_size,
-                    file_id: fileData.file_id
-                };
+        return UploadFile(uploadUrl, formData, (percentage, estimatedTime) => {
+            setProgressPrecentage(percentage);
+            setProgressTime(estimatedTime);
+        })
+        .then(response => {
+            const fileData = response.data.data.file;
+            const fileDetails = {
+                file_path: fileData.file_path,
+                file_name: fileData.file_name,
+                file_size: fileData.file_size,
+                file_id: fileData.file_id
+            };
     
-                // Save file path
-                setFilePaths(prevPaths => [...prevPaths, fileDetails]);
+            setFilePaths(prevPaths => [...prevPaths, fileDetails]);
     
-                // Set files with file path instead of file_data
-                setFiles(prevFiles => [
-                    ...prevFiles,
-                    {
-                        file_name: file.name,
-                        file_size: (file.size / (1024 * 1024)).toFixed(2), // Convert size to MB
-                        file_path: fileDetails.file_path,  // Use file path instead of file_data
-                        file_id: fileDetails.file_id,
-                        }
-                ]);
+            setFiles(prevFiles => [
+                ...prevFiles,
+                {
+                    file_name: file.name,
+                    file_size: (file.size / (1024 * 1024)).toFixed(2), // Convert size to MB
+                    file_path: fileDetails.file_path, 
+                    file_id: fileDetails.file_id,
+                }
+            ]);
     
-                setDisableConnectorSave(false);
-                setShowProgressBar(false);
-                resolve(fileDetails);  
-            })
-            .catch(error => {
-                console.error('File upload failed:', error);
-                setShowProgressBar(false);
-                reject(error);  
-            })
-            .finally(() => {
-                setProgressPrecentage(0);
-                setProgressTime("");
-            });
+            setDisableConnectorSave(false);
+            setShowProgressBar(false);
+        })
+        .catch(error => {
+            toast.error('File upload failed:', error);
+            setShowProgressBar(false);
+        })
+        .finally(() => {
+            setProgressPrecentage(0);
+            setProgressTime("");
         });
     };
     
@@ -311,51 +305,51 @@ const ProviderForm = ()=>{
 
 
 
-const onFileChange = (event) => {
-    const selectedFile = event.target.files[0];
-
-    if (!selectedFile) return;
-
-    const fileSizeMB = selectedFile.size / (1024 * 1024); 
-
-    if (files.length >= maxFiles) {
-        toast.error(`You can only upload up to ${maxFiles} files.`)
-        return;
-    }
-
-    if (fileSizeMB > maxFileSizeMB) {
-        toast.error(`File size should not exceed ${maxFileSizeMB} MB. The selected file is ${fileSizeMB.toFixed(2)} MB.`)
-        return;
-    }
-
-    onSaveFiles(selectedFile).catch((error) => {
-        console.error('Error while saving file:', error);
-    });
-};
-
-const onAddFileOnDrag = (event) => {
-    event.preventDefault();
-    const draggedFile = event.dataTransfer.files[0];
-
-    if (!draggedFile) return;
-
-    const fileSizeMB = draggedFile.size / (1024 * 1024); // Convert size to MB
-
-    if (files.length >= maxFiles) {
-        toast.error(`You can only upload up to ${maxFiles} files.`)
-        return;
-    }
-
-    if (fileSizeMB > maxFileSizeMB) {
-        toast.error(`File size should not exceed ${maxFileSizeMB} MB. The selected file is ${fileSizeMB.toFixed(2)} MB.`)
-        return;
-    }
-
-    onSaveFiles(draggedFile).catch((error) => {
-        console.error('Error while saving dragged file:', error);
-    });
-};
-
+    const onFileChange = (event) => {
+        const selectedFile = event.target.files[0];
+        if (!selectedFile) return;
+    
+        const fileSizeMB = selectedFile.size / (1024 * 1024); 
+    
+        if (files.length >= maxFiles) {
+            toast.error(`You can only upload up to ${maxFiles} files.`)
+            return;
+        }
+    
+        if (fileSizeMB > maxFileSizeMB) {
+            toast.error(`File size should not exceed ${maxFileSizeMB} MB. The selected file is ${fileSizeMB.toFixed(2)} MB.`)
+            return;
+        }
+    
+        onSaveFiles(selectedFile)
+            .catch((error) => {
+                toast.error('Error while saving file:', error);
+            });
+    };
+    
+    const onAddFileOnDrag = (event) => {
+        event.preventDefault();
+        const draggedFile = event.dataTransfer.files[0];
+    
+        if (!draggedFile) return;
+    
+        const fileSizeMB = draggedFile.size / (1024 * 1024); 
+    
+        if (files.length >= maxFiles) {
+            toast.error(`You can only upload up to ${maxFiles} files.`)
+            return;
+        }
+    
+        if (fileSizeMB > maxFileSizeMB) {
+            toast.error(`File size should not exceed ${maxFileSizeMB} MB. The selected file is ${fileSizeMB.toFixed(2)} MB.`)
+            return;
+        }
+    
+        onSaveFiles(draggedFile)
+            .catch((error) => {
+                toast.error('Error while saving dragged file:', error);
+            });
+    };
 
 
 const onRemoveFile = (fileId) => {
@@ -639,7 +633,7 @@ const onRemoveFile = (fileId) => {
                                     <Button type="transparent" className="icon-button" onClick={()=>navigate("/plugins")}> <FaArrowLeft/> Cancel</Button>
                                 </div>
                                 <div>
-                                {disableConnectorSave && <Button style={{marginRight: "10px",display: providerId == 3 ? "none" : ""}} className="icon-button" disabled={Object.keys(errors).length > 0 ? true : false} onClick={onTestConnection}>  Connection Test <RiPlugLine/></Button>}
+                                {disableConnectorSave && <Button style={{marginRight: "10px",display: providerDetails.category_id == 4 ? "none" : ""}} className="icon-button" disabled={Object.keys(errors).length > 0 ? true : false} onClick={onTestConnection}>  Connection Test <RiPlugLine/></Button>}
                                     <Button buttonType="submit" className="icon-button" disabled={disableConnectorSave} >  Save & Continue <FaRegArrowAltCircleRight/></Button>
                                 </div>
                             </div>

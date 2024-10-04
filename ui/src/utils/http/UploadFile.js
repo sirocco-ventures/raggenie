@@ -28,6 +28,7 @@ const UploadFile = (url, formData, onProgress) => {
 };
 
 
+
 const formatRemainingTime = (timeInSeconds) => {
   const minutes = Math.floor(timeInSeconds / 60);
   const seconds = Math.floor(timeInSeconds % 60);
