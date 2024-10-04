@@ -14,7 +14,7 @@ class YamlLoader(DocsReader):
                     with open(path, 'r', encoding='utf-8') as file:
                         content = file.read()
                     body = yaml.safe_load(content)
-                    temp["content"] = body
+                    temp["content"] = yaml.dump(body)
                     temp["metadata"] = metadata
                     out.append(temp)
                 except Exception as e:

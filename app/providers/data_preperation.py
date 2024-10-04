@@ -34,7 +34,7 @@ class SourceDocuments:
 
 
             for docs in self.documentation:
-                temp_docs = text_splitter_doc.create_documents([docs["content"]])
+                temp_docs = text_splitter_doc.create_documents([str(docs["content"])])
                 chunks = text_splitter_doc.split_documents(temp_docs)
                 for chunk in chunks:
                     chunk.metadata = docs["metadata"] if "metadata" in docs else {}

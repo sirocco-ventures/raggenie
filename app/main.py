@@ -82,7 +82,7 @@ def create_app(config):
         configs.inference_llm_model=config["models"][0]["unique_name"] if len(config["models"]) > 0 else None
 
         if len(config["datasources"]) >0:
-            err = svc.update_datasource_documentations(session, vectore_store, datasources, id_name_mappings)
+            datasources, err = svc.update_datasource_documentations(session, vectore_store, datasources, id_name_mappings)
             if err is not None:
                 logger.error("Error loading data into vector store")
 

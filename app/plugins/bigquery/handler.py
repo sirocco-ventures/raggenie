@@ -47,17 +47,20 @@ class Bigquery(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
         if self.client is None:
             logger.warning("Connection to BigQuery is not established.")
             return False, "Connection to BigQuery is not established."
-        try:
-            query = 'SELECT schema_name FROM `region-us`.INFORMATION_SCHEMA.SCHEMATA LIMIT 1'
-            query_job = self.client.query(query)
-            results = query_job.result()
+        try:  
+            datasets = list(self.client.list_datasets())
+            if datasets:            
+                dataset_id = datasets[0].dataset_id
+                query = f"SELECT * FROM {dataset_id}.INFORMATION_SCHEMA.TABLES"
+                query_job = self.client.query(query)
+                results = query_job.result()
 
-            if results.total_rows > 0:
-                logger.info("Healthcheck successful: BigQuery connection is healthy.")
-                return True, None
-            else:
-                logger.warning("Healthcheck failed: No results returned.")
-                return False, "Healthcheck failed: No results returned."
+                if results.total_rows > 0:
+                    logger.info("Healthcheck successful: BigQuery connection is healthy.")
+                    return True, None
+
+            logger.warning("Healthcheck failed: No results returned.")
+            return False, "Healthcheck failed: No results returned."
 
         except Exception as error:
             logger.error(f"Healthcheck failed: {error}")

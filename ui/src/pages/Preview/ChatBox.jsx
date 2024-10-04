@@ -157,7 +157,7 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
                     setEnableChatbox(false)
                     setEmptyURL("/bot-configuration")
                     setMessageBoxButtonText("Add Inference")
-                    setMessageBox("You need to add inference chat box")
+                    setMessageBox("Please configure the inference endpoint details in the bot configuration to proceed.")
                 }
             }else{
                 setEnableChatbox(false)
