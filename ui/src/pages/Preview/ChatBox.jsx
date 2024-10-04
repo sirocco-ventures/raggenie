@@ -76,15 +76,19 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
         if(e.keyCode  == 13){
             e.preventDefault()
             let message = e.target.innerText;
-            chatQuery(message)
-            e.target.innerText = ""
+            if(message != ""){
+                chatQuery(message)
+                e.target.innerText = ""
+            }
         }
     }
     
     const onSendClick = ()=>{
         let message = messageBoxRef.current.innerText;
-        chatQuery(message)
-        messageBoxRef.current.innerText = ""
+        if(message != ""){
+            chatQuery(message)
+            messageBoxRef.current.innerText = ""
+        }
     }
 
     const getChatByContexts =(contextId)=>{
