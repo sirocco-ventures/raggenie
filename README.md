@@ -81,29 +81,29 @@ Comprehensive documentation is available to help you get the most out of RAGGENI
 
 #### Raggenie Backend
 
-##### Installing dependencies
+* Installing dependencies
 
-* **Using `requirements.txt`**
+  * **Using `requirements.txt`**
 
-  To install the required dependencies with `pip`, run:
-  
-  ```bash
-  pip install -r requirements.txt
-  ```
+    To install the required dependencies with `pip`, run:
+    
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-* **Using Poetry**
+  * **Using Poetry**
 
-  First, install Poetry:
-  
-  ```bash
-  curl -sSL https://install.python-poetry.org | python3 -
-  ```
-  
-  Then, to install the dependencies, run:
-  
-  ```bash
-  poetry install
-  ```
+    First, install Poetry:
+    
+    ```bash
+    curl -sSL https://install.python-poetry.org | python3 -
+    ```
+    
+    Then, to install the dependencies, run:
+    
+    ```bash
+    poetry install
+    ```
 
 
 * Running RAGGENIE backend
@@ -139,15 +139,17 @@ This configuration ensures that the RAGGENIE system connects to the `chroma` vec
   npm install
   ```
 
-* To run **RAGGENIE** frontend, create a .env file and add the URL to backend as env variables
-  ```env
-  VITE_BACKEND_URL=${BACKEND_URL}
-  ```
+* Running RAGGENIE Frontend
 
-* To start the server, run
-  ```bash
-  npm run dev
-  ```
+  * To run **RAGGENIE** frontend, create a .env file and add the URL to backend as env variables
+    ```env
+    VITE_BACKEND_URL=${BACKEND_URL}
+    ```
+
+  * To start the server, run
+    ```bash
+    npm run dev
+    ```
 
 for more details visit [frontend readme](./ui/README.md)
 
