@@ -11,14 +11,14 @@ class JWTUtils:
         self.SECRET_KEY = secret_key
         self.ALGORITHM = algorithm
 
-    def create_access_token(self, data: dict, expires_delta: timedelta = timedelta(minutes=30)):
+    def create_jwt_token(self, data: dict, expires_delta: timedelta = timedelta(minutes=30)):
         to_encode = data.copy()
         expire = datetime.now() + expires_delta
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
         return encoded_jwt
 
-    def decode_access_token(self, token: str):
+    def decode_jwt_token(self, token: str):
         try:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
             return payload

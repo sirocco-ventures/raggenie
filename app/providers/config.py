@@ -29,7 +29,7 @@ class Configs(BaseSettings):
     username: str = os.getenv("USERNAME","admin")
     password: str = os.getenv("PASSWORD","password")
     secret_key: str = os.getenv("SECRET_KEY","secret")
-    auth_enabled: bool = os.getenv("AUTH_ENABLED",True)
+    auth_enabled: bool = os.getenv("AUTH_ENABLED",False)
 
     retry_limit:int = os.getenv("RETRY_LIMIT",0)
     application_port: int = os.getenv("APP_PORT", 8001)

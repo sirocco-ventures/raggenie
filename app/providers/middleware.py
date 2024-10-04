@@ -38,7 +38,7 @@ class AuthMiddleware:
                 ).model_dump()
             )
 
-        payload = self.jwt_utils.decode_access_token(token)
+        payload = self.jwt_utils.decode_jwt_token(token)
         if payload is None or "sub" not in payload:
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -52,7 +52,7 @@ class AuthMiddleware:
             )
 
         username = payload["sub"]
-        new_token = self.jwt_utils.create_access_token(data={"sub": username})
+        new_token = self.jwt_utils.create_jwt_token(data={"sub": username})
         response = await call_next(request)
         response.set_cookie(
             key=self.COOKIE_NAME,
