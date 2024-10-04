@@ -246,10 +246,6 @@ const ProviderForm = ()=>{
                 })
                 
             })
-
-    
-
-          
             window.localStorage.setItem("dbschema", JSON.stringify(tempSaveTableDetails))
             
         })
@@ -292,7 +288,7 @@ const ProviderForm = ()=>{
             setShowProgressBar(false);
         })
         .catch(error => {
-            toast.error('File upload failed:', error);
+            toast.error('File upload failed', error);
             setShowProgressBar(false);
         })
         .finally(() => {
@@ -322,9 +318,6 @@ const ProviderForm = ()=>{
         }
     
         onSaveFiles(selectedFile)
-            .catch((error) => {
-                toast.error('Error while saving file:', error);
-            });
     };
     
     const onAddFileOnDrag = (event) => {
@@ -346,9 +339,6 @@ const ProviderForm = ()=>{
         }
     
         onSaveFiles(draggedFile)
-            .catch((error) => {
-                toast.error('Error while saving dragged file:', error);
-            });
     };
 
 
@@ -415,7 +405,7 @@ const onRemoveFile = (fileId) => {
                             title="Upload your files"
                             description="You can upload up to 5 files, with each file having a maximum size of 10 MB."
                             accept=".pdf,.yaml,.txt,.docx"
-                            DragMessage="Drag your files to start uploading"
+                            dragMessage="Drag your files to start uploading"
                             progressPrecentage={progressPrecentage}
                             showProgressBar={showProgressBar}
                             progressTime={progressTime}
@@ -423,7 +413,7 @@ const onRemoveFile = (fileId) => {
                             onFileChange={onFileChange}
                             onRemoveFile={onRemoveFile}
                             files={files}
-                            SupportedFileMessage={providerConfig[0]?.description}
+                            supportedFileMessage={providerConfig[0]?.description}
                             multipleFileSupport={false}
                           />
                         )

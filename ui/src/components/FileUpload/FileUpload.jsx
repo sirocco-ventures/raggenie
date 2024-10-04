@@ -17,8 +17,8 @@ const FileUpload = ({
     onRemoveFile = () => { },
     pdfUploadRef = null,
     showProgressBar = false,
-    SupportedFileMessage = "",
-    DragMessage = "",
+    supportedFileMessage = "",
+    dragMessage = "",
     multipleFileSupport = false
 }) => {
     return (
@@ -26,7 +26,7 @@ const FileUpload = ({
             <TitleDescription title={title} description={description} descriptionStyle={{paddingBottom:"23px"}} />
             <div className={style.DragContainer} onDragOver={(e) => e.preventDefault()} onDragEnter={(e) => e.preventDefault()} onDrop={onAddFileOnDrag}>
                 <img src={FolderIcon} alt="Folder Icon" />
-                <h4 className={style.DragMessage}>{DragMessage}</h4>
+                <h4 className={style.DragMessage}>{dragMessage}</h4>
 
                 <input
                     type="file"
@@ -44,7 +44,7 @@ const FileUpload = ({
                     Browse file
                 </button>
             </div>
-            <p>{SupportedFileMessage}</p>
+            <p>{supportedFileMessage}</p>
 
             <div>
 
