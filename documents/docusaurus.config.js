@@ -12,15 +12,15 @@ const config = {
   // tagline: 'Dinosaurs are cool'
 
   // Set the production url of your site here
-  url: 'https://arjunPA2001.github.io',
+  url: 'https://sirocco-ventures.github.io/raggenie/',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/raggenie-fork/',
+  baseUrl: '/raggenie/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'ArjunPA2001', // Usually your GitHub org/user name.
-  projectName: 'raggenie-fork', // Usually your repo name.
+  organizationName: 'sirocco ventures', // Usually your GitHub org/user name.
+  projectName: 'raggenie', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -43,7 +43,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/ArjunPA2001/raggenie-fork/tree/main/documents',
+            'https://sirocco-ventures.github.io/raggenie/tree/main/documents',
         },
         blog: false,
         theme: {
