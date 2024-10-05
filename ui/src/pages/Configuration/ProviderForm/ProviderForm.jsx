@@ -22,6 +22,9 @@ import { toast } from "react-toastify"
 import "./DatabaseTable.css"
 import TitleDescription from "src/components/TitleDescription/TitleDescription"
 import { getProviderInfo } from "src/services/Plugins"
+import FileUpload from "src/components/FileUpload/FileUpload"
+import { API_URL } from "src/config/const"
+import UploadFile from "src/utils/http/UploadFile"
 
 
 const ProviderForm = ()=>{
@@ -30,6 +33,13 @@ const ProviderForm = ()=>{
     const [providerConfig, setProviderConfig] = useState([])
     const [providerSchema, setProviderSchema] = useState([])
     const [currentActiveTab, setCurrentActiveTab] = useState("configuration")
+
+    const [filePaths, setFilePaths] = useState([]);
+    const [files, setFiles] = useState([]);
+    const [showProgressBar, setShowProgressBar] = useState(false);
+    const [progressPrecentage, setProgressPrecentage] = useState(0);
+    const [progressTime, setProgressTime] = useState('');
+    const pdfUploadRef = useRef(null);
     
 
     const [disableConnectorSave, setDisableConnectorSave] = useState(true);
@@ -49,6 +59,8 @@ const ProviderForm = ()=>{
     const {providerId, connectorId} = useParams()
     const navigate = useNavigate()
 
+    const maxFileSizeMB = 10;
+    const maxFiles = 5; 
 
     let tableColumns = [
         
@@ -209,6 +221,16 @@ const ProviderForm = ()=>{
             configDocRef.current.value = connectorData.connector_docs
             setProviderSchema(connectorData.schema_config ?? [])
 
+            const fetchedFiles = connectorConfig.document_files?.map(file => ({
+                file_path: file.file_path,
+                file_name: file.file_name,
+                file_size: parseFloat(file.file_size) * 1024, 
+                file_id: file.file_id
+            })) || [];
+
+            setFiles(prevFiles => [...prevFiles, ...fetchedFiles]);
+            setDisableConnectorSave(false); 
+
 
             let tempSaveTableDetails = {}
             connectorData.schema_config?.map(item=>{
@@ -224,14 +246,109 @@ const ProviderForm = ()=>{
                 })
                 
             })
-
-    
-
-          
             window.localStorage.setItem("dbschema", JSON.stringify(tempSaveTableDetails))
             
         })
     }
+
+
+    
+    const onSaveFiles = (file) => {
+        const uploadUrl = API_URL + `/connector/upload/datasource`;
+        const formData = new FormData();
+        formData.append('file', file);
+        setShowProgressBar(true);
+    
+        return UploadFile(uploadUrl, formData, (percentage, estimatedTime) => {
+            setProgressPrecentage(percentage);
+            setProgressTime(estimatedTime);
+        })
+        .then(response => {
+            const fileData = response.data.data.file;
+            const fileDetails = {
+                file_path: fileData.file_path,
+                file_name: fileData.file_name,
+                file_size: fileData.file_size,
+                file_id: fileData.file_id
+            };
+    
+            setFilePaths(prevPaths => [...prevPaths, fileDetails]);
+    
+            setFiles(prevFiles => [
+                ...prevFiles,
+                {
+                    file_name: file.name,
+                    file_size: (file.size / (1024 * 1024)).toFixed(2), // Convert size to MB
+                    file_path: fileDetails.file_path, 
+                    file_id: fileDetails.file_id,
+                }
+            ]);
+    
+            setDisableConnectorSave(false);
+            setShowProgressBar(false);
+        })
+        .catch(error => {
+            toast.error('File upload failed', error);
+            setShowProgressBar(false);
+        })
+        .finally(() => {
+            setProgressPrecentage(0);
+            setProgressTime("");
+        });
+    };
+    
+
+
+
+
+    const onFileChange = (event) => {
+        const selectedFile = event.target.files[0];
+        if (!selectedFile) return;
+    
+        const fileSizeMB = selectedFile.size / (1024 * 1024); 
+    
+        if (files.length >= maxFiles) {
+            toast.error(`You can only upload up to ${maxFiles} files.`)
+            return;
+        }
+    
+        if (fileSizeMB > maxFileSizeMB) {
+            toast.error(`File size should not exceed ${maxFileSizeMB} MB. The selected file is ${fileSizeMB.toFixed(2)} MB.`)
+            return;
+        }
+    
+        onSaveFiles(selectedFile)
+    };
+    
+    const onAddFileOnDrag = (event) => {
+        event.preventDefault();
+        const draggedFile = event.dataTransfer.files[0];
+    
+        if (!draggedFile) return;
+    
+        const fileSizeMB = draggedFile.size / (1024 * 1024); 
+    
+        if (files.length >= maxFiles) {
+            toast.error(`You can only upload up to ${maxFiles} files.`)
+            return;
+        }
+    
+        if (fileSizeMB > maxFileSizeMB) {
+            toast.error(`File size should not exceed ${maxFileSizeMB} MB. The selected file is ${fileSizeMB.toFixed(2)} MB.`)
+            return;
+        }
+    
+        onSaveFiles(draggedFile)
+    };
+
+
+const onRemoveFile = (fileId) => {
+    const updatedFiles = files.filter(file => file.file_id !== fileId);
+    setFiles(updatedFiles);
+
+    const updatedFilePaths = filePaths.filter(filePath => filePath.file_id !== fileId);
+    setFilePaths(updatedFilePaths);
+};
 
 
     const getConfigFormData = async ()=>{
@@ -275,7 +392,25 @@ const ProviderForm = ()=>{
                                 {errors[item.slug]?.message != "" && <label className={style.SelectErrorMessage}>{errors[item.slug]?.message}</label>}
                             </div>
                         )
-                        case 7: return <Textarea key={index} rows="5" label={item.name} required={item.required} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})} />  
+                        case 7: return <Textarea key={index} rows="5" label={item.name}  required={item.required} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ?  "This is required" : false})} />  
+                        case 8: return(
+                            <FileUpload
+                            pdfUploadRef={pdfUploadRef}
+                            title="Upload your files"
+                            description="You can upload up to 5 files, with each file having a maximum size of 10 MB."
+                            accept=".pdf,.yaml,.txt,.docx"
+                            dragMessage="Drag your files to start uploading"
+                            progressPrecentage={progressPrecentage}
+                            showProgressBar={showProgressBar}
+                            progressTime={progressTime}
+                            onAddFileOnDrag={onAddFileOnDrag}
+                            onFileChange={onFileChange}
+                            onRemoveFile={onRemoveFile}
+                            files={files}
+                            supportedFileMessage={providerConfig[0]?.description}
+                            multipleFileSupport={false}
+                          />
+                        )
                         default : return <Input key={index} type="text" label={item.name} required={item.required} placeholder={item.description}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})} />     
                     }
                 
@@ -303,22 +438,34 @@ const ProviderForm = ()=>{
     }
 
 
-    const onSaveConnector = async (data)=>{
-       
-        let { formValues} = await getConfigFormData()
-        saveConnector(connectorId, providerId, data.pluginName, data.pluginDescription, formValues).then(response=>{
+    const onSaveConnector = async (data) => {
+
+        let { formValues } = await getConfigFormData();
+        if(providerDetails.category_id == 4){
+            formValues.document_files = files; 
+        }
+            
+        saveConnector(connectorId, providerId, data.pluginName, data.pluginDescription, formValues).then(response => {
             toast.success("Successfuly plugin added")
-            if(connectorId == undefined){
+            if (connectorId == undefined) {
                 let url = window.location.href.split('/');
-                window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=database-table`
-            }else{
-                setCurrentActiveTab("database-table")
+                if(providerDetails.category_id == 2){
+                    window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=database-table`
+                }else{
+                    window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=documentation`
+                }
+            } else {
+                if(providerDetails.category_id == 2){
+                    setCurrentActiveTab("database-table")
+                }else{
+                    setCurrentActiveTab("documentation")
+                }
             }
-        }).catch(e=>{
+        }).catch(e => {
             toast.error("Plugin saving failed")
-        })
-        
-     }
+        }
+        )
+    }
 
      
      const onTestConnection = async ()=>{
@@ -470,7 +617,7 @@ const ProviderForm = ()=>{
                                     <Button type="transparent" className="icon-button" onClick={()=>navigate("/plugins")}> <FaArrowLeft/> Cancel</Button>
                                 </div>
                                 <div>
-                                    {disableConnectorSave && <Button style={{marginRight: "10px"}} className="icon-button" disabled={Object.keys(errors).length > 0 ? true : false} onClick={onTestConnection}>  Connection Test <RiPlugLine/></Button>}
+                                {disableConnectorSave && <Button style={{marginRight: "10px",display: providerDetails.category_id == 4 ? "none" : ""}} className="icon-button" disabled={Object.keys(errors).length > 0 ? true : false} onClick={onTestConnection}>  Connection Test <RiPlugLine/></Button>}
                                     <Button buttonType="submit" className="icon-button" disabled={disableConnectorSave} >  Save & Continue <FaRegArrowAltCircleRight/></Button>
                                 </div>
                             </div>
