@@ -148,13 +148,13 @@ const BotConfiguration = () => {
                     "inferenceModelName": inferenceGetValues("inferenceModelName"),
                     "inferenceEndpoint":  inferenceGetValues("inferenceEndpoint"),
                 }).then(()=>{
-                    toast.success("Inference test successfull")
+                    toast.success("Inference test successful")
                     setShowNotificationPanel(false);
                     setDisabledInferenceSave(false)
                 }).catch(err=>{
-                    toast.error("Inference test failed")
+                    toast.error("Inference endpoint verification failed")
                     setShowNotificationPanel(true);
-                    setNotificationMessage(err.data?.error ?? "Inference test failed")
+                    setNotificationMessage(err.data?.error ?? "Inference endpoint verification failed")
                 });
             }
            
