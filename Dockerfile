@@ -24,7 +24,10 @@ FROM python:3.11-slim AS deployer
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
+# Set the working directory
+WORKDIR /app
+
 # Copy the rest of the application code
-COPY ./app ./commands ./assets ./main.py ./config.yaml ./
+COPY . .
 
 EXPOSE 8001
