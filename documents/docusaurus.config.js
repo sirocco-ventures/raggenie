@@ -12,7 +12,7 @@ const config = {
   // tagline: 'Dinosaurs are cool'
 
   // Set the production url of your site here
-  url: 'https://sirocco-ventures.github.io/raggenie/',
+  url: 'https://sirocco-ventures.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/raggenie/',
