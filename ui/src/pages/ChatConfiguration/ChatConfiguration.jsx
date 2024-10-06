@@ -99,7 +99,7 @@ const BotConfiguration = () => {
                 console.log({k :configs[0].inference[0]?.id})
 
                 if(configs[0].capabilities?.length == 0) {
-                    setCapabalities([{id: undefined, title:`Capability 1`, name:"", description:"", requirements: [], isCollapse: false}])
+                    setCapabalities([])
                 }else{
                     setCapabalities(configs[0].capabilities)
                 }
