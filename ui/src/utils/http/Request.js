@@ -39,6 +39,9 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
 
     return axios.request(requestConfig).then(response=>{
         loaderContainer.style.display = "none"
+        if (response.data?.status == false) {
+            return new Promise((resolve, reject) => reject(response));
+        }
         return new Promise((resolve)=>resolve(response))
 
     }).catch(error=>{

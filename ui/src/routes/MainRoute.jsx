@@ -11,6 +11,7 @@ const MainRoute = ()=>{
         <Routes>
             <Route key={"index"} path="/:contextId/chat" element={<Chat/>} />
             <Route path="/"  element={ <Navigate to={`/preview/${v4()}/chat`} repalce={true} /> } />
+            <Route path="*" element={<h1>Error</h1>}/>
             <Route path='/' element={<DashboardLayout/>}>
                 {
                 routes.map((item, index)=>{

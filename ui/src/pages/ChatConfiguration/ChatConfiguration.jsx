@@ -179,7 +179,7 @@ const BotConfiguration = () => {
                 console.log({k :configs[0].inference[0]?.id})
 
                 if(configs[0].capabilities?.length == 0) {
-                    setCapabalities([{id: undefined, title:`Capability 1`, name:"", description:"", requirements: [], isCollapse: false}])
+                    setCapabalities([])
                 }else{
                     setCapabalities(configs[0].capabilities)
                 }
@@ -244,8 +244,9 @@ const BotConfiguration = () => {
 
 
     const addNewCapability = ()=>{
-        //console.log({capabalities})
-        let tempCapabalities = JSON.parse(JSON.stringify(capabalities))
+        // console.log({capabalities})
+        let tempCapabalities = [...capabalities];
+        console.log([...capabalities])
         tempCapabalities.push({
             id: undefined, title:`Capability ${tempCapabalities.length + 1}`, name:"", description:"", requirements: []
         })
@@ -256,7 +257,7 @@ const BotConfiguration = () => {
 
     const onSaveCapability = (formData)=>{
 
-        let capabilityId = formData.get("capability-id")
+        let capabilityId = formData.getLLMModels()("capability-id")
         let paramsIds = formData.getAll("params-id[]")
         let paramsNames = formData.getAll("params-name[]")
         let paramsDescs = formData.getAll("params-description[]")
@@ -278,14 +279,14 @@ const BotConfiguration = () => {
 
 
         if(capabilityId == ""){
-            saveBotCapability(currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements).then(response=>{
+            saveBotCapability(currentConfigID, formData.getLLMModels()("capability-name"), formData.getLLMModels()("capability-description"), requirements).then(response=>{
                 toast.success("Capability saved")
             }).catch(()=>{
                 toast.error("Capability save failed")
             })
 
         }else{
-            updateBotCapability(capabilityId, currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements).then(response=>{
+            updateBotCapability(capabilityId, currentConfigID, formData.getLLMModels()("capability-name"), formData.getLLMModels()("capability-description"), requirements).then(response=>{
                 toast.success("Capability updated")
             }).catch(()=>{
                 toast.error("Capability update failed")
@@ -378,13 +379,21 @@ const BotConfiguration = () => {
 
 
 
-    useEffect(() => {
-        getLLMModels();
+    // useEffect(() => {
+    //     getLLMModels();
        
       
-    }, [])
-
-
+    // }, [])
+  
+    useEffect(() => {
+        console.log('Component mounted or updated !')
+        console.log(capabalities)
+        getLLMModels()
+        
+    },[] )
+    
+    
+    
 
     return (
         <DashboardBody title="Bot Configuration">
@@ -447,7 +456,7 @@ const BotConfiguration = () => {
                             <div className="text-align-right margin-bottom-10">
                                <Button variant="secondary" className="icon-button" onClick={addNewCapability}>New Capability <GoPlus/> </Button>
                             </div>
-                            <div>
+                            <div  >
                                 {capabalities?.map((item, index)=>{
                                     return <Capability  
                                                 key={index}
@@ -458,6 +467,7 @@ const BotConfiguration = () => {
                                                 description={item.description} 
                                                 parameters={item.requirements}
                                                 isCollapse={item.isCollapse}
+                                                
                                                 onCapabilitySave={onSaveCapability}
                                                 onParamEdit={editParameter}
                                                 onParamDelete={deleteParameter}
