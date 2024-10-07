@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Input from 'src/components/Input/Input';
 import Tab from 'src/components/Tab/Tab';
 import Tabs from 'src/components/Tab/Tabs';
 import Textarea from 'src/components/Textarea/Textarea';
 import DashboardBody from 'src/layouts/dashboard/DashboadBody';
+import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
 import style from './ChatConfiguration.module.css';
 import { useForm, Controller } from "react-hook-form"
 import Button from "src/components/Button/Button"
@@ -19,9 +21,10 @@ import { v4  as uuid4} from "uuid"
 import Capability from './Capability/Capability';
 import Modal from 'src/components/Modal/Modal';
 import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src/services/Capability';
+import { getAllActions } from 'src/services/Action';
 import { getBotConfiguration, getLLMProviders, saveBotConfiguration, saveBotInferene, testInference } from 'src/services/BotConfifuration';
-import { useNavigate } from 'react-router-dom';
-import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
+
+
 
 
 const BotConfiguration = () => {
@@ -41,7 +44,7 @@ const BotConfiguration = () => {
     const [selectedProvider, setSelectedProvider] = useState()
 
     const [capabalities, setCapabalities] = useState([])
-
+    const [actions, setActions] = useState([])
     const [llmModels, setllmModels] = useState([])
 
     const [editCapabilityIndexRef, setEditCapabilityIndexRef] = useState("")
@@ -65,6 +68,19 @@ const BotConfiguration = () => {
     const { register: inferenceRegister, getValues: inferenceGetValues , setValue: inferenceSetValue, handleSubmit : inferenceHandleSubmit, formState: inferenceFormState, control: inferenceController, trigger: inferenceTrigger, watch: inferenceWatch } = useForm({mode : "all"})
     const { errors: inferenceFormError } = inferenceFormState
    
+
+
+    const getActionsList = ()=>{
+        getAllActions().then(response=>{
+            let tempAcitions = [];
+            response.data?.data?.actions?.map(item=>{
+                tempAcitions.push({id: item.id, name: item.name})
+            });
+            setActions(tempAcitions)
+        })
+    }
+
+
     const onBotConfigSave = (data) => {
         saveBotConfiguration(currentConfigID, data ).then(response => {
                 setActiveInferencepiontTab(false)
@@ -218,14 +234,14 @@ const BotConfiguration = () => {
 
 
         if(capabilityId == ""){
-            saveBotCapability(currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements).then(response=>{
+            saveBotCapability(currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements, formData.getAll("actions[]")).then(response=>{
                 toast.success("Capability saved")
             }).catch(()=>{
                 toast.error("Capability save failed")
             })
 
         }else{
-            updateBotCapability(capabilityId, currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements).then(response=>{
+            updateBotCapability(capabilityId, currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements, formData.getAll("actions[]")).then(response=>{
                 toast.success("Capability updated")
             }).catch(()=>{
                 toast.error("Capability update failed")
@@ -313,6 +329,7 @@ const BotConfiguration = () => {
     
     useEffect(() => {
         getLLMModels();
+        getActionsList();
     }, [])
 
 
@@ -327,24 +344,24 @@ const BotConfiguration = () => {
                     <p className={style.ConfigDescription}>Provide your database connection details and database data description can make your application more efficient.</p>
                     <form onSubmit={configHandleSubmit(onBotConfigSave)}>
                         <div>
-                        <Input 
-  label="Bot Configuration Name" 
-  maxLength={50} 
-  value={configWatch("botName")} 
-  hasError={configFormError["botName"]?.message ? true : false} 
-  errorMessage={configFormError["botName"]?.message}  
-  {...configRegister("botName", { 
-    required: "This field is required", 
-    maxLength: {
-      value: 50,
-      message: "The maximum length is 50 characters"
-    },
-    minLength: {
-      value: 10,
-      message: "The minimum length is 20 characters"
-    }
-  })} 
-/>
+                            <Input 
+                                label="Bot Configuration Name" 
+                                maxLength={50} 
+                                value={configWatch("botName")} 
+                                hasError={configFormError["botName"]?.message ? true : false} 
+                                errorMessage={configFormError["botName"]?.message}  
+                                {...configRegister("botName", { 
+                                    required: "This field is required", 
+                                    maxLength: {
+                                    value: 50,
+                                    message: "The maximum length is 50 characters"
+                                    },
+                                    minLength: {
+                                    value: 10,
+                                    message: "The minimum length is 20 characters"
+                                    }
+                                })} 
+                            />
                             <Input label="Bot Short Description" placeholder="brief detail about the use case of the bot" minLength={20} maxLength={200} value={configWatch("botShortDescription")} hasError={configFormError["botShortDescription"]?.message ? true : false} errorMessage={configFormError["botShortDescription"]?.message}  {...configRegister("botShortDescription", { required: "This field is required", minLength: {value: 20, message : "minimun length is 20"}, maxLength: {value: 200, message: "maximum length is 200"}})}  />
                             <Textarea label="Bot Long Description" placeholder="detailed information about the bot, including its full use case and functionalities" rows={10} minLength={50} maxLength={400} value={configWatch("botLongDescription")} hasError={configFormError["botLongDescription"]?.message ? true : false} errorMessage={configFormError["botLongDescription"]?.message}  {...configRegister("botLongDescription", { required: "This field is required", minLength:{value: 50, message: "minimun length is 50"}, maxLength: {value: 400, message: "maximum length is 400"}})} />
                             
@@ -407,6 +424,8 @@ const BotConfiguration = () => {
                                                 name={item.name}
                                                 description={item.description} 
                                                 parameters={item.requirements}
+                                                actions={item.actions_list}
+                                                actionsList={actions}
                                                 isCollapse={item.isCollapse}
                                                 onCapabilitySave={onSaveCapability}
                                                 onParamEdit={editParameter}

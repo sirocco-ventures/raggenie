@@ -4,18 +4,21 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { GoPencil } from "react-icons/go";
 import { LuTrash2 } from "react-icons/lu";
 import { FiCheckCircle} from "react-icons/fi"
-import style from "./Capability.module.css"
 import Button from "src/components/Button/Button";
+import Select from "src/components/Select/Select";
 import Input from "src/components/Input/Input";
 import Textarea from "src/components/Textarea/Textarea";
 import { GoPlus } from "react-icons/go"
 import { useEffect, useState } from "react";
+import style from "./Capability.module.css"
 
 
-const Capability = ({capabilityId = "", capabilityIndex = 0, title = "", name = "", description = "", parameters = [], isCollapse= true, onCapabilitySave = ()=>{}, onCapabilityDelete = ()=>{}, onParamEdit=()=>{}, onParamDelete = ()=>{}, onCreateNewParam = ()=>{}})=>{
+const Capability = ({capabilityId = "", capabilityIndex = 0, title = "", name = "", description = "", parameters = [], actions = [], actionsList = [], isCollapse= true, onCapabilitySave = ()=>{}, onCapabilityDelete = ()=>{}, onParamEdit=()=>{}, onParamDelete = ()=>{}, onCreateNewParam = ()=>{}})=>{
 
     const [expand, setExpand] = useState(true)
     const [capabilityLitle, setCapabilityLitle] = useState(title)
+    const [selectedActions, setSelectedActions] = useState([])
+    const actionsForSelect = actionsList?.map(item=>({label: item.name, value: item.id }))
 
     const onDeleteCapability = ()=> {
         let capabilityContainer = document.querySelector(`[data-capability-index='${capabilityIndex}']`)
@@ -30,11 +33,15 @@ const Capability = ({capabilityId = "", capabilityIndex = 0, title = "", name = 
     const onFormSubmit = (e)=>{
         e.preventDefault()
         var data = new FormData(e.target);
+        let formActions = selectedActions?.map(item=>item.value)
+        formActions.forEach((item) => data.append("actions[]", item))
         onCapabilitySave(data)
     }
 
     useEffect(()=>{
         setExpand(isCollapse)
+        let tempAcitions = actionsForSelect.filter(item=>actions?.includes(item.value))
+        setSelectedActions(tempAcitions)
     },[isCollapse])
 
 
@@ -57,6 +64,7 @@ const Capability = ({capabilityId = "", capabilityIndex = 0, title = "", name = 
                             <Input type="hidden" name="capability-id" value={capabilityId}  />
                             <Input label="Capability Name" name="capability-name" value={name}  onChange={(e)=>setCapabilityLitle(e.target.value)} />
                             <Textarea label="Description" name="capability-description" value={description} rows={8}/>
+                            <Select label="Select Action" name="capability-actions" isMulti={true} options={actionsForSelect} value={selectedActions} onChange={setSelectedActions} />
                         </div>
                     </div>
 
