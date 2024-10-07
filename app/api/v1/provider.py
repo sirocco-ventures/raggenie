@@ -7,7 +7,8 @@ import app.services.provider as svc
 import app.api.v1.commons as commons
 import app.schemas.connector as conn_schemas
 from fastapi import Request
-from app.utils.jwt import verify_token
+from app.providers.middleware import verify_token
+
 
 router = APIRouter()
 sample = APIRouter()

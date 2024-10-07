@@ -17,7 +17,7 @@ from app.chain.chains.general_chain import GeneralChain
 import app.api.v1.commons as commons
 from loguru import logger
 from app.providers.config import configs
-from app.utils.jwt import verify_token
+from app.providers.middleware import verify_token
 
 
 router = APIRouter()
