@@ -59,7 +59,7 @@ const Message = ({
             </div>
             <div style={{marginLeft: "52px", marginBottom: "40px"}}>
                  {/* {showFeedback && message.isBot && <Feedback onSubmit={onFeedbackSubmit} onFeedBackClose={handleOnFeedbackClose} message={message} /> } */}
-                 {showChatSummary && message.isBot && <Summary onSummaryClose={handleOnSummaryClose} message={message} /> }
+                 {message.isBot && <Summary onSummaryClose={handleOnSummaryClose} message={message} /> }
                  
                  
                  { (message.kind == "list" || message.kind == "table" || message.kind == "single" || message.kind == "none") && <Table data={message.data?.chart?.data} />}
