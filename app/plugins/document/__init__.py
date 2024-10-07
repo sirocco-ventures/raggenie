@@ -37,7 +37,9 @@ __prompt__ = Prompt(**{
         Adhere to these rules while generating answers:
         - Carefully read through the question and context word by word to appropriately answer the question.
         - Only use information provided in the context to answer questions.
+        - Answer should not break the json format
         - If the answer cannot be found in the context, state that you don't have enough information to answer.
+        
         """
         },
         "user_prompt":{
@@ -45,11 +47,7 @@ __prompt__ = Prompt(**{
             User question is "$question"
             Generate a JSON response in the following format without any formatting:
             {
-                "explanation": "Explain how you determined the answer using the provided context",
-                "operation_kind": "none",
                 "general_message": "Answer to user question based on the context",
-                "confidence": "Confidence level from 0 to 100",
-                "main_entity": "document"
             }
             """
         },
@@ -58,11 +56,7 @@ __prompt__ = Prompt(**{
             User question is "$question"
             Generate a JSON response in the following format without any formatting:
             {
-                "explanation": "Explain how you determined the answer using the provided context",
-                "operation_kind": "answer_from_context",
                 "general_message": "Answer to user question based on the context",
-                "confidence": "Confidence level from 0 to 100",
-                "main_entity": "document"
             }
             """
         }
