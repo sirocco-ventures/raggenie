@@ -4,25 +4,43 @@ from app.models.request import ConnectionArgument
 
 # Plugin Metadata
 __version__ = '1.0.0'
-__plugin_name__ = 'website'
-__display_name__ = 'Website loader'
-__description__ = 'Website integration for handling website data'
+__plugin_name__ = 'webhook'
+__display_name__ = 'Webhooks'
+__description__ = 'Webhooks integration for pushing data to rest endpoints'
 __icon__ = '/assets/plugins/logos/website.svg'
-__category__ = 1
+__category__ = 3
+__actions_enabled__ = True
+__actions_supported__ = ["send"]
 
-__actions_enabled__ = False
-__actions_supported__ = []
 
 # Connection arguments
 __connection_args__ = OrderedDict(
-    website_url= ConnectionArgument(
+    webhook_url= ConnectionArgument(
         type = 4,
-        generic_name= 'Website URL',
+        generic_name= 'Webhook URL',
         description = 'URL of website',
         order = 1,
         required = True,
         value = None,
-        slug = "website_url"
+        slug = "webhook_url"
+    ),
+    webhook_method= ConnectionArgument(
+        type = 6,
+        generic_name= 'Webhook Method',
+        description = 'HTTP method to exexute',
+        order = 2,
+        required = True,
+        value=[{"label":"post", "value": "POST"}, {"label":"get", "value": "GET"}, {"label":"put", "value": "PUT"}],
+        slug = "webhook_method"
+    ),
+    webhook_headers= ConnectionArgument(
+        type = 7,
+        generic_name= 'Webhook headers',
+        description = 'HTTP headers to pass',
+        order = 3,
+        required = True,
+        value = None,
+        slug = "webhook_headers"
     )
 )
 

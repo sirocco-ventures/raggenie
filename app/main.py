@@ -93,7 +93,7 @@ def create_app(config):
     logger.info("initializing chain")
     query_chain = QueryChain(config, vectore_store, datasources, context_storage)
     general_chain = GeneralChain(config, vectore_store, datasources, context_storage)
-    capability_chain = CapabilityChain(config, context_storage, query_chain)
+    capability_chain = CapabilityChain(config, context_storage, datasources)
     metadata_chain = MetadataChain(config, vectore_store, datasources, context_storage)
     intent_chain = IntentChain(config, vectore_store, datasources, context_storage, query_chain, general_chain, capability_chain, metadata_chain)
 

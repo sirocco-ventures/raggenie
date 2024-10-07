@@ -69,3 +69,6 @@ test_db.db
 
 # node_modules folder
 ui/node_modules
+
+# config files
+config.yaml

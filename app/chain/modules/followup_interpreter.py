@@ -2,6 +2,8 @@ from app.base.abstract_handlers import AbstractHandler
 from typing import Any
 from loguru import logger
 from app.chain.formatter.general_response import Formatter
+from string import Template
+import json
 
 class FollowupInterpreter(AbstractHandler):
     """
@@ -12,7 +14,7 @@ class FollowupInterpreter(AbstractHandler):
     """
 
 
-    def __init__(self, common_context, general_chain) -> None:
+    def __init__(self, common_context, datasources) -> None:
         """
         Initialize the FollowupInterpreter.
 
@@ -22,7 +24,7 @@ class FollowupInterpreter(AbstractHandler):
         """
 
         self.common_context = common_context
-        self.general_chain = general_chain
+        self.datasources = datasources
 
     def handle(self, request: Any) -> str:
         """
@@ -40,7 +42,34 @@ class FollowupInterpreter(AbstractHandler):
         if "inference" in request:
             inference = request["inference"]
             if inference["completed"] == True or inference["completed"] == "true":
-                logger.info("Intent completed, trigger the action")
+                logger.info("Intent completed, triggering the action")
+                capability = request.get("capability",{})
+                extracted_params = inference.get("params", {})
+                required_params = capability.get("requirements", [])
+                missing_params = [param for param in required_params if param["parameter_name"] not in extracted_params]
+                
+                if len(missing_params) == 0:
+                    actions = capability.get("action",[])
+                    if len(actions) == 0:
+                        logger.info("No actions are linked with capability")
+                    
+                    for action in actions:
+                        connector = action.get("connector",{})
+                        if connector.get("name","") in self.datasources :
+                            datasource = self.datasources[connector.get("name","")]
+                            
+                            body_string = json.dumps(action.get("body", {}))
+                            temp = Template(body_string).safe_substitute(
+                                **extracted_params
+                            )
+                            body = json.loads(temp)
+                            print(action.get("action", ""))
+                            print(body)
+                            
+                        else:
+                            logger.warning("failed to load connector for action {action.name}")
+                else:
+                    logger.info("missing parameters")
 
             response = Formatter.format(inference["message"],"")
             response["summary"] = request["inference"]["summary"]
