@@ -6,6 +6,7 @@ from app.utils.database import get_db
 import app.services.connector as svc
 import app.services.provider as provider_svc
 from starlette.requests import Request
+from fastapi import APIRouter, UploadFile, File
 
 from app.chain.chains.capability_chain import CapabilityChain
 from app.chain.chains.metadata_chain import MetadataChain
@@ -79,6 +80,39 @@ def get_connector(connector_id: int, db: Session = Depends(get_db)):
         status_code=200,
         data={"connector": result},
         message="Connector Found",
+        error=None
+    )
+
+@router.post("/upload/datasource", response_model=resp_schemas.CommonResponse)
+async def upload_document_datsource(
+    file: UploadFile = File(...)
+):
+    
+    """
+    Uploads an document data source file to the server.
+
+    Args:
+        file (UploadFile): The uploaded document file. Accepted formats are .pdf, .txt, .yaml, and .docx.
+
+    Returns:
+        CommonResponse: A response containing the file upload status, file details, or an error message.
+    """
+
+    error, size = await svc.fileValidation(file)
+
+    if error:
+        return commons.is_error_response("Invalid File", error, {"file_path": None})
+    
+    result, error = await svc.upload_pdf(file)
+
+    if error:
+        return commons.is_error_response("document not uploaded", error, {"file_path": None})
+    
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=201,
+        data={"file": {"file_path": result["file_path"],"file_name": file.filename, "file_size":f"{round(size / (1024 * 1024), 2)}MB", "file_id": result["file_id"]}},
+        message="File Uploaded Success",
         error=None
     )
 
@@ -482,8 +516,7 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     datasources = request.app.container.datasources()
 
     mappings = confyaml.get("mappings",{})
-    err = svc.update_datasource_documentations(db, vectore_store, datasources, mappings)
-
+    datasources, err = svc.update_datasource_documentations(db, vectore_store, datasources, mappings)
     if err:
         logger.error("Error updating")
 

@@ -4,7 +4,7 @@ import style from './Select.module.css';
 
 
 
-const Select = ({label, placeholder, options, value, hasError = false, errorMessage = "", onChange, props}) => {
+const Select = ({label, placeholder, options, value, hasError = false, errorMessage = "", onChange, ...props}) => {
     const [selectedOption, setSelectedOption] = useState(null);
 
     const handleChange = (option) => {
@@ -56,6 +56,13 @@ const Select = ({label, placeholder, options, value, hasError = false, errorMess
             ...provided,
             color: '#333'
         }),
+        multiValue: (provided)=>({
+            ...provided,
+            backgroundColor: "#74B3FF",
+            padding: "4px 6px",
+            color: "#FFFFFF",
+            borderRadius: "20px"
+        }),
         indicatorSeparator: (provided) => ({
             ...provided,
             display: 'none'
@@ -63,7 +70,20 @@ const Select = ({label, placeholder, options, value, hasError = false, errorMess
         placeholder:(provided)=>({
             ...provided,
             color:"#888787"
+        }),
+        multiValueLabel: (provided)=>({
+            ...provided,
+            color: "#FFFFFF",
+            marginRight: "4px"
+        }),
+        multiValueRemove: (provided)=>({
+            ...provided,
+            color:"#84BCFF",
+            backgroundColor: "#FFFFFF",
+            borderRadius: "20px",
+            cursor: "pointer"
         })
+
     };
 
     return (

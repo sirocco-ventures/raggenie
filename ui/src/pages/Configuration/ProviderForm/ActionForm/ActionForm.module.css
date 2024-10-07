@@ -1,0 +1,7 @@
+.ActionTitleContainer {
+    display: flex;
+}
+
+.ActionTitle {
+    flex-grow: 1;
+}

@@ -18,6 +18,10 @@ The project is in its early stages, and we are working on adding more capabiliti
 
 • Current focus: We are currently focused on making it easy to build RAG Application. Going forward we will be focusing on maintaince and monitoring of the RAG system as well cosidering how to help these applications to take from pilots to production.
 
+### RAGGENIE Demo
+1. Demo with database -    [![Demo with database](https://img.youtube.com/vi/7wBO6g4rj3U/0.jpg)](https://www.youtube.com/watch?v=7wBO6g4rj3U)
+2. Demo with website data -    [![Demo with website data](https://img.youtube.com/vi/8h4bqqs5S3U/0.jpg)](https://www.youtube.com/watch?v=8h4bqqs5S3U)
+
 ## 🌎 Communities
 
 Join our communities for product updates, support, and to stay connected with the latest from RAGGENIE!
@@ -71,60 +75,87 @@ This component will help you embed the chat widget into your UI with JavaScript.
 ## 🛠️ Getting Started
 You can use RAGGENIE to create your own conversational chat feature for your application either by integrating it as a chatbot or by embedding it into your application. You can also use it to create different chatbots for different internal teams by tuning each chatbot for different tasks and using different knowledge base for different usecases.
 
-### ☁️ Usage of RAGGENIE
-![demo video]()
+### How to run Video
+[![Setting up RAGGENIE](https://img.youtube.com/vi/LfCqiToOCvI/0.jpg)](https://www.youtube.com/watch?v=LfCqiToOCvI)
 
 ### 📄 Documentation
 Comprehensive documentation is available to help you get the most out of RAGGENIE. The full documentation for RAGGENIE can be found [here]()
 
 ### 📦 Installation and running
 
+#### Raggenie Backend
 
-#### Installing dependencies
+* Installing dependencies
 
-* **Using `requirements.txt`**
+  * **Using `requirements.txt`**
 
-  To install the required dependencies with `pip`, run:
-  
+    To install the required dependencies with `pip`, run:
+    
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+  * **Using Poetry**
+
+    First, install Poetry:
+    
+    ```bash
+    curl -sSL https://install.python-poetry.org | python3 -
+    ```
+    
+    Then, to install the dependencies, run:
+    
+    ```bash
+    poetry install
+    ```
+
+
+* Running RAGGENIE backend
+
+  To run **RAGGENIE** in API mode, specify the config file to use by running the following command:
+
   ```bash
-  pip install -r requirements.txt
+  python main.py --config ./config.yaml llm
   ```
 
-* **Using Poetry**
+  Below is a sample configuration for the vector database setup in `config.yaml`:
 
-  First, install Poetry:
-  
-  ```bash
-  curl -sSL https://install.python-poetry.org | python3 -
+  ```yaml
+  vector_db:
+    name: "chroma"
+    params:
+      path: "./vector_db"
+      embeddings:
+        provider: "chroma_default"
   ```
-  
-  Then, to install the dependencies, run:
-  
-  ```bash
-  poetry install
-  ```
-
-
-#### Running RAGGENIE
-
-To run **RAGGENIE** in API mode, specify the config file to use by running the following command:
-
-```bash
-python main.py --config ./config.yaml llm
-```
-
-Below is a sample configuration for the vector database setup in `config.yaml`:
-
-```yaml
-vector_db:
-  name: "chroma"
-  params:
-    path: "./vector_db"
-    embeddings:
-      provider: "chroma_default"
-```
 
 This configuration ensures that the RAGGENIE system connects to the `chroma` vector database and uses the default embeddings provided by Chroma.
+
+#### Raggenie Frontend
+
+* **Move into the ui folder.**
+  ```
+  cd ./ui
+  ```
+
+* Install dependencies
+  ```bash
+  npm install
+  ```
+
+* Running RAGGENIE Frontend
+
+  * To run **RAGGENIE** frontend, create a .env file and add the URL to backend as env variables
+    ```env
+    VITE_BACKEND_URL=${BACKEND_URL}
+    ```
+
+  * To start the server, run
+    ```bash
+    npm run dev
+    ```
+
+for more details visit [frontend readme](./ui/README.md)
 
 ## ⛔️ Troubleshooting
 

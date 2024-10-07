@@ -1,6 +1,6 @@
 import DashboardBody from "src/layouts/dashboard/DashboadBody"
 import ChatBox from "src/components/ChatBox/ChatBox"
-import {  useEffect, useState } from "react"
+import {  useEffect, useRef, useState } from "react"
 import GetService from "src/utils/http/GetService"
 import { API_URL } from "src/config/const"
 import PostService from "src/utils/http/PostService"
@@ -28,16 +28,13 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
 
     let { contextId } = useParams()
     const navigate = useNavigate()
+    const messageBoxRef = useRef(null)
 
 
-    const onChatBoyKeyDown = (e)=>{
+    const chatQuery = (message)=>{
 
-        if(e.keyCode  == 13){
-            e.preventDefault()
-            let message = e.target.innerText;
-            setCurrentChat({isBot: false, message: message})
-            e.target.innerText = ""
-
+        setCurrentChat({isBot: false, message: message})
+        
             let axiosConfig = {
                 headers: {
                     "x-llm-context-id": contextId
@@ -63,7 +60,6 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
                     }
                 
               
-                //onCreateNewChat() 
                 setCurrentChat({isBot: true, message: chatMessage, entity: chatEntity, format: chatFormat, kind: chatKind, data: chatData })
                 setIsChatLoading(false)
                 getChatHistory()
@@ -73,7 +69,25 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
                
                 setCurrentChat({isBot: true, message: "Oops somethings went wrong, try again", format: "general_message", kind: "none", data: [] })
             })
-            
+    }
+
+    const onChatBoyKeyDown = (e)=>{
+
+        if(e.keyCode  == 13){
+            e.preventDefault()
+            let message = e.target.innerText;
+            if(message != ""){
+                chatQuery(message)
+                e.target.innerText = ""
+            }
+        }
+    }
+    
+    const onSendClick = ()=>{
+        let message = messageBoxRef.current.innerText;
+        if(message != ""){
+            chatQuery(message)
+            messageBoxRef.current.innerText = ""
         }
     }
 
@@ -130,8 +144,8 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
         navigate(`${urlPrex}/${generateContextUUID()}/chat`)
       }
 
-      const handleNavigateChatContext=(e,contextId)=>{
-        navigate(`${urlPrex}${contextId}/chat`)    
+    const handleNavigateChatContext=(e, contextId)=>{
+        navigate(`${urlPrex}/${contextId}/chat`)    
     }
 
 // ===================CHAT HISTROY END==============================
@@ -157,7 +171,7 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
                     setEnableChatbox(false)
                     setEmptyURL("/bot-configuration")
                     setMessageBoxButtonText("Add Inference")
-                    setMessageBox("You need to add inference chat box")
+                    setMessageBox("Please configure the inference endpoint details in the bot configuration to proceed.")
                 }
             }else{
                 setEnableChatbox(false)
@@ -206,8 +220,7 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
 
     return(
         <>
-            {/* <ChatBox feedbackStatus={feedbackStatus}  conversations={conversations} onKeyDown={onDivKeyDown} onLike={onFeedback} onFeedBackSubmit={onFeedback} /> */}
-            {enableChatbox ? <ChatBox handleNavigateChatContext={handleNavigateChatContext} onCreateNewChat={onCreateNewChat} chatHistory={chatHistory} isLoading={isChatLoading} conversations={conversations} onKeyDown={onChatBoyKeyDown}  /> : <EmptyPreview message={messageBoxText} url={emptyURL} buttonText={messageBoxButtonText} />} 
+            {enableChatbox ? <ChatBox messageBoxRef={messageBoxRef} handleNavigateChatContext={handleNavigateChatContext} onCreateNewChat={onCreateNewChat} chatHistory={chatHistory} isLoading={isChatLoading} conversations={conversations} onKeyDown={onChatBoyKeyDown} onSendClick={onSendClick}  /> : <EmptyPreview message={messageBoxText} url={emptyURL} buttonText={messageBoxButtonText} />} 
         </>
     )
 }
