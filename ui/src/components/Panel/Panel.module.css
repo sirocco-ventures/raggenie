@@ -1,0 +1,31 @@
+
+.PanelContainer {
+    background-color: var(--neural-7);
+    padding: 17px 15px;
+    overflow: hidden;
+    margin-bottom: 11px;
+}
+
+.PanelContainerCollapse {
+    height: 29px;
+}
+
+.PanelHeader {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.PanelTitle {
+    color: #323232;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    flex-grow: 1;
+}
+
+.PanelBody {
+    padding: 21px 20px;
+}
