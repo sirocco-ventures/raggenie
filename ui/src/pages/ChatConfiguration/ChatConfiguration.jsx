@@ -421,9 +421,7 @@ const BotConfiguration = () => {
                                 <div style={{flexGrow: 1}}>
                                     <Button type="transparent" className="icon-button" onClick={()=>setCurrentActiveTab("documentation")}> <FaArrowLeft/> Back</Button>
                                 </div>
-                                <div>
-                                    <Button buttonType="submit" className="icon-button" onClick={()=>navigate("/plugins")}>  Finish  <FiCheckCircle/></Button>
-                                </div>
+                              
                             </div>
                     </Tab>
             </Tabs>
