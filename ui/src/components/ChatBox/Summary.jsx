@@ -16,7 +16,7 @@ function Summary({message={}}) {
               <img src={""} alt='closemodal' width={18} height={18} className={`${summaryOpen ? style.SummaryToggleIconClose: style.SummaryToggleIconOpen}`} />
             </button>
             <div>
-              <h2 className={style.SummaryHeaderTitle}>Chat Summary</h2>
+              <h2 className={style.SummaryHeaderTitle}>Summary</h2>
             </div>
           </div>
           
@@ -24,7 +24,7 @@ function Summary({message={}}) {
               <div className={style.ChatSummayContainer}>
                   <div>
                       <p className={style.ChatSQLSummary}>
-                        showing {message?.data?.chart?.data?.length > 12 ? 12 : message?.data?.chart?.data?.length } out of {message.data?.chart?.data?.length} items retreived
+                        Showing {message?.data?.chart?.data?.length > 12 ? 12 : message?.data?.chart?.data?.length } out of {message.data?.chart?.data?.length} items retreived
                       </p>
                   </div>
                   <div onClick={()=>setQueryOpen(!queryOpen)}>
