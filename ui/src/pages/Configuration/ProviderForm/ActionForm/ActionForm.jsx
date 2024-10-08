@@ -20,7 +20,6 @@ const ActionForm = ({ index = 0, id = undefined, name = "Action", description = 
 
 
     const onActioNameChange = (name)=>{
-        console.log({name})
         setActioName(name)
     }
 

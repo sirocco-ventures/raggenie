@@ -4,6 +4,7 @@ import Textarea from "src/components/Textarea/Textarea"
 import { Controller } from "react-hook-form"
 import TitleDescription from "src/components/TitleDescription/TitleDescription"
 import { useEffect } from "react"
+import { isJSON } from "src/utils/utils"
 
 
 const Webhook = ({ register, setValue,  control, errors, ...props })=> {
@@ -42,14 +43,16 @@ const Webhook = ({ register, setValue,  control, errors, ...props })=> {
                             label={ <span className="span-important">Action Type</span> } 
                             value={ props.type ?  actionTypes.find(val=>val.value == props.type) : actionTypes[0]}
                             options={actionTypes} 
-                            onChange={val=>onChange(val.value)} />
+                            onChange={val=>onChange(val.value)} 
+                            hasError={errors["actionType"]?.message} 
+                            errorMessage={errors["actionType"]?.message} />
                     )}
                 
                 />
             </div>
             <div>
                 <TitleDescription title="Request Body"  description="Contains information about the event that triggered the webhook."/>
-                <Textarea rows={4} style={{resize: "vertical"}}  hasError={errors["actionBody"]?.message} errorMessage={errors["actionBody"]?.message} {...register("actionBody", { required :"This field is required" })}   />
+                <Textarea rows={4} style={{resize: "vertical"}}  hasError={errors["actionBody"]?.message} errorMessage={errors["actionBody"]?.message} {...register("actionBody", { required :"This field is required", validate: value => isJSON(value) || "JSON is not validate" })}   />
             </div>
         </div>   
     )
