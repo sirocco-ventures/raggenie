@@ -19,7 +19,9 @@ def get_plugin_providers():
                 "display_name": getattr(module, '__display_name__'),
                 "description": getattr(module, '__description__'),
                 "category": getattr(module, '__category__'),
-                "args": getattr(module, "__connection_args__")
+                "args": getattr(module, "__connection_args__"),
+                "actions_enabled": getattr(module, "__actions_enabled__"),
+                "actions_supported": getattr(module, "__actions_supported__"),
             })
 
         except Exception as e:

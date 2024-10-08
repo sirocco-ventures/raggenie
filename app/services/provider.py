@@ -66,7 +66,9 @@ def initialize_plugin_providers(db:Session):
             "description":i["description"],
             "icon":i["icon"],
             "category_id":i["category"],
-            "key":i["plugin_name"]
+            "key":i["plugin_name"],
+            "actions_enabled": i["actions_enabled"],
+            "actions_supported": i["actions_supported"],
         })
 
         if is_error:
@@ -169,6 +171,8 @@ def get_provider(provider_id: int,db: Session):
         'icon': provider.icon,
         'category_id': provider.category_id,
         'key': provider.key,
+        'actions_enabled': provider.actions_enabled,
+        'actions_supported': provider.actions_supported,
         'configs': [
             {
                 'id': config.id,
