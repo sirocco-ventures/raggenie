@@ -1,0 +1,14 @@
+./ui
+./github
+.gitignore
+poetry.lock
+README.md
+CODE_OF_CONDUCT.md
+pyproject.toml
+CONTRIBUTING.md
+.flake8
+LICENSE
+setup.py
+Makefile
+.pre-commit-config.yaml
+.env.example

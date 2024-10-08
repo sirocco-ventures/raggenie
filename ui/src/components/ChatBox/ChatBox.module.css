@@ -492,7 +492,7 @@
 
 /* ===========CHAT HISTORY SIDEBAR=========== */
 .chatHistoryContainer {
-    min-width: 356px; /* Start with the sidebar visible */
+    width: 356px; /* Start with the sidebar visible */
     padding-right: 16px; /* Adjust padding as needed */
     position: relative;
     box-sizing: border-box;

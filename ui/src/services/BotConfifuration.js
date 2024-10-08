@@ -31,7 +31,18 @@ export const saveBotConfiguration = (configID, saveData = {})=>{
 }
 
 
-export const saveBotInferene = (configID, inferenceID, saveData = {}, llmProvider)=>{
+export const testInference = (configID, data)=>{
+    return PostService(`${API_URL}/provider/test-inference-credentials`, {
+        "name": data.inferenceName,
+        "apikey": data.inferenceAPIKey,
+        "llm_provider": data.inferenceLLMProvider,
+        "model":data.inferenceModelName ,
+        "config_id": configID,
+        "endpoint": data.inferenceEndpoint
+    })
+}
+
+export const saveBotInferene = (configID, inferenceID, saveData = {})=>{
     let apiURL = "/inference/create"
 
     if(inferenceID){
@@ -41,7 +52,7 @@ export const saveBotInferene = (configID, inferenceID, saveData = {}, llmProvide
     return PostService(`${API_URL}${apiURL}`, {
         "name": saveData.inferenceName,
         "apikey": saveData.inferenceAPIKey,
-        "llm_provider": llmProvider,
+        "llm_provider": saveData.inferenceLLMProvider,
         "model":saveData.inferenceModelName ,
         "config_id": configID,
         "endpoint": saveData.inferenceEndpoint

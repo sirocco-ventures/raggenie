@@ -1,0 +1,219 @@
+.DragContainer {
+    border-radius: var(--radi-mlg, 8px);
+    border: 2px dashed #3893FF;
+    background: #FFF;
+    display: flex;
+    padding: var(--spacing-lg, 24px);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    max-width: 500px;
+    align-self: stretch;
+    padding: 24px;
+}
+
+.DragContainer:hover {
+    background: #F5FAFF;
+}
+
+.DragContainer:focus {
+    background: #F5FAFF;
+}
+
+.DragMessage {
+    color: #0B0B0B;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.FileUploader {
+    display: none;
+}
+
+.FileUploader::-webkit-file-upload-button {
+    display: none;
+}
+
+.FileUploader::-webkit-file-upload-button {
+    display: none;
+}
+
+.UploadButton {
+    display: inline-block;
+    border: 1px solid #3893FF;
+    border-radius: 3px;
+    padding: 5px 8px;
+    outline: none;
+    color: #3893FF;
+    white-space: nowrap;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 10pt;
+    background: transparent;
+    margin-top: 8px;
+}
+
+.FileUploader:hover::before {
+    border-color: black;
+}
+
+.FileUploader:active::before {
+    background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+}
+
+.OptionDefault {
+    width: 201px;
+    text-align: center;
+    border-top: 1px solid #E7E7E7;
+    position: relative;
+}
+
+.DragContainer:hover .OptionDefault h5 {
+    background: #F5FAFF;
+}
+
+.OptionDefault h5 {
+    left: 34%;
+    top: -8px;
+    padding-right: 20px;
+    position: absolute;
+    margin: 0;
+    background-color: #FFF;
+    color: #6D6D6D;
+    font-family: Inter;
+    font-size: 12px;
+    font-weight: 400;
+    padding-left: 20px;
+}
+
+.ProgressContainer {
+    display: flex;
+    padding: var(--16, 16px);
+    flex-direction: row;
+    align-items: center;
+    align-items: flex-start;
+    gap: 8px;
+    align-self: stretch;
+    border-radius: var(--radi-lg, 12px);
+    border: 1px solid #F0F0F0;
+    background: #FFF;
+    max-width: 518px;
+    height: auto;
+    margin-bottom: 16px;
+    animation: zoomEffect 0.5s ease-in-out forwards; 
+    animation-iteration-count: 1; 
+    align-items: center;
+  }
+
+  .ProgressContainer:hover, .ProgressContainer:focus {
+    border: 1px solid #A0CCFF;
+    background: #F5FAFF;
+  }
+  
+  @keyframes zoomEffect {
+    0% {
+      transform: scale(1); 
+    }
+    50% {
+      transform: scale(1.1); 
+    }
+    100% {
+      transform: scale(1); 
+    }
+  }
+  
+
+
+.FileInfo {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1;
+}
+
+.FileName {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.FileSize {
+    color: #888787;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+}
+
+.FilesName {
+    color: #323232;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+}
+.CloseProgress{
+    cursor: pointer;
+}
+
+.ProgressAnalzer{
+    width: 100%;
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ProgressBarContent {
+    width: inherit;
+    display: flex;
+}
+
+.ProgressText {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ProgressText span:first-child {
+    color: #323232;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+}
+
+.ProgressText span:nth-child(2) {
+    color: #888787;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+}
+
+
+.ProgressControl{
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.ProgressBar {
+    width: 100%;
+    background-color: #e6e6e6;
+    height: 8px;
+    border-radius: 40px;
+}
+
+.ProgressLine {
+    display: block;
+    background-color: #3893FF;
+    height: 8px;
+    border-radius: 40px;
+    transition: width ease-in-out;
+}
+  

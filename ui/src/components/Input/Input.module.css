@@ -56,11 +56,20 @@
     border: 1px solid #3893FF;
 }
 
-Input::placeholder {
+.Input::placeholder {
     color: #DDD;
     font-weight: 400;
 }
 
+
+
+.InputLabel:has(+ .Input:required)::after {
+    content: " *";
+    color: #FF7F6D;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400
+}
 .HasError {
     border-color: #FF7F6D;
 }

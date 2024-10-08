@@ -7,7 +7,7 @@ import Loader from "./Loader"
 import ChatHistorySideBar from "./ChatHistorySideBar"
 
 
-const ChatBox = forwardRef(({handleNavigateChatContext=()=>{}, onCreateNewChat=()=>{}, chatHistory=[], isLoading = false, onFeedBackSubmit=()=>{}, conversations = [], onKeyDown = ()=>{}, onKeyUp = ()=>{}, onLike = ()=>{} , onDisLike = ()=>{} }, ref)=>{
+const ChatBox = forwardRef(({messageBoxRef = null, handleNavigateChatContext=()=>{}, onCreateNewChat=()=>{}, chatHistory=[], isLoading = false, onFeedBackSubmit=()=>{}, conversations = [], onKeyDown = ()=>{}, onKeyUp = ()=>{}, onSendClick = ()=>{}, onLike = ()=>{} , onDisLike = ()=>{} }, ref)=>{
 
     const chatListRef = useRef(null)
    
@@ -46,10 +46,10 @@ const ChatBox = forwardRef(({handleNavigateChatContext=()=>{}, onCreateNewChat=(
 
                     <div>
                         <div className={style.ChatBoxTextContainer}>
-                            <div className={style.ChatBoxTextBox} contentEditable="true" onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
+                            <div ref={messageBoxRef} className={style.ChatBoxTextBox} contentEditable="true" onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
                             </div>
                             <div>
-                                <div className={style.ChatBoxSendIcon}></div>
+                                <div className={style.ChatBoxSendIcon} onClick={onSendClick}></div>
                             </div>
                         </div>
                         <div>

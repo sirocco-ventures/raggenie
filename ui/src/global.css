@@ -193,5 +193,5 @@ textarea::placeholder {
 /* important span */
 .span-important::after {
     content: " *";
-    color: red
+    color: #FF7F6D
 }
