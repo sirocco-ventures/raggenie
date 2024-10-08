@@ -4,7 +4,6 @@ import Textarea from "src/components/Textarea/Textarea"
 import { Controller } from "react-hook-form"
 import TitleDescription from "src/components/TitleDescription/TitleDescription"
 import { useEffect } from "react"
-import { validate } from "uuid"
 import { isJSON } from "src/utils/utils"
 
 

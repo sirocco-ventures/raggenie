@@ -196,7 +196,9 @@ const ProviderForm = ()=>{
                 description:  data.provider.description,
                 icon: data.provider.icon,
                 category_id: data.provider.category_id,
-                enable: data.provider.enable
+                enable: data.provider.enable,
+                actions_enabled: data.provider.actions_enabled,
+                actions_supported: data.provider.actions_supported
             })
 
             setProviderConfig(data.provider.configs)
@@ -722,8 +724,10 @@ const onRemoveFile = (fileId) => {
                                 </div>
                             </div>
                         </form>
+                        
                     </Tab>
-                    <Tab title={<>Action <span style={{fontSize: "9px"}}>(BETA)</span></>} tabKey="action" key={"action"} disabled={connectorId ? false : true} hide={![2, 3].includes(providerDetails.category_id)} >
+                    <Tab title={<>Action <span style={{fontSize: "9px"}}>(BETA)</span></>} tabKey="action" key={"action"} disabled={connectorId ? false : true} hide={!providerDetails.actions_enabled} >
+                        
                         {renderActionHeader(providerDetails.category_id)}
                         <div className={style.ActionCreateNewContainer}>
                             <div className={style.ActionCreateNewLabel}>Action List</div>
