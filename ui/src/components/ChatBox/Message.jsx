@@ -59,7 +59,7 @@ const Message = ({
             </div>
             <div style={{marginLeft: "52px", marginBottom: "40px"}}>
                  {/* {showFeedback && message.isBot && <Feedback onSubmit={onFeedbackSubmit} onFeedBackClose={handleOnFeedbackClose} message={message} /> } */}
-                 {message.isBot && <Summary onSummaryClose={handleOnSummaryClose} message={message} /> }
+                
                  
                  
                  { (message.kind == "list" || message.kind == "table" || message.kind == "single" || message.kind == "none") && <Table data={message.data?.chart?.data} />}
@@ -67,7 +67,7 @@ const Message = ({
                  { message.kind == "pie_chart" && <PieChart title={message.data.chart.title} data={message.data.chart.data} labelKey={message.data.chart.xAxis[0]} dataKey={message.data.chart.yAxis[0]}  /> }
                  { message.kind == "line_chart" && <LineChart title={message.data.chart.title} data={message.data.chart.data} xAxis={message.data.chart.xAxis[0]} yAxis={message.data.chart.yAxis[0]}  /> }
                  { message.kind == "area_chart" && <AreaChart title={message.data.chart.title} data={message.data.chart.data} xAxis={message.data.chart.xAxis[0]} yAxis={message.data.chart.yAxis[0]}  /> }
-                 
+                 {message.isBot && <Summary onSummaryClose={handleOnSummaryClose} message={message} /> }
             </div>
             
         </>
