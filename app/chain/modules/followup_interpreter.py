@@ -57,15 +57,26 @@ class FollowupInterpreter(AbstractHandler):
                         connector = action.get("connector",{})
                         if connector.get("name","") in self.datasources :
                             datasource = self.datasources[connector.get("name","")]
+                            if datasource.__actions_enabled__ :
                             
-                            body_string = json.dumps(action.get("body", {}))
-                            temp = Template(body_string).safe_substitute(
-                                **extracted_params
-                            )
-                            body = json.loads(temp)
-                            print(action.get("action", ""))
-                            print(body)
-                            
+                                body_string = json.dumps(action.get("body", {}))
+                                temp = Template(body_string).safe_substitute(
+                                    **extracted_params
+                                )
+                                body = json.loads(temp)
+                                action = action.get("action", "")
+                                
+                                if action in datasource.__actions_supported__:
+                                    match action:
+                                        case "send":
+                                            datasource.send(body)
+                                        case "default":
+                                            logger.warning("unsupported action")
+                                            
+                                else:
+                                    logger.warning("unsupoorted action for connector")
+                            else:
+                                logger.warning("actions are not enabled in connector")
                         else:
                             logger.warning("failed to load connector for action {action.name}")
                 else:

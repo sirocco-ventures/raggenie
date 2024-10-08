@@ -745,7 +745,6 @@ def create_yaml_file(request:Request, config_id: int, db: Session):
     Tuple: Configuration YAML and error message (if any).
 
     """
-    print("=== 1")
     configuration, is_error = repo.get_configuration_by_id(config_id, db)
     if (configuration == [] or configuration==None) or is_error:
         return None, None, "Configuration Not Found"
@@ -794,9 +793,6 @@ def create_yaml_file(request:Request, config_id: int, db: Session):
          ]
     })
     
-    print(use_case)
-
-
     if datasources is not None and use_case is not None:
         repo.update_configuration_status(config_id,db)
     return datasources, use_case, None

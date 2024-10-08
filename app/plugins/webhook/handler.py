@@ -1,6 +1,7 @@
 from .formatter import Formatter
 from loguru import logger
 import requests
+import json
 from app.base.base_plugin import BasePlugin
 from app.base.messaging_plugin import MessagePlugin
 from app.base.plugin_metadata_mixin import PluginMetadataMixin
@@ -43,10 +44,20 @@ class Webhook(BasePlugin, PluginMetadataMixin, MessagePlugin, Formatter):
         """
         logger.info("health check for webhook")
 
-        url = self.params["url"]
-
+        url = self.params.get('url')
+        method = self.params.get('method').upper()
 
         try:
+            match method:
+                case 'POST':
+                    response = requests.post(url)
+                case 'PUT':
+                    response = requests.put(url)
+                case 'GET':
+                    response = requests.get(url)
+                case _:
+                    logger.error(f"Unsupported method: {method}")
+                    return False, f"Unsupported method: {method}"
             response = requests.get(url)
             if response.status_code != 404:
                 logger.info("Website health check passed.")
@@ -59,5 +70,39 @@ class Webhook(BasePlugin, PluginMetadataMixin, MessagePlugin, Formatter):
             return False, str(e)
 
 
-    def send(self, params=None):
-        print("send")
+    def send(self, params:dict=None):
+        if params is None:
+            params = {}
+            
+        url = self.params.get('url')
+        method = self.params.get('method').upper()
+        header_string = self.params.get('headers', '{}')
+        
+        try:
+            headers = json.loads(header_string)
+        except Exception as e:
+            logger.warning("improper json for headers")
+            headers = {}
+
+        try:
+            match method:
+                case 'POST':
+                    response = requests.post(url, headers=headers, data=params)
+                case 'PUT':
+                    response = requests.put(url, headers=headers, data=params)
+                case 'GET':
+                    response = requests.get(url, headers=headers, params=params)
+                case _:
+                    logger.error(f"Unsupported method: {method}")
+                    return False, f"Unsupported method: {method}"
+                
+            if response.status_code < 300:
+                logger.info(f"Successfully sent data to webhook. Status code: {response.status_code}")
+                return True, response
+            else:
+                logger.error(f"Failed to send data. Status code: {response.status_code}, Response: {response.text}")
+                return False, response
+            
+        except Exception as e:
+            logger.exception(f"Exception during {method} request: {str(e)}")
+            return False, str(e)
