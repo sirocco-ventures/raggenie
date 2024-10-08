@@ -97,7 +97,7 @@ const Select = ({label, placeholder, options, value, hasError = false, errorMess
                 styles={customStyles}
                 {...props}
             />
-             {errorMessage !== "" && <span className={style.errorMessage}>{errorMessage}</span>}
+             {errorMessage !== "" && <span className={style.ErrorMessage}>{errorMessage}</span>}
         </div>
     );
 };

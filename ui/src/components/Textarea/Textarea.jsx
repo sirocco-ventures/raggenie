@@ -34,11 +34,9 @@ const Textarea = forwardRef(({
                 <textarea ref={ref} defaultValue={value} placeholder={placeholder} className={`${style.Input} ${hasError ? style.HasError : ""} ${className}`} onChange={inputOnChange} {...props} />
                 <div className={style.InputHintContainer}>
                     <div className={style.InputHint}>
-                        <span className={style.InputHintMessage}>
-                            { minLength > 0 && maxLength == Infinity && `Min characters ${minLength}` }  
-                            { minLength == 0 && maxLength != Infinity && `Max characters ${maxLength}` }  
-                            { minLength > 0 && maxLength != Infinity && `Min characters ${minLength} and Max characters ${maxLength}` }  
-                        </span>
+                            { minLength > 0 && maxLength == Infinity && <span className={style.InputHintMessage}> {`Min characters ${minLength}`} </span> }  
+                            { minLength == 0 && maxLength != Infinity && <span className={style.InputHintMessage}> {`Max characters ${maxLength}`} </span>}  
+                            { minLength > 0 && maxLength != Infinity && <span className={style.InputHintMessage}> {`Min characters ${minLength} and Max characters ${maxLength}`} </span> }
                     </div>
                     <div>
                        {(minLength > 0 || maxLength != Infinity) &&  <span className={style.InputHintMessage}>{textLength}/ { maxLength != Infinity ? maxLength: minLength }</span> }

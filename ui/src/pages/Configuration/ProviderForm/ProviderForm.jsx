@@ -704,7 +704,7 @@ const onRemoveFile = (fileId) => {
                             </div>
                         </div>
                     </Tab>    
-                    <Tab title="Documentation" tabKey="documentation" key={"documentation"} disabled={connectorId ? false : true}>
+                    <Tab title="Documentation" tabKey="documentation" key={"documentation"} hide={[3].includes(providerDetails.category_id)} disabled={connectorId ? false : true}>
                         <form onSubmit={onDocumentUpdate}>
                             <div style={{marginBottom: "30px"}}>
                                 <h4>Documentation details</h4>
@@ -723,7 +723,7 @@ const onRemoveFile = (fileId) => {
                             </div>
                         </form>
                     </Tab>
-                    <Tab title="Action" tabKey="action" key={"action"} disabled={connectorId ? false : true} hide={![2, 3].includes(providerDetails.category_id)} >
+                    <Tab title={<>Action <span style={{fontSize: "9px"}}>(BETA)</span></>} tabKey="action" key={"action"} disabled={connectorId ? false : true} hide={![2, 3].includes(providerDetails.category_id)} >
                         {renderActionHeader(providerDetails.category_id)}
                         <div className={style.ActionCreateNewContainer}>
                             <div className={style.ActionCreateNewLabel}>Action List</div>
@@ -755,10 +755,7 @@ const onRemoveFile = (fileId) => {
                          
                         <div className={style.ActionDiv}>
                             <div style={{flexGrow: 1}}>
-                                <Button type="transparent" className="icon-button" onClick={()=>setCurrentActiveTab("documentation")}> <FaArrowLeft/> Back</Button>
-                            </div>
-                            <div>
-                                <Button buttonType="submit" className="icon-button" onClick={()=>navigate("/plugins")}>  Finish  <FiCheckCircle/></Button>
+                                <Button type="transparent" className="icon-button" onClick={()=> providerDetails.category_id == 3 ? setCurrentActiveTab("configuration") : setCurrentActiveTab("documentation")}> <FaArrowLeft/> Back</Button>
                             </div>
                         </div>
                            
