@@ -749,6 +749,7 @@ const onRemoveFile = (fileId) => {
                                         table={action.table}
                                         condition={action.condition} 
                                         body={action.body}
+                                        actions={providerDetails.actions_supported}
                                         onActionSave={onSaveAction} 
                                         onActionDelete={onDeleteAction} />
                             })

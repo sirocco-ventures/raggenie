@@ -41,13 +41,13 @@ const Database = ({ register, setValue,  control, errors, ...props })=> {
                     rules={{
                         required: "This field is required"
                     }}
-                    defaultValue={props.type == "" ? actionTypes[0].value : actionTypes.find(val=>val.value == props.type)?.value}
+                    defaultValue={props.type == "" ? props.actions[0].value : props.actions.find(val=>val.value == props.type)?.value}
                     render={({ field: { onChange, value, ref } })=>(
                         <Select 
                             inputRef={ref} 
                             label={ <span className="span-important">Action Type</span> } 
-                            value={ props.type ?  actionTypes.find(val=>val.value == props.type) : actionTypes[0]}
-                            options={actionTypes} 
+                            value={ props.type ?  props.actions.find(val=>val.value == props.type) : props.actions[0]}
+                            options={props.actions} 
                             onChange={val=>onChange(val.value)} />
                     )}
                 

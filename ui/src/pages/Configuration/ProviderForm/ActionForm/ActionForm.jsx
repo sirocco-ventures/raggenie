@@ -9,11 +9,11 @@ import { useForm } from "react-hook-form"
 import Webhook from "./Webhook"
 
 
-const ActionForm = ({ index = 0, id = undefined, name = "Action", description = "", type = "get", table = "", condition = {}, body = {}, category = 1, schemas = [], expand = false,  onActionSave = ()=>{}, onActionDelete = ()=>{}})=>{
+const ActionForm = ({ index = 0, id = undefined, name = "Action", description = "", type = "get", table = "", condition = {}, body = {}, category = 1, schemas = [], expand = false, actions = [], onActionSave = ()=>{}, onActionDelete = ()=>{}})=>{
 
     const [panelExpand, setPanelExpand] = useState(false)
     const [actionName, setActioName] = useState(name)
-
+    const actionList = actions.map(item=>({ label: item, value: item }))
 
     const { register, setValue, handleSubmit, control, formState } = useForm({mode : "all"})
     const { errors } = formState
@@ -65,6 +65,7 @@ const ActionForm = ({ index = 0, id = undefined, name = "Action", description = 
                                         table={table}
                                         condition={condition}
                                         body={body}
+                                        actions={actionList}
                                         onNameChange={onActioNameChange}
                                     /> }
                     {category == 3 && <Webhook 
@@ -77,6 +78,7 @@ const ActionForm = ({ index = 0, id = undefined, name = "Action", description = 
                                         description={description}
                                         type={type}
                                         body={body}
+                                        actions={actionList}
                                         onNameChange={onActioNameChange}
                                     /> }
                     
