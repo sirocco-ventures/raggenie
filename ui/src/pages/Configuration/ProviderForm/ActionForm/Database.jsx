@@ -77,7 +77,7 @@ const Database = ({ register, setValue,  control, errors, ...props })=> {
             </div>
             <div>
                 <TitleDescription title="Request Body"  description="Contains information about the event that triggered the webhook."/>
-                <Textarea rows={4} style={{resize: "vertical"}}  hasError={errors["actionBody"]?.message} errorMessage={errors["actionBody"]?.message} {...register("actionBody", { required :"This field is required", validate: value => isJSON(value) || "JSON is not validate" })}   />
+                <Textarea rows={4} style={{resize: "vertical"}}  hasError={errors["actionBody"]?.message} errorMessage={errors["actionBody"]?.message} {...register("actionBody", { required :"This field is required", validate: value => isJSON(value) || "invalid JSON" })}   />
             </div>
         </div>   
     )
