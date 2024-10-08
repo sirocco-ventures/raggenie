@@ -11,7 +11,7 @@ login = APIRouter()
 @login.post("/")
 def login_user(response: Response, user: LoginData):
     if user.username == configs.username and user.password == configs.password:
-        jwt_utils = JWTUtils(configs.secret_key, "HS256")
+        jwt_utils = JWTUtils(configs.secret_key)
         token = jwt_utils.create_jwt_token(data={"sub": user.username})
         response.set_cookie(
             key="auth_token",

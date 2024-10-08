@@ -2,9 +2,9 @@ from app.utils.jwt import JWTUtils
 from app.providers.config import configs
 from fastapi import Request, status, HTTPException
 
-jwt_utils = JWTUtils(configs.secret_key, "HS256")
 
 async def verify_token(request: Request):
+    jwt_utils = JWTUtils(configs.secret_key)
     if configs.auth_enabled:
         token = request.cookies.get("auth_token")
         if not token:
