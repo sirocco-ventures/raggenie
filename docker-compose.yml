@@ -12,8 +12,7 @@ services:
     environment:
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
-    command: >
-      bash -c "source /opt/venv/bin/activate && python main.py --config ./config.yaml llm"
+    command: 'python3 main.py --config ./config.yaml llm'
 
   frontend:
     build:
