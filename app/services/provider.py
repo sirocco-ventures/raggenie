@@ -121,6 +121,8 @@ def list_providers(db: Session):
             icon=provider.icon,
             category_id=provider.category_id,
             key = provider.key,
+            actions_supported= provider.actions_supported,
+            actions_enabled = provider.actions_enabled,
             configs=[
                 {
                     'id': config.id,
