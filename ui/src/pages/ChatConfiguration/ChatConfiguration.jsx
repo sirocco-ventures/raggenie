@@ -406,7 +406,7 @@ const BotConfiguration = () => {
                         </div>
                     </form>
                 </Tab>
-                <Tab title="Capabilities" disabled={activeInferencepiontTab} tabKey="capabalities" key={"capabalities"}>
+                <Tab title={<>Capabilities <span style={{fontSize: "9px"}}>(BETA)</span></>} disabled={activeInferencepiontTab} tabKey="capabalities" key={"capabalities"}>
                             <div style={{marginBottom: "30px"}}>
                                 <h4>Capabilities details</h4>
                                 <p>Explore and define the functionalities offered by the plugin. By incorporating additional capabilities, you can maximize its benefits and fully leverage the plugin's potential.</p>
