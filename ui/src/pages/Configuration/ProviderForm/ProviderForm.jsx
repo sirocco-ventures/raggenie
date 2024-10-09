@@ -726,7 +726,7 @@ const onRemoveFile = (fileId) => {
                         </form>
                         
                     </Tab>
-                    <Tab title={<>Action <span style={{fontSize: "9px"}}>(BETA)</span></>} tabKey="action" key={"action"} disabled={connectorId ? false : true} hide={!providerDetails.actions_enabled} >
+                    <Tab title={<>Action <span className="beta-tag">Beta</span></>} tabKey="action" key={"action"} disabled={connectorId ? false : true} hide={!providerDetails.actions_enabled} >
                         
                         {renderActionHeader(providerDetails.category_id)}
                         <div className={style.ActionCreateNewContainer}>
