@@ -37,3 +37,27 @@
     height: 24px;
     margin-right: 8px;
 }
+
+.ConfirmDialog {
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  
+  .ConfirmDialog h3 {
+    margin-top: 0;
+  }
+  
+  .ConfirmDialog p {
+    margin: 10px 0;
+  }
+  
+  .ButtonGroup {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+

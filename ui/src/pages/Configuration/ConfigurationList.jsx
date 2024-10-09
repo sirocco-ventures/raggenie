@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import SearchInput from "src/components/SearchInput/SearchInput"
 import Table from "src/components/Table/Table"
 import Tag from "src/components/Tag/Tag"
@@ -10,7 +11,23 @@ import { Link } from "react-router-dom";
 import { BACKEND_SERVER_URL } from "src/config/const";
 
 const ConfigurationList = ({configurations = [], onPluginDelete})=>{
-
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [selectedPluginId, setSelectedPluginId] = useState(null);
+    const handleDeleteClick = (pluginId) => {
+        setSelectedPluginId(pluginId);
+        setShowConfirmDialog(true);
+      };
+    
+    const confirmDelete = () => {
+        onPluginDelete(selectedPluginId);
+        setShowConfirmDialog(false);
+        setSelectedPluginId(null);
+      };
+    
+      const cancelDelete = () => {
+        setShowConfirmDialog(false);
+        setSelectedPluginId(null);
+      };
 
     let tableColumns = [
         
@@ -35,12 +52,16 @@ const ConfigurationList = ({configurations = [], onPluginDelete})=>{
                     <div className={style.ConnectorAction}>
                         <span>
                             <Link to={`/plugins/${row.connector_type}/${row.connector_key}/${row.connector_id}/details`} ><GoPencil size={20} color="#3893FF" /> </Link>
-                        </span>
+                        </span> 
                         {/* <span>
                             <TbMessagePlus size={20} color="#3893FF"/>
-                        </span> */}
+                        </span> */} 
                         <span>
-                            <LuTrash2 size={20} onClick={()=>onPluginDelete(row.connector_id)}  color="#FF7F6D"/>
+                        <LuTrash2
+                            size={20}
+                            onClick={() => handleDeleteClick(row.connector_id)}
+                            color="#FF7F6D"
+                        />
                         </span>
                     </div>
                    
@@ -66,9 +87,19 @@ const ConfigurationList = ({configurations = [], onPluginDelete})=>{
                 </div>
                 <Table columns={tableColumns} data={configurations} />
             </div>
+            {showConfirmDialog && (
+            <div className={style.ConfirmDialog}>
+                <h3>Confirmation</h3>
+                <p>Are you sure you want to delete this?</p>
+                <div className={style.ButtonGroup}>
+                <Button onClick={confirmDelete}>Delete</Button>
+                <Button onClick={cancelDelete}>Cancel</Button>
+                </div>
+            </div>
+            )}
         
         </>
     )
 }
 
-export default ConfigurationList
+export default ConfigurationList 
