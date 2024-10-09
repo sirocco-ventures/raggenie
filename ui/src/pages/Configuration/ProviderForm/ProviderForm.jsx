@@ -25,6 +25,7 @@ import { getProviderInfo } from "src/services/Plugins"
 import FileUpload from "src/components/FileUpload/FileUpload"
 import { API_URL } from "src/config/const"
 import UploadFile from "src/utils/http/UploadFile"
+import confirmDailog from "src/utils/ConfirmDialog"
 
 
 const ProviderForm = ()=>{
@@ -607,13 +608,19 @@ const onRemoveFile = (fileId) => {
     const onDeleteAction = (index, actionId)=>{
 
         confirmDailog("Do you want to delete this", "" ,()=>{
-            deleteAction(actionId).
-            then(()=>{
-                toast.success("Action deleted succesfully");
+            if(actionId){
+                deleteAction(actionId).
+                then(()=>{
+                    toast.success("Action deleted succesfully");
+                    let actionPanel = document.querySelector(`[data-action-index='${index}']`)
+                    actionPanel.remove()
+                }).
+                catch(()=>toast.error("Action deleted failed"))
+            }else{
                 let actionPanel = document.querySelector(`[data-action-index='${index}']`)
                 actionPanel.remove()
-            }).
-            catch(()=>toast.error("Action deleted failed"))
+            }
+            
         })
 
        
