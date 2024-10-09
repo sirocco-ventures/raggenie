@@ -569,6 +569,14 @@ const onRemoveFile = (fileId) => {
             setCurrentActiveTab("configuration")
         }
     }
+    const onBacktoDocumenation = ()=>{
+        console.log({l: providerDetails.category_id})
+        if([3].includes(providerDetails.category_id)){
+            setCurrentActiveTab("configuration")
+        }else{
+            setCurrentActiveTab("documentation")
+        }
+    }
 
     const renderActionHeader = (categoryId)=>{
         switch (categoryId) {
@@ -617,6 +625,7 @@ const onRemoveFile = (fileId) => {
         setActions(tempAction)
     }
 
+   
 
     useEffect(()=>{
         setTimeout(()=>{
@@ -670,8 +679,7 @@ const onRemoveFile = (fileId) => {
     return (
         <>
             <DashboardBody title={providerDetails.name}>
-                {/* activeTab={searchParams.get("activeTab") ?? "configuration"} */}
-                <Tabs activeTab={currentActiveTab}>
+                <Tabs activeTab={currentActiveTab} onTabChange={setCurrentActiveTab}>
                     <Tab  title="Configuration" tabKey="configuration" key={"configuration"}>
                         <form onSubmit={handleSubmit(onSaveConnector)}>
                             {generateGeneralDetails()}
@@ -756,7 +764,7 @@ const onRemoveFile = (fileId) => {
                          
                         <div className={style.ActionDiv}>
                             <div style={{flexGrow: 1}}>
-                                <Button type="transparent" className="icon-button" onClick={()=> providerDetails.category_id == 3 ? setCurrentActiveTab("configuration") : setCurrentActiveTab("documentation")}> <FaArrowLeft/> Back</Button>
+                                <Button type="transparent" className="icon-button" onClick={onBacktoDocumenation}> <FaArrowLeft/> Back</Button>
                             </div>
                         </div>
                            

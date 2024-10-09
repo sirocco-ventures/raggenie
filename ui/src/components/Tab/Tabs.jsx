@@ -10,11 +10,11 @@ const renderTab = (title, key, isActive, onTabClick, disabled = false, hide = fa
     )
 }
 
-const Tabs = ({ activeTab, children }) => {
+const Tabs = ({ activeTab, children, onTabChange = ()=>{} }) => {
     const [activetab, setActivetab] = useState(activeTab)
     let content = ""
 
-    const onTabClick = (key) => setActivetab(key)
+    const onTabClick = (key) => (setActivetab(key), onTabChange(key))
 
     useEffect(() => {
         setActivetab(activeTab)
