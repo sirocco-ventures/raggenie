@@ -254,8 +254,16 @@ const BotConfiguration = () => {
     const deleteCapability = (capabilityIndex, capabilityId)=>{
         confirmDialog("Do you want to delete this", "" ,()=>{
             if(capabilityId){
-                deleteBotCapability(capabilityId).then(()=>toast.success("Capability deleted")).catch(()=>toast.error("Capability deletion failed"))
+                deleteBotCapability(capabilityId).then(()=>{
+                    toast.success("Capability deleted")
+                    let capabilityContainer = document.querySelector(`[data-capability-index='${capabilityIndex}']`)
+                    capabilityContainer.remove()
+                }).catch(()=>toast.error("Capability deletion failed"))
+            }else{
+                let capabilityContainer = document.querySelector(`[data-capability-index='${capabilityIndex}']`)
+                capabilityContainer.remove()
             }
+
         })
         
        

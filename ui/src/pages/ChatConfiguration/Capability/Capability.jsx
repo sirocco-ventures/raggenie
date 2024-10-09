@@ -21,8 +21,6 @@ const Capability = ({capabilityId = "", capabilityIndex = 0, title = "", name = 
     const actionsForSelect = actionsList?.map(item=>({label: item.name, value: item.id }))
 
     const onDeleteCapability = ()=> {
-        let capabilityContainer = document.querySelector(`[data-capability-index='${capabilityIndex}']`)
-        capabilityContainer.remove()
         onCapabilityDelete(capabilityIndex, capabilityId)
     }
 
