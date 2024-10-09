@@ -1,6 +1,6 @@
 FROM node:20-alpine AS build
 
-ARG VITE_API_URL
+ARG BACKEND_URL
 
 WORKDIR /app
 
