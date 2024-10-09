@@ -495,10 +495,6 @@ const onRemoveFile = (fileId) => {
         Object.keys(localTableDetails).map(table_id=>{
             let tempCols = [];
             Object.keys(localTableDetails[table_id].columns).map(col_id=>{
-                if(localTableDetails[table_id].columns[col_id].description == ""){
-                    fullFill = false
-                }
-
                 tempCols.push({
                     column_id: col_id,
                     column_name: localTableDetails[table_id].columns[col_id].column_name,
@@ -522,12 +518,12 @@ const onRemoveFile = (fileId) => {
        
 
         if(fullFill == false){
-            toast.error("Please complete form")
+            toast.error("Table description is a required field. Please provide a valid description.")
             return
         }
 
         updateSchema(connectorId, tempTableDetails).then(response=>{
-            toast.success("Successfuly saved")
+            toast.success("Data saved successfully.")
             setCurrentActiveTab("documentation") 
         })
     }
