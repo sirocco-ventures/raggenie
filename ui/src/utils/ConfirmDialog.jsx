@@ -104,7 +104,7 @@ const confirmDialogStyle = {
 
 
 
-const  confirmDailog = (title, message, onConfirm = ()=>{}, config = {} )=>{
+const  confirmDialog = (title, message, onConfirm = ()=>{}, config = {} )=>{
   
 
     let allConfig = {...defaultValue, ...config}
@@ -150,4 +150,4 @@ const  confirmDailog = (title, message, onConfirm = ()=>{}, config = {} )=>{
     })
 }
 
-export default confirmDailog
+export default confirmDialog
