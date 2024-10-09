@@ -47,6 +47,7 @@ __prompt__ = Prompt(**{
             User question is "$question"
             Generate a JSON response in the following format without any formatting:
             {
+                "explanation": "Explain how you determined the answer using the provided context",
                 "general_message": "Answer to user question based on the context",
             }
             """
@@ -56,6 +57,7 @@ __prompt__ = Prompt(**{
             User question is "$question"
             Generate a JSON response in the following format without any formatting:
             {
+                "explanation": "Explain how you determined the answer using the provided context",
                 "general_message": "Answer to user question based on the context",
             }
             """
