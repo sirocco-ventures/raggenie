@@ -19,9 +19,9 @@ services:
       context: ./ui
       dockerfile: Dockerfile
       args:
-        - VITE_API_URL=${VITE_API_URL}
+        - BACKEND_URL=${BACKEND_URL}
     ports:
-      - "8080:8080"
+      - "8080:5000"
     volumes:
       - ./ui:/app
     depends_on:
