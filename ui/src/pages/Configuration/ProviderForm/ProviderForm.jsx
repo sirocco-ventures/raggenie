@@ -25,7 +25,7 @@ import { getProviderInfo } from "src/services/Plugins"
 import FileUpload from "src/components/FileUpload/FileUpload"
 import { API_URL } from "src/config/const"
 import UploadFile from "src/utils/http/UploadFile"
-import confirmDailog from "src/utils/ConfirmDialog"
+import confirmDialog from "src/utils/ConfirmDialog"
 
 
 const ProviderForm = ()=>{
@@ -607,7 +607,7 @@ const onRemoveFile = (fileId) => {
 
     const onDeleteAction = (index, actionId)=>{
 
-        confirmDailog("Do you want to delete this", "" ,()=>{
+        confirmDialog("Do you want to delete this", "" ,()=>{
             if(actionId){
                 deleteAction(actionId).
                 then(()=>{

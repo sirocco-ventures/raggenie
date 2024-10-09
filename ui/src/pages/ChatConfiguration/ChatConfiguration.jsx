@@ -23,6 +23,7 @@ import Modal from 'src/components/Modal/Modal';
 import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src/services/Capability';
 import { getAllActions } from 'src/services/Action';
 import { getBotConfiguration, getLLMProviders, saveBotConfiguration, saveBotInferene, testInference } from 'src/services/BotConfifuration';
+import confirmDialog from 'src/utils/ConfirmDialog';
 
 
 
@@ -251,9 +252,12 @@ const BotConfiguration = () => {
     }
 
     const deleteCapability = (capabilityIndex, capabilityId)=>{
-        if(capabilityId){
-            deleteBotCapability(capabilityId).then(()=>toast.success("Capability deleted")).catch(()=>toast.error("Capability deletion failed"))
-        }
+        confirmDialog("Do you want to delete this", "" ,()=>{
+            if(capabilityId){
+                deleteBotCapability(capabilityId).then(()=>toast.success("Capability deleted")).catch(()=>toast.error("Capability deletion failed"))
+            }
+        })
+        
        
     }
     
