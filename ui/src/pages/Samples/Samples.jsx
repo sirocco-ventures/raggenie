@@ -6,6 +6,7 @@ import SampleForm from "./SampleForm"
 import { getSamples, deleteSample } from "src/services/Sample"
 import SampleList from "./SampleList"
 import { confirmDialog } from "src/utils/confirmDialog"
+import { toast } from "react-toastify"
 
 const Samples = () => {
   const [sampleList, setSampleList] = useState([])
@@ -35,10 +36,10 @@ const Samples = () => {
       onConfirm: () => {
         deleteSample(sampleData.id).then(() => {
           getAllSamples()
+          toast.success("Sample deleted successfully")
         }).catch(error => {
           console.error("Error deleting sample:", error)
-          // You can add a simple alert here if you want to show an error message
-          alert("Failed to delete sample. Please try again.")
+          toast.error("Failed to delete sample. Please try again.")
         })
       }
     })
