@@ -251,7 +251,10 @@ const BotConfiguration = () => {
     }
 
     const deleteCapability = (capabilityIndex, capabilityId)=>{
-        deleteBotCapability(capabilityId).then(()=>toast.success("Capability deleted")).catch(()=>toast.error("Capability deletion failed"))
+        if(capabilityId){
+            deleteBotCapability(capabilityId).then(()=>toast.success("Capability deleted")).catch(()=>toast.error("Capability deletion failed"))
+        }
+       
     }
     
     const onClickNewParams = (capabilityId, capabilityIndex)=>{
