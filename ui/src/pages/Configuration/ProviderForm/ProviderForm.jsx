@@ -41,6 +41,7 @@ const ProviderForm = ()=>{
     const [progressTime, setProgressTime] = useState('');
     const pdfUploadRef = useRef(null);
     
+    
 
     const [disableConnectorSave, setDisableConnectorSave] = useState(true);
     
@@ -111,7 +112,8 @@ const ProviderForm = ()=>{
         window.localStorage.setItem("dbschema", JSON.stringify(tempTableDetails))
     
     }
-
+    
+     
 
     const rowExpandComponent = (row)=>{
         let tempTableDetails =  JSON.parse(window.localStorage.getItem("dbschema")) 
@@ -619,7 +621,9 @@ const onRemoveFile = (fileId) => {
                 <Tabs activeTab={currentActiveTab}>
                     <Tab  title="Configuration" tabKey="configuration" key={"configuration"}>
                         <form onSubmit={handleSubmit(onSaveConnector)}>
-                            {generateGeneralDetails()}
+                             
+                             {generateGeneralDetails()}
+                             
                             <div className={style.ActionDiv}>
                                 <div style={{flexGrow: 1}}>
                                     <Button type="transparent" className="icon-button" onClick={()=>navigate("/plugins")}> <FaArrowLeft/> Cancel</Button>
