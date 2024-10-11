@@ -1,9 +1,10 @@
 from app.schemas.common import LoginData
 import os
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Response, Depends, Request, Response, HTTPException
 from app.providers.config import configs
 from app.utils.jwt import JWTUtils
 from app.schemas.common import CommonResponse
+from app.providers.middleware import verify_token
 
 login = APIRouter()
 
@@ -36,3 +37,36 @@ def login_user(response: Response, user: LoginData):
             data=None,
             error=None,
         )
+
+@login.post("/logout",dependencies=[Depends(verify_token)])
+def logout_user(response: Response):
+    response.set_cookie(
+        key="auth_token",
+        value="",
+        httponly=True,
+        max_age=0,
+        path="/",
+        domain=configs.auth_server
+    )
+    return CommonResponse(
+        status=True,
+        status_code=200,
+        message="Logout Successful",
+        data=None,
+        error=None
+    )
+
+@login.get("/user_info", dependencies=[Depends(verify_token)])
+def get_user_info(request: Request):
+    token = request.cookies.get("auth_token")
+
+    jwt_utils = JWTUtils(configs.secret_key)
+    payload = jwt_utils.decode_jwt_token(token)
+
+    return CommonResponse(
+        status=True,
+        status_code=200,
+        message="User info retrieved successfully",
+        data={"username": payload.get("sub")},
+        error=None
+    )
