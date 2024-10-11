@@ -4,6 +4,7 @@ import DashboardLayout from "src/layouts/dashboard/Dashboard"
 import routes from "src/config/routes"
 import Chat from "src/pages/Chat/Chat"
 import { v4 } from "uuid"
+import AuthLogin from "src/layouts/auth/AuthLogin"
 
 const MainRoute = ()=>{
 
@@ -20,6 +21,8 @@ const MainRoute = ()=>{
                 })
                 }
             </Route>
+            <Route path="/login" element={<AuthLogin />} />
+            {/* <Route path="/signup" element={<>d</>} /> */}
         </Routes>
     )
 }

@@ -1,0 +1,61 @@
+.AuthBackground {
+    width: 100vw;
+    /* height: 100vh; */
+    background: #FFF;
+    overflow: hidden;
+    scroll-behavior: none;
+    display: flex;
+    justify-items: center;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.FIeldContainer {
+    margin-top: 67px;
+    display: flex;
+    padding: var(--spacing-xxxl, 40px) 60px;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    width: 440px;
+    min-height: auto;
+    border-radius: 8px;
+    border: 0.5px solid #F0F0F0;
+    background: #FFF;
+    box-shadow: 0px 0px 30px 0px rgba(33, 33, 52, 0.08);
+    padding-bottom: 123px;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.Welcome {
+    color: #323232;
+    text-align: center;
+    margin: 0;
+    color: #323232;
+    text-align: center;
+    font-family: Inter;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 150%;
+    /* 36px */
+}
+
+.FIeldContainer p {
+    margin: 0;
+    color: #858585;
+    text-align: center;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    /* 24px */
+}
+.SubmitButton{
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+}

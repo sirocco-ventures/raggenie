@@ -8,6 +8,7 @@ import style from './ChatConfiguration.module.css';
 import { useForm, Controller } from "react-hook-form"
 import Button from "src/components/Button/Button"
 import { FaArrowLeft } from 'react-icons/fa6';
+import { LiaToolsSolid } from "react-icons/lia";
 import { FiCheckCircle, FiXCircle} from "react-icons/fi"
 import { GoPlus } from "react-icons/go"
 import { FaRegArrowAltCircleRight } from 'react-icons/fa';
@@ -18,8 +19,9 @@ import { v4  as uuid4} from "uuid"
 import Capability from './Capability/Capability';
 import Modal from 'src/components/Modal/Modal';
 import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src/services/Capability';
-import { getBotConfiguration, getLLMProviders, saveBotConfiguration, saveBotInferene } from 'src/services/BotConfifuration';
+import { getBotConfiguration, getLLMProviders, saveBotConfiguration, saveBotInferene, testInference } from 'src/services/BotConfifuration';
 import { useNavigate } from 'react-router-dom';
+import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
 
 
 const BotConfiguration = () => {
@@ -28,7 +30,9 @@ const BotConfiguration = () => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [currentConfigID, setCurrentConfigID] = useState(undefined)
     const [currentInferenceID,setCurrentInferenceID] = useState(undefined)
-    const [disabledGenerateYAMLButton, setDisabledGenerateYAMLButton] = useState(true)
+    const [disabledInferenceSave, setDisabledInferenceSave] = useState(true)
+    const [showNotificationPanel, setShowNotificationPanel] = useState(false)
+    const [notificationMessage, setNotificationMessage] = useState("")
     
     const [activeInferencepiontTab, setActiveInferencepiontTab] = useState(true)
     const [activeTab, setActiveTab] = useState("configuration")
@@ -53,97 +57,14 @@ const BotConfiguration = () => {
 
     const navigate = useNavigate()
 
-    const customSelect = {
-        control: (provided) => ({
-            ...provided,
-            marginBottom: "10px",
-            color: '#DDDDDD',
-            background: 'transparent',
-            fontSize: "14px",
-            fontFamily: 'Inter',
-            borderColor: '#F0F0F0',
-            alignItemsCentre: "center",
-            borderRadius: '4px',
-            boxShadow: 'none',
-            padding: "5px 5px",
-            '&:hover': {
-                borderColor: '#3893FF;',
-                background: "#FFF"
-            },
-            '&:focus': {
-                borderColor: '#3893FF;',
-            },
-        }),
-        menu: (provided) => ({
-            ...provided,
-            background: 'white',
-            borderRadius: '4px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            width: '100%',
-            fontSize: "14px",
-            fontWeight: "400",
-            fontFamily: 'Inter'
-        }),
-        menuList: (provided) => ({
-            ...provided,
-            background: "#F0F0F0",
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            background: state.isSelected ? 'hsl(0deg 78.56% 95%)' : 'white',
-            color: state.isSelected ? 'hsl(0deg 78.56% 55%)' : 'black',
-            cursor: 'pointer',
-           
-            '&:hover': {
-                background: '#F9F9F9',
-            },
-        }),
-        multiValue: (provided) => ({
-            ...provided,
-            minWidth: "auto",
-            borderRadius: "20px",
-            color: '#FFFFFF',
-            background: '#74B3FF',
-            padding: "3px 6px",
-            width: "max-content",
-            cursor: "pointer",
-            '&:hover': {
-                background: '#3893FF',
-            },
-
-        }),
-        multiValueLabel: (provided) => ({
-            ...provided,
-            fontSize: "14px",
-            color: '#FFFFFF',
-            fontFamily: 'Inter'
-        }),
-        indicatorSeparator: (provided) => ({
-            ...provided,
-            display: 'none'
-        }),
-        indicatorContainer: (provided) => ({
-            ...provided,
-            display: 'none'
-        }),
-        multiValueRemove: (provided) => ({
-            ...provided,
-            color: 'white',
-            ':hover': {
-                background: 'transparent',
-                color: 'white',
-            },
-        }),
-    };
 
 
     const { register: configRegister, setValue: configSetValue, handleSubmit : configHandleSubmit, formState: configFormState, setError: configSetError, clearErrors: configClearErrors, watch: configWatch } = useForm({mode : "all"})
     const { errors: configFormError, } = configFormState
 
-    const { register: inferenceRegister, setValue: inferenceSetValue, handleSubmit : inferenceHandleSubmit, formState: inferenceFormState, control: inferenceController } = useForm({mode : "all"})
+    const { register: inferenceRegister, getValues: inferenceGetValues , setValue: inferenceSetValue, handleSubmit : inferenceHandleSubmit, formState: inferenceFormState, control: inferenceController, trigger: inferenceTrigger, watch: inferenceWatch } = useForm({mode : "all"})
     const { errors: inferenceFormError } = inferenceFormState
-
-
+   
     const onBotConfigSave = (data) => {
         saveBotConfiguration(currentConfigID, data ).then(response => {
                 setActiveInferencepiontTab(false)
@@ -161,7 +82,6 @@ const BotConfiguration = () => {
         getBotConfiguration().then(response=>{
             let configs = response.data?.data?.configurations
             if(configs?.length > 0){
-                setDisabledGenerateYAMLButton(false)
                 setActiveInferencepiontTab(false)
                 setCurrentConfigID(configs[0].id)
                 setCurrentInferenceID(configs[0].inference[0]?.id ?? undefined)
@@ -196,13 +116,7 @@ const BotConfiguration = () => {
                     
                     setSelectedProvider(tempSelectedProvider)
 
-                    setDisabledGenerateYAMLButton(false)
-
-                }else{
-                    setDisabledGenerateYAMLButton(true)
                 }
-            }else{
-                setDisabledGenerateYAMLButton(true)
             }
         })
     }
@@ -224,6 +138,29 @@ const BotConfiguration = () => {
     }
 
 
+    const onTestInference = ()=>{
+        inferenceTrigger().then((result)=>{
+            if(result){
+                testInference(currentConfigID, {
+                    "inferenceName": inferenceGetValues("inferenceName"),
+                    "inferenceAPIKey": inferenceGetValues("inferenceAPIKey"),
+                    "inferenceLLMProvider": selectedProvider.value,
+                    "inferenceModelName": inferenceGetValues("inferenceModelName"),
+                    "inferenceEndpoint":  inferenceGetValues("inferenceEndpoint"),
+                }).then(()=>{
+                    toast.success("Inference test successful")
+                    setShowNotificationPanel(false);
+                    setDisabledInferenceSave(false)
+                }).catch(err=>{
+                    toast.error("Inference endpoint verification failed")
+                    setShowNotificationPanel(true);
+                    setNotificationMessage(err.data?.error ?? "Inference endpoint verification failed")
+                });
+            }
+           
+        })
+    }
+
     
     const onInferanceSave = (data) => {
         configClearErrors("inferenceProvider")
@@ -233,11 +170,14 @@ const BotConfiguration = () => {
         }
 
 
-       
-        saveBotInferene(currentConfigID, currentInferenceID, data, selectedProvider.value).then(() => {
+        data["inferenceLLMProvider"] = selectedProvider.value
+        saveBotInferene(currentConfigID, currentInferenceID, data).then(() => {
             toast.success("Inference saved successfully")
+            setShowNotificationPanel(false);
         })
         .catch(() => {
+            setShowNotificationPanel(true);
+            setNotificationMessage(err.data?.error)
             toast.error("Failed to save inference")
         });
     }
@@ -320,7 +260,6 @@ const BotConfiguration = () => {
             return 
         }
 
-        console.log({ k: editCapabilityIndexRef})
         capabalities?.map((item, index)=>{
                
                 if(index == editCapabilityIndexRef){
@@ -344,11 +283,6 @@ const BotConfiguration = () => {
                     
                 }
             })
-            //console.log({tempCap})
-            // editCapabilityIndexRef.current.value = "";
-            // editParamsIdRef.current.value = "";
-            // setEditCapabilityIndexRef("")
-            // setEditParamsIdRef("")
             editParamsNameRef.current.value = ""
             editParamsDesc.current.value = ""
             toast.success("New parameter added")
@@ -356,8 +290,6 @@ const BotConfiguration = () => {
 
     const editParameter = (capabalityIndex, parameters)=>{
       
-        // editCapabilityIndexRef.current.value = capabalityIndex
-        // editParamsIdRef.current.value = parameters.parameter_id;
         setEditCapabilityIndexRef(capabalityIndex)
         setEditParamsIdRef(parameters.parameter_id)
         editParamsNameRef.current.value = parameters.parameter_name
@@ -369,19 +301,18 @@ const BotConfiguration = () => {
     }
 
     const deleteParameter = (capabilityIndex, paramsIndex, item)=>{
-        //console.log({capabilityIndex,paramsIndex, item})
         let tempCapabalities = JSON.parse(JSON.stringify(capabalities))
         tempCapabalities[capabilityIndex].requirements.splice(paramsIndex, 1)
-        // delete tempCapabalities[capabilityIndex].requirements[paramsIndex]
         setCapabalities(tempCapabalities)
     }
 
+    const resetTestInference = ()=>{
+        setDisabledInferenceSave(true)
+    }
 
-
+    
     useEffect(() => {
         getLLMModels();
-       
-      
     }, [])
 
 
@@ -436,22 +367,24 @@ const BotConfiguration = () => {
                                     control={inferenceController}
                                     name='inferenceProvider'
                                     render={() => (
-                                            <Select label={"LLM Provider"} placeholder={llmModels[0]?.label} options={llmModels} value={selectedProvider} onChange={setSelectedProvider} />
+                                            <Select label={"LLM Provider"} placeholder={llmModels[0]?.label} options={llmModels} value={selectedProvider} onChange={(value)=>{setSelectedProvider(value); resetTestInference() }} />
                                         )}
                                 />
                                 
                                 {configFormError["inferenceProvider"]?.message && <span style={{color: "#FF7F6D"}}>{configFormError["inferenceProvider"]?.message}</span> }
                             </div>   
-                            <Input label="Model Name" hasError={inferenceFormError["inferenceModelName"]?.message ? true : false} errorMessage={inferenceFormError["inferenceModelName"]?.message}  {...inferenceRegister("inferenceModelName", { required: "This field is required"})}  />
-                            <Input label="Endpoint" hasError={inferenceFormError["inferenceEndpoint"]?.message ? true : false} errorMessage={inferenceFormError["inferenceEndpoint"]?.message}  {...inferenceRegister("inferenceEndpoint", { required: "This field is required"})}  />
-                            <Input label="API Key" type="password" hasError={inferenceFormError["inferenceAPIKey"]?.message ? true : false} errorMessage={inferenceFormError["inferenceAPIKey"]?.message}  {...inferenceRegister("inferenceAPIKey", { required: "This field is required"})}  />
+                            <Input label="Model Name" hasError={inferenceFormError["inferenceModelName"]?.message ? true : false} errorMessage={inferenceFormError["inferenceModelName"]?.message}  {...inferenceRegister("inferenceModelName", { required: "This field is required"})}  onChange={resetTestInference} />
+                            <Input label="Endpoint" hasError={inferenceFormError["inferenceEndpoint"]?.message ? true : false} errorMessage={inferenceFormError["inferenceEndpoint"]?.message}  {...inferenceRegister("inferenceEndpoint", { required: "This field is required"})}  onChange={resetTestInference}  />
+                            <Input label="API Key" type="password" hasError={inferenceFormError["inferenceAPIKey"]?.message ? true : false} errorMessage={inferenceFormError["inferenceAPIKey"]?.message}  {...inferenceRegister("inferenceAPIKey", { required: "This field is required"})}  onChange={resetTestInference} />
                         </div>
+                        { showNotificationPanel && <NotificationPanel message={notificationMessage} containerStyle={{marginBottom: "30px"}} /> }
                         <div className={`${style.SaveConfigContainer} ${style.InferenceSaveContainer}`}>
                             <div style={{flexGrow: 1}}>
                                 <Button type="transparent" className="icon-button" onClick={()=>setActiveTab("configuration")} > <FaArrowLeft/> Back</Button>
                             </div>
                             <div>
-                                <Button buttonType="submit" className="icon-button">  Save <FiCheckCircle /></Button>
+                                 { disabledInferenceSave && <Button onClick={onTestInference} style={{marginRight: "10px"}}> Test <LiaToolsSolid/>  </Button> }
+                                <Button buttonType="submit" className="icon-button" disabled={disabledInferenceSave}>  Save <FiCheckCircle /></Button>
                             </div>
                         </div>
                     </form>
