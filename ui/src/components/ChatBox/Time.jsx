@@ -13,16 +13,6 @@ function Time({message={}, time= "", onLike = ()=>{}, onDisLike = ()=>{}, summar
                         <div className={`${message.feedback_status == 0 ? `${style.DislikeButton} ${style.ActiveDisliked}` : style.DislikeButton}`} onClick={(e)=>{onDisLike(e)}}></div>
                   </div> */}
               </div>
-              <div>
-                
-                 { message.data?.query && <div className={style.SummaryMenuContainer} onClick={onSummaryClick}>
-                        <div><span className={style.Summarylabel}>Chat Summary </span></div>
-                        <div className={`${style.SummaryImgContainer} ${summaryOpen ? style.SummaryOpenImgContainer : style.SummaryCloseImgContainer}`}> 
-                            <img src={"./assets/summary-down.svg"} className={summaryOpen ? style.SummaryOpen : style.SummaryClose } />  
-                        </div>
-                    </div>
-                  }
-              </div>
           </div>
       </>
   )
