@@ -98,3 +98,13 @@ class SampleSQLUpdate(BaseModel):
 
 class SampleSQLResponse(SampleSQLBase):
     id: int
+
+class VectorDBBase(BaseModel):
+    name: str
+    description: str
+    key: str
+    icon: str
+    config: List[Dict[str,Any]]
+
+class VectorDBResponse(VectorDBBase):
+    id: int

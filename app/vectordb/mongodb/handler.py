@@ -20,9 +20,9 @@ class AltasMongoDB(BaseVectorDB):
             self.doc_collection = self.db.get_collection('documents')
             self.cache_collection = self.db.get_collection('cache')
             self.clear_collection()
-            self.schema_index_name = "adfolk-poc-schema"
-            self.doc_index_name = "adfolk-poc-doc"
-            self.cache_index_name = "adfolk-poc-cache"
+            self.schema_index_name = "schema"
+            self.doc_index_name = "doc"
+            self.cache_index_name = "cache"
             self.emf = self.load_embeddings_function()
         except Exception as e:
             logger.critical(f"Failed connecting Altas MongoDB Vector Database: {e}")

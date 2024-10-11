@@ -223,6 +223,3 @@ class ChromaDataBase(BaseVectorDB):
 
     def find_similar_cache(self, datasource, query, count = 3):
         return self._find_similar(datasource, query, self.samples_store, count)
-
-
-

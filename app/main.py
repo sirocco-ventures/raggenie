@@ -59,6 +59,11 @@ def create_app(config):
     if err is not None:
         logger.critical(err)
 
+    logger.info("initializing vector store")
+    err = provider_svc.initialize_vectordb_provider(session)
+    if err is not None:
+        logger.critical(err)
+
     err = commonservices.check_configurations_availability(session)
     datasources = []
 

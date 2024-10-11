@@ -1,5 +1,5 @@
-from app.vectordb.chromadb import ChromaDataBase
-from app.vectordb.atlas_mongodb import AltasMongoDB
+from app.vectordb.chromadb.handler import ChromaDataBase
+from app.vectordb.mongodb.handler import AltasMongoDB
 
 from loguru import logger
 

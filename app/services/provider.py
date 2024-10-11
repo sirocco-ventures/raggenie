@@ -6,8 +6,8 @@ from app.services.connector_details import test_plugin_connection
 from app.loaders.base_loader import BaseLoader
 from app.repository import connector as conn_repo
 from fastapi import Request
-from app.utils.module_reader import get_plugin_providers
-from app.models.provider import Provider, ProviderConfig
+from app.utils.module_reader import get_plugin_providers, get_vectordb_providers
+from app.models.provider import Provider, ProviderConfig, VectorDB
 from loguru import logger
 from app.utils.module_reader import get_llm_providers
 
@@ -16,16 +16,16 @@ def test_inference_credentials(inference: conn_schemas.InferenceBase):
     Tests the connection credentials for a specific LLM inference based on its provider.
 
     Args:
-        inference (conn_schemas.InferenceBase): 
+        inference (conn_schemas.InferenceBase):
             A configuration object containing the provider details for testing the credentials.
 
     Returns:
-        Tuple[bool, str]: 
+        Tuple[bool, str]:
             - (True, "Test Credentials successfully completed") if the credentials are valid and the test is successful.
             - (None, error_message) if there was an error during the test or inference.
             - (False, "Unsupported Inference") if the LLM provider is not recognized or unsupported.
     """
-    
+
     model_configs = [{
         "unique_name": inference.name,
         "name": inference.model,
@@ -38,13 +38,36 @@ def test_inference_credentials(inference: conn_schemas.InferenceBase):
         inference_model = BaseLoader(model_configs= model_configs).load_model(inference.name)
     except Exception as error:
         return None, str(error)
-    
+
     output, response_metadata = inference_model.do_inference(
             "hi", []
     )
     if output['error'] is not None:
         return None, output['error']
     return True, "Test Credentials successfully completed"
+
+def initialize_vectordb_provider(db:Session):
+    """
+    Initializes the vector database by fetching the vector database data and inserting or updating
+    their details in the database.
+
+    Args:
+        db (Session): Database session used for performing transactions.
+    """
+
+    vector_dbs = get_vectordb_providers()
+
+    for i in vector_dbs:
+        data, is_error = repo.insert_or_update_data(db,VectorDB, {"key":i['vectordb_name']},{
+            "name":i["display_name"],
+            "description":i["description"],
+            "icon":i["icon"],
+            "key":i["vectordb_name"],
+            "config": i["config"] if i["config"] is not None else None
+        })
+
+        if is_error:
+            logger.error(f"Error inserting {i['vectordb_name']} {data}")
 
 
 def initialize_plugin_providers(db:Session):
@@ -223,6 +246,37 @@ def test_credentials(provider_id: int, config: schemas.TestCredentials, db: Sess
         case _:
             return None, "Unsupported Provider"
 
+def getvectordbs(db: Session):
+    """
+    Returns a list of available vector databases.
+
+    Args:
+        request (Request): Request object used for handling incoming requests.
+
+    Returns:
+        dict: List of available vector databases.
+    """
+
+    vector_dbs,is_error = repo.get_vectordb_providers(db)
+
+    if is_error:
+        return vector_dbs, "DB Error"
+
+    if not vector_dbs:
+        return [], None
+
+    resp = [
+        schemas.VectorDBResponse(
+            id=db.id,
+            name=db.name,
+            description=db.description,
+            icon=db.icon,
+            key=db.key,
+            config=db.config if db.config is not None else [],
+        ) for db in vector_dbs
+    ]
+
+    return resp, None
 
 def getllmproviders(request: Request):
 

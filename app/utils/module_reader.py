@@ -3,7 +3,25 @@ import importlib
 import pkgutil
 
 
+def get_vectordb_providers():
+    vectordb = importlib.import_module("app.vectordb")
+    modules = []
+    for module_info in pkgutil.iter_modules(vectordb.__path__):
+        try:
+            module = importlib.import_module(f"{vectordb.__name__}.{module_info.name}")
+            modules.append({
+                "icon": getattr(module, '__icon__'),
+                "vectordb_name": getattr(module, '__vectordb_name__'),
+                "display_name": getattr(module, '__display_name__'),
+                "description": getattr(module, '__description__'),
+                "config": getattr(module, "__connection_args__")
+            })
 
+        except Exception as e:
+            if module_info.name!= "loader":
+                logger.warning(f"failed loading {module_info.name} {e}")
+
+    return modules
 
 def get_plugin_providers():
     plugins = importlib.import_module("app.plugins")

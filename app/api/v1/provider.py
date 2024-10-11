@@ -105,6 +105,35 @@ def test_connections(provider_id: int, config: schemas.TestCredentials, db: Sess
         error=None,
     )
 
+@router.get("/vectordbs",response_model= resp_schemas.CommonResponse)
+def getvectordbs(db: Session = Depends(get_db)):
+    """
+    Retrieves a list of available VectorDB providers.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        CommonResponse: A response containing either the list of VectorDB providers or an error message.
+    """
+
+    result, is_error = svc.getvectordbs(db)
+
+
+    if is_error:
+        return commons.is_error_response("DB error", result, {"vectordbs": []})
+
+    if not result:
+        return commons.is_none_reponse("Sample SQL Not Found", {"vectordbs": []})
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message="VectorDB providers found",
+        data={"vectordbs":[result]},
+        error=None,
+    )
+
 @router.get("/llmproviders", response_model=resp_schemas.CommonResponse)
 def getllmproviders(request: Request):
 
@@ -142,11 +171,11 @@ def test_inference_connections(inference: conn_schemas.InferenceBase):
     Tests the inference connections by validating the credentials for a specific LLM provider.
 
     Args:
-        inference (conn_schemas.InferenceBase): 
+        inference (conn_schemas.InferenceBase):
             Configuration object containing the provider details, including model name, API key, and endpoint, for testing the connections.
 
     Returns:
-        resp_schemas.CommonResponse: 
+        resp_schemas.CommonResponse:
             - Response object containing:
                 - status (bool): Indicates whether the credentials validation was successful.
                 - status_code (int): HTTP status code (200 for success, 422 for failure).

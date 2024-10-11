@@ -54,6 +54,19 @@ class ProviderConfig(Base):
 
     provider = relationship('Provider', back_populates='providerconfig')
 
+class VectorDB(Base):
+    __tablename__ = "vectordb"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False, index=True)
+    description = Column(String, nullable=False)
+    key = Column(String, unique=True, nullable=False, index=True)
+    icon = Column(String, nullable=False)
+    config = Column(JSON)
+    enable = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 class SampleSQL(Base):
     __tablename__ = "sample_sql"
