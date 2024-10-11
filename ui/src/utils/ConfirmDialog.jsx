@@ -10,6 +10,10 @@ const defaultValue = {
     deleteButtonIconsvg: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path d="M10.6667 4.00016V3.46683C10.6667 2.72009 10.6667 2.34672 10.5213 2.06151C10.3935 1.81063 10.1895 1.60665 9.93865 1.47882C9.65344 1.3335 9.28007 1.3335 8.53333 1.3335H7.46667C6.71993 1.3335 6.34656 1.3335 6.06135 1.47882C5.81046 1.60665 5.60649 1.81063 5.47866 2.06151C5.33333 2.34672 5.33333 2.72009 5.33333 3.46683V4.00016M6.66667 7.66683V11.0002M9.33333 7.66683V11.0002M2 4.00016H14M12.6667 4.00016V11.4668C12.6667 12.5869 12.6667 13.147 12.4487 13.5748C12.2569 13.9511 11.951 14.2571 11.5746 14.4488C11.1468 14.6668 10.5868 14.6668 9.46667 14.6668H6.53333C5.41323 14.6668 4.85318 14.6668 4.42535 14.4488C4.04903 14.2571 3.74307 13.9511 3.55132 13.5748C3.33333 13.147 3.33333 12.5869 3.33333 11.4668V4.00016" stroke="#FF7F6D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>,
+    cancelButtonIconsvg: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="7.5" stroke="#3893FF" strokeWidth="1"/>
+        <path d="M5 5L11 11M11 5L5 11" stroke="#3893FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>,
     onCancel: () => { },
     onConfirm: () => { }
 };
@@ -68,7 +72,7 @@ const confirmDialogStyle = {
         fontStyle: "normal",
         fontWeight: "500",
         lineHeight: "150%",
-        marginRight: "10px"
+        marginLeft: "10px"
     },
     deleteButton: {
         padding: "3px 13px",
@@ -82,14 +86,14 @@ const confirmDialogStyle = {
         fontStyle: "normal",
         fontWeight: "500",
         lineHeight: "150%",
-        marginLeft: "10px"
+        marginRight: "10px"
     },
     buttonContentAlign: {
         display: "flex",
         flexDirection: "row"
     },
     ButtonIcon: {
-        marginRight: "5px"
+        marginLeft: "5px"
     }
 };
 
@@ -119,24 +123,6 @@ const confirmDialog = (
                         </div>
                         <div style={confirmDialogStyle.actionContainer}>
                             <button
-                                style={confirmDialogStyle.cancelButton}
-                                onClick={() => {
-                                    allConfig.onCancel();
-                                    onClose();
-                                }}
-                            >
-                                <div style={confirmDialogStyle.buttonContentAlign}>
-                                    {cancelButtonIconsvg && (
-                                        <div style={confirmDialogStyle.ButtonIcon}>
-                                            {cancelButtonIconsvg}
-                                        </div>
-                                    )}
-                                    <div>
-                                        {allConfig.cancelButtonText}
-                                    </div>
-                                </div>
-                            </button>
-                            <button
                                 style={confirmDialogStyle.deleteButton}
                                 onClick={() => {
                                     onConfirm();
@@ -144,14 +130,32 @@ const confirmDialog = (
                                 }}
                             >
                                 <div style={confirmDialogStyle.buttonContentAlign}>
+                                    <div>
+                                        {confirmButtonText}
+                                    </div>
                                     {deleteButtonIconsvg && (
                                         <div style={confirmDialogStyle.ButtonIcon}>
                                             {deleteButtonIconsvg}
                                         </div>
                                     )}
+                                </div>
+                            </button>
+                            <button
+                                style={confirmDialogStyle.cancelButton}
+                                onClick={() => {
+                                    allConfig.onCancel();
+                                    onClose();
+                                }}
+                            >
+                                <div style={confirmDialogStyle.buttonContentAlign}>
                                     <div>
-                                        {confirmButtonText}
+                                        {allConfig.cancelButtonText}
                                     </div>
+                                    {cancelButtonIconsvg && (
+                                        <div style={confirmDialogStyle.ButtonIcon}>
+                                            {cancelButtonIconsvg}
+                                        </div>
+                                    )}
                                 </div>
                             </button>
                         </div>
