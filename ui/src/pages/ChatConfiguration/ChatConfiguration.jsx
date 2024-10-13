@@ -132,13 +132,11 @@ const BotConfiguration = () => {
                     tempSelectedCapabilities.push({ value: cap.id, label: cap.name })
                 })
                 setSelectedOptions(tempSelectedCapabilities)
-                console.log({k :configs[0].inference[0]?.id})
+                
 
-                if(configs[0].capabilities?.length == 0) {
-                    setCapabalities([{id: undefined, title:`Capability 1`, name:"", description:"", requirements: [], isCollapse: false}])
-                }else{
-                    setCapabalities(configs[0].capabilities)
-                }
+                 if(configs[0].capabalities?.length>0){
+                    setCapabalities(configs[0].capabalities)
+                 } 
 
                 if(configs[0].inference[0]?.id){
                     let inference = configs[0].inference[0];
