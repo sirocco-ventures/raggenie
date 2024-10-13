@@ -22,6 +22,10 @@ import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src
 import { getBotConfiguration, getLLMProviders, saveBotConfiguration, saveBotInferene, testInference } from 'src/services/BotConfifuration';
 import { useNavigate } from 'react-router-dom';
 import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
+import PostService from 'src/utils/http/PostService';
+import ToastIcon from "./assets/ToastIcon.svg"
+import { RiRestartLine } from 'react-icons/ri';
+import { IoMdClose } from 'react-icons/io';
 
 
 const BotConfiguration = () => {
@@ -65,19 +69,30 @@ const BotConfiguration = () => {
     const { register: inferenceRegister, getValues: inferenceGetValues , setValue: inferenceSetValue, handleSubmit : inferenceHandleSubmit, formState: inferenceFormState, control: inferenceController, trigger: inferenceTrigger, watch: inferenceWatch } = useForm({mode : "all"})
     const { errors: inferenceFormError } = inferenceFormState
 
-
-    const ToastMessage = ({ message, icon }) => {
+    const ToastCloseButton = ({ closeToast }) => {
         return (
-          <div className="custom-toast">
-            {icon && <span className="toast-icon">{icon}</span>}
-            <span className="toast-message">{message}</span>
-          </div>
+          <button className={style.CustomBotCloseButton} onClick={closeToast}>
+            <IoMdClose size={18} />
+          </button>
         );
-      };  
+      };
+
+
+    const ToastMessage = ({ message}) => {
+        return (
+                <div className={style.BotRestartToast}>
+                <span className={style.BotRestartMessage}><img src={ToastIcon} alt="toasticon"/>{message}</span>
+                <Button onClick={restartChatBot}>
+                    Restart Chatbot  <RiRestartLine size={24}/>
+                </Button>
+            </div>
+        );
+      };
+      
 
     const restartChatBot = ()=>{
         PostService(API_URL + `/connector/createyaml/${currentConfigID}`,{},{loaderText: "Restating Chatbot"}).then(()=>{
-            toast(<ToastMessage/>)
+            toast.success("Bot Restarted successfully:")
         }).catch(()=>{
             toast.error("Failed to restart bot")
         })
@@ -89,8 +104,8 @@ const BotConfiguration = () => {
         saveBotConfiguration(currentConfigID, data ).then(response => {
                 setActiveInferencepiontTab(false)
                 setCurrentConfigID(response.data.data.configuration.id)
-                toast.success("Configuration saved successfully:")
-                restartChatBot()
+                toast(<ToastMessage message={`Please restart the bot to get
+                changes to take effect. `}/>,{autoClose:true,hideProgressBar:true,className:style.ToastContainerClass,closeButton:<ToastCloseButton/>})
                 setActiveTab("inferenceendpoint")
         })
         .catch(() => {
@@ -376,7 +391,6 @@ const BotConfiguration = () => {
                             </div>
                         </div>
                     </form>
-                    <ToastContainer />
                 </Tab>
 
                 {/*==============second tab==================*/}
