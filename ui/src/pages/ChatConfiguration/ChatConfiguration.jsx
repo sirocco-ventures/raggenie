@@ -102,11 +102,11 @@ const BotConfiguration = () => {
    
     const onBotConfigSave = (data) => {
         saveBotConfiguration(currentConfigID, data ).then(response => {
-                setActiveInferencepiontTab(false)
-                setCurrentConfigID(response.data.data.configuration.id)
-                toast(<ToastMessage message={`Please restart the bot to get
-                changes to take effect. `}/>,{autoClose:true,hideProgressBar:true,className:style.ToastContainerClass,closeButton:<ToastCloseButton/>})
-                setActiveTab("inferenceendpoint")
+            toast(<ToastMessage message={`Please restart the bot to get
+            changes to take effect. `} />, { autoClose: true, hideProgressBar: true, className: style.ToastContainerClass, closeButton: <ToastCloseButton /> })
+            setActiveInferencepiontTab(false)
+            setCurrentConfigID(response.data.data.configuration.id)
+            setActiveInferencepiontTab(true)
         })
         .catch(() => {
             toast.error("Configuration faild to save")
