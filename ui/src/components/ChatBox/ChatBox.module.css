@@ -770,3 +770,51 @@
 
 
 /* Chat Summary */
+
+
+/* Error Message Style */
+.ErrorContainer {
+    width: 401px;
+    border-radius: 4px;
+    border: 1px solid #F0F0F0;
+    background: #FFF;
+    padding: 10px;
+}
+
+.ErrorHeading {
+    color: #323232;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    margin: 0px;
+    margin-bottom: 10px;
+}
+
+.ErrorDescription {
+    color: #858585;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 23px !important;
+}
+
+.ErrorButtonAnchor {
+    text-decoration: none;
+}
+
+.ErrorActionButton {
+    border-radius: 4px;
+    background: #ECF5FF;
+    border: 0px;
+    padding: 6px 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+/* Error Message Style */
