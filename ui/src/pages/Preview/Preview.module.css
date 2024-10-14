@@ -41,6 +41,7 @@
     margin: 2.5em 0;
     padding: 0;
     display: inline-block;
+    margin-left: 35px;
 }
   
 .StatusTimeline li {
@@ -71,6 +72,7 @@
     justify-content: center;
     color: #323232;
     border: 10px solid white;
+    font-family: Inter;
 }
 
 .StatusTimeline li.Current::before {
