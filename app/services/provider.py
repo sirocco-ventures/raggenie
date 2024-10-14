@@ -2,12 +2,12 @@ from sqlalchemy.orm import Session
 import app.repository.provider as repo
 import app.schemas.provider as schemas
 import app.schemas.connector as conn_schemas
-from app.services.connector_details import test_plugin_connection
+from app.services.connector_details import test_plugin_connection, test_vector_db_credentials
 from app.loaders.base_loader import BaseLoader
 from app.repository import connector as conn_repo
 from fastapi import Request
 from app.utils.module_reader import get_plugin_providers, get_vectordb_providers
-from app.models.provider import Provider, ProviderConfig, VectorDB
+from app.models.provider import Provider, ProviderConfig, VectorDBConfig
 from loguru import logger
 from app.utils.module_reader import get_llm_providers
 
@@ -58,7 +58,7 @@ def initialize_vectordb_provider(db:Session):
     vector_dbs = get_vectordb_providers()
 
     for i in vector_dbs:
-        data, is_error = repo.insert_or_update_data(db,VectorDB, {"key":i['vectordb_name']},{
+        data, is_error = repo.insert_or_update_data(db,VectorDBConfig, {"key":i['vectordb_name']},{
             "name":i["display_name"],
             "description":i["description"],
             "icon":i["icon"],
@@ -213,6 +213,25 @@ def get_provider(provider_id: int,db: Session):
 
     return provider_resp, None
 
+def test_vectordb_credentials(config:schemas.TestVectorDBCredentials, db:Session):
+    """
+    Tests the credentials of a specific vector database based on its configuration.
+
+    Args:
+        config (schemas.TestVectorDBCredentials): Credentials to test.
+        db (Session): Database session used for performing transactions.
+
+    Returns:
+        (str, str | None): A success message or an error message if unsupported.
+    """
+    db_config, is_error = repo.get_vector_db_config(db, config.vectordb_config["key"])
+
+    match config.vectordb_config["key"]:
+        case ("chromadb" | "mongodb"):
+            return test_vector_db_credentials(db_config,config, config.vectordb_config["key"])
+        case _:
+            return None, "Unsupported Vector Database Provider"
+
 
 def test_credentials(provider_id: int, config: schemas.TestCredentials, db: Session):
 
@@ -266,7 +285,7 @@ def getvectordbs(db: Session):
         return [], None
 
     resp = [
-        schemas.VectorDBResponse(
+        schemas.VectorDBConfigResponse(
             id=db.id,
             name=db.name,
             description=db.description,

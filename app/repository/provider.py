@@ -44,10 +44,15 @@ def get_provider_by_id(provider_id: int, db: Session):
         return provider, False
     except SQLAlchemyError as e:
         return e, True
+def get_vector_db_config(db: Session, key: str):
+    try:
+        return db.query(models.VectorDBConfig).filter(models.VectorDBConfig.key==key).first(), False
+    except SQLAlchemyError as e:
+        return e, True
 
 def get_vectordb_providers(db:Session):
     try:
-        return db.query(models.VectorDB).all(), False
+        return db.query(models.VectorDBConfig).all(), False
     except SQLAlchemyError as e:
         return e, True
 

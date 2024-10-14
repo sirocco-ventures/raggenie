@@ -16,15 +16,6 @@ __connection_args__ = [
         "required": True,
         "slug": "uri",
         "field": "uri"
-    },
-    {
-        "type": 1,
-        "generic_name": "MongoDB password",
-        "description": "Password to connect to MongoDB",
-        "order": 2,
-        "required": True,
-        "slug": "password",
-        "field": "password"
     }
 ]
 

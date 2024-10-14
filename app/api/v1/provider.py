@@ -105,6 +105,36 @@ def test_connections(provider_id: int, config: schemas.TestCredentials, db: Sess
         error=None,
     )
 
+@router.post("/vectordbs/test_credentials", response_model=resp_schemas.CommonResponse)
+def test_vectordb_credentials(config: schemas.TestVectorDBCredentials, db: Session = Depends(get_db)):
+    """
+    Tests the credentials for a VectorDB provider.
+
+    Args:
+        config (TestVectorDBCredentials): The credentials to test.
+        db (Session): Database session dependency.
+
+    Returns:
+        CommonResponse: A response indicating the success or failure of the credential test.
+    """
+    success, message = svc.test_vectordb_credentials(config, db)
+
+    if not success:
+        return resp_schemas.CommonResponse(
+            status=False,
+            status_code=422,
+            message="Test credentials Failed",
+            error=message,
+        )
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message=message,
+        error=None,
+    )
+
+
 @router.get("/vectordbs",response_model= resp_schemas.CommonResponse)
 def getvectordbs(db: Session = Depends(get_db)):
     """

@@ -86,6 +86,9 @@ class ProviderConfigList(BaseModel):
 class TestCredentials(BaseModel):
     provider_config: Dict[str, Any]
 
+class TestVectorDBCredentials(BaseModel):
+    vectordb_config: Dict[str, Any]
+
 class SampleSQLBase(BaseModel):
     description: str
     sql_metadata: Optional[Dict] = None
@@ -99,12 +102,12 @@ class SampleSQLUpdate(BaseModel):
 class SampleSQLResponse(SampleSQLBase):
     id: int
 
-class VectorDBBase(BaseModel):
+class VectorDBConfigBase(BaseModel):
     name: str
     description: str
     key: str
     icon: str
     config: List[Dict[str,Any]]
 
-class VectorDBResponse(VectorDBBase):
+class VectorDBConfigResponse(VectorDBConfigBase):
     id: int

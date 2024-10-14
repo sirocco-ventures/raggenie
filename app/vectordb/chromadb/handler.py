@@ -46,8 +46,10 @@ class ChromaDataBase(BaseVectorDB):
                 metadata={"hnsw:space": "cosine"}
             )
             logger.info(f"Connected to ChromaDB")
+            return None
         except Exception as e:
             logger.critical(f"Failed connecting ChromaDB: {e}")
+            return str(e)
 
 
 

@@ -1,12 +1,13 @@
 import pymongo
 from loguru import logger
 from app.base.base_vectordb import BaseVectorDB
+import urllib.parse
 
 
 
 class AltasMongoDB(BaseVectorDB):
-    def __init__(self, uri: str , password: str, path:str , embeddings: dict):
-        self.uri = uri.replace('<db_password>',password)
+    def __init__(self, uri: str , embeddings: dict={"provider": "default"}):
+        self.uri = uri
         self.client = None
         self.embeddings = embeddings
         self.EMBEDDING_FIELD_NAME = "embeddings"
@@ -24,8 +25,10 @@ class AltasMongoDB(BaseVectorDB):
             self.doc_index_name = "doc"
             self.cache_index_name = "cache"
             self.emf = self.load_embeddings_function()
+            return None
         except Exception as e:
             logger.critical(f"Failed connecting Altas MongoDB Vector Database: {e}")
+            return str(e)
 
     def clear_collection(self):
         self.schema_collection.delete_many({})  # Delete all documents in the collection

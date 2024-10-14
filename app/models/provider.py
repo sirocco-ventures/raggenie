@@ -54,8 +54,8 @@ class ProviderConfig(Base):
 
     provider = relationship('Provider', back_populates='providerconfig')
 
-class VectorDB(Base):
-    __tablename__ = "vectordb"
+class VectorDBConfig(Base):
+    __tablename__ = "vectordbconfig"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False, index=True)
