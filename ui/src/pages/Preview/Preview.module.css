@@ -5,18 +5,119 @@
 }
 .EmptyDataContainer {
     text-align: center;
-    margin-top: 20vh;
+    margin-top: 10vh;
 }
 
-.EmptyDataTitleSpan {
-    color: var(--neural-3);
+
+.EmptyDataHeader {
+    
+}
+
+.EmptyDataHeading {
+    color: #323232;
     text-align: center;
-    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Inter;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+}
+
+.EmptyDataParagraph {
+
+    color: #888787;
+    text-align: center;
     font-family: Inter;
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
-    line-height: 20px;
+    text-align: center;
+    width: 500px;
+    margin: auto;
+
 }
+
+
+.StatusTimeline {
+    margin: 2.5em 0;
+    padding: 0;
+    display: inline-block;
+}
+  
+.StatusTimeline li {
+    list-style: none;
+    margin: auto;
+    min-height: 30px;
+    border-left: 3px solid #F0F0F0;
+    padding: 0 0 40px 30px;
+    position: relative;
+    cursor: pointer;
+}
+  
+.StatusTimeline li:last-child {
+    border-left: 0;
+}
+
+  
+.StatusTimeline li::before {
+    position: absolute;
+    left: -28px;
+    border-radius: 500%;
+    background: #F0F0F0;
+    height: 32px;
+    width: 32px;
+    content:  attr(data-index);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #323232;
+    border: 10px solid white;
+}
+
+.StatusTimeline li.Current::before {
+    background: #FCBD73;
+    color: #FFFFFF;
+}
+
+.StatusTimeline li.Completed::before {
+    background: #76D3AC;
+    color: #FFFFFF;
+}
+
+
+
+.StatusTimeline li:last-child::before {
+    left: -25px;
+}
+
+.StatusTimelineContent {
+    padding-top: 14px;
+    text-align: left;
+}
+
+.StatusTimelineContentHide {
+    display: none;
+}
+
+
+.StatusTimelineTitle {
+    color: #323232;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    margin: 0px;
+}
+
+.StatusTimelineDescription {
+    color: #888787;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 26px;
+}
+  
+
 
 /* end Empty Configuration Page ****/
