@@ -4,6 +4,7 @@ from app.api.v1.main_router import MainRouter
 from app.api.v1.connector import router as ConnectorRouter
 from app.api.v1.llmchat import chat_router
 from app.api.v1.provider import router as ProviderRouter
+from app.api.v1.provider import vectordb as vectordb
 from app.api.v1.connector import cap_router as capabilityrouter
 from app.api.v1.connector import inference_router as inference_router
 from app.api.v1.connector import actions as actions
@@ -134,6 +135,7 @@ def create_app(config):
     app.include_router(inference_router, prefix="/api/v1/inference")
     app.include_router(actions, prefix="/api/v1/actions")
     app.include_router(sample_sql, prefix="/api/v1/sql")
+    app.include_router(vectordb, prefix="/api/v1/vectordb")
 
     curr_schema = app.openapi()
     curr_schema["info"]["title"] = "Rag genie Chat API"

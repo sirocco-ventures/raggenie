@@ -134,3 +134,119 @@ def get_sql_by_key(key: str, db: Session):
     except SQLAlchemyError as e:
         db.rollback()
         return str(e),True
+
+def create_vectordb_instance(vectordb, db: Session):
+    try:
+        db_vectordb = models.VectorDB(
+            vectordb=vectordb.vectordb,
+            vectordb_config=vectordb.vectordb_config,
+        )
+        db.add(db_vectordb)
+        db.commit()
+        db.refresh(db_vectordb)
+
+        db_vectordb_mapping = models.VectorDBConfigMapping(
+            vector_db_id=db_vectordb.id,
+            config_id=vectordb.config_id,
+        )
+        db.add(db_vectordb_mapping)
+        db.commit()
+        db.refresh(db_vectordb_mapping)
+
+        return (db_vectordb, db_vectordb_mapping), False
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        return str(e), True
+
+
+def get_vectordb_instance(id: int, db: Session):
+    """
+    Retrieves a VectorDB instance by its ID, along with its associated VectorDBConfigMapping, using joinedload.
+
+    Args:
+        id (int): The ID of the VectorDB instance.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: The VectorDB instance and its associated config mapping, or an error message.
+    """
+
+    try:
+        db_vectordb = db.query(models.VectorDB).options(
+            joinedload(models.VectorDB.vectordb_config_mapping)
+        ).filter(models.VectorDB.id == id).first()
+
+        if not db_vectordb:
+            return "VectorDB not found", True
+
+
+        return db_vectordb, False
+
+    except SQLAlchemyError as e:
+        return str(e), True
+
+def delete_vectordb_instance(id: int, db: Session):
+    """
+    Deletes a VectorDB instance and its associated config mapping by ID.
+
+    Args:
+        id (int): The ID of the VectorDB instance to delete.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: Success message and error flag.
+    """
+    try:
+        db_vectordb = db.query(models.VectorDB).filter(models.VectorDB.id == id).first()
+
+        if not db_vectordb:
+            return "VectorDB instance not found", True
+
+        db.query(models.VectorDBConfigMapping).filter(
+            models.VectorDBConfigMapping.vector_db_id == id
+        ).delete()
+
+        db.delete(db_vectordb)
+        db.commit()
+
+        return "VectorDB instance deleted successfully", False
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        return str(e), True
+
+def update_vectordb_instance(id: int, vectordb: schemas.VectorDBBase, db: Session):
+    """
+    Updates a VectorDB instance and its associated config mapping by ID.
+
+    Args:
+        id (int): The ID of the VectorDB instance to update.
+        vectordb (schemas.VectorDBBase): The updated data for the VectorDB instance.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: Updated VectorDB instance and error flag.
+    """
+    try:
+        db_vectordb = db.query(models.VectorDB).options(
+            joinedload(models.VectorDB.vectordb_config_mapping)
+        ).filter(models.VectorDB.id == id).first()
+
+        if not db_vectordb:
+            return "VectorDB instance not found", True
+
+        db_vectordb.vectordb = vectordb.vectordb
+        db_vectordb.vectordb_config = vectordb.vectordb_config
+
+        for mapping in db_vectordb.vectordb_config_mapping:
+            mapping.config_id = vectordb.config_id
+
+        db.commit()
+        db.refresh(db_vectordb)
+
+        return db_vectordb, False
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        return str(e), True

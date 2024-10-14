@@ -556,3 +556,96 @@ def insert_vector_store(request, sql, db: Session):
     except Exception as e:
 
         return str(e)
+
+def create_vectordb_instance(vectordb, db:Session):
+    """
+    Creates a new vector database instance in the database.
+
+    Args:
+        request (Request): Request object to access app components.
+        vectordb (schemas.VectorDBBase): Data for the new vector database instance.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: VectorDBConfigResponse schema and error message (if any).
+    """
+
+    (vectordb_instance, vectordb_mapping), is_error = repo.create_vectordb_instance(vectordb, db)
+
+    if is_error:
+        return vectordb, "DB Error"
+
+    return schemas.VectorDBResponse(
+        id=vectordb.id,
+        vectordb = vectordb_instance.vectordb,
+        vector_config = vectordb_instance.config,
+        config_id=vectordb_mapping.config_id
+    ), None
+
+def get_vectordb_instance(id: int, db: Session):
+    """
+    Retrieves a VectorDB instance by its ID.
+
+    Args:
+        id (int): The ID of the VectorDB instance.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: VectorDBResponse schema and error message (if any).
+    """
+
+    vectordb_instance, is_error = repo.get_vectordb_instance(id, db)
+
+    if is_error:
+        return vectordb_instance, "DB Error"
+
+    return schemas.VectorDBResponse(
+        id=vectordb_instance.id,
+        vectordb=vectordb_instance.vectordb,
+        vector_config=vectordb_instance.vectordb_config,
+        config_id=vectordb_instance.vectordb_config_mapping[0].config_id
+    ), None
+
+def delete_vectordb_instance(id: int, db: Session):
+    """
+    Deletes a VectorDB instance and its associated config mapping by ID.
+
+    Args:
+        id (int): The ID of the VectorDB instance to delete.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: Success message and error message (if any).
+    """
+
+    success, is_error = repo.delete_vectordb_instance(id, db)
+
+    if is_error:
+        return success, "DB Error or VectorDB not found"
+
+    return success, None
+
+def update_vectordb_instance(id: int, vectordb: schemas.VectorDBBase, db: Session):
+    """
+    Updates a VectorDB instance and its associated config mapping by ID.
+
+    Args:
+        id (int): The ID of the VectorDB instance to update.
+        vectordb (schemas.VectorDBBase): The updated data for the VectorDB instance.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: Updated VectorDB instance and error message (if any).
+    """
+
+    updated_instance, is_error = repo.update_vectordb_instance(id, vectordb, db)
+
+    if is_error:
+        return updated_instance, "DB Error or VectorDB not found"
+
+    return schemas.VectorDBResponse(
+        id=updated_instance.id,
+        vectordb=updated_instance.vectordb,
+        vector_config=updated_instance.vectordb_config,
+        config_id=updated_instance.vectordb_config_mapping[0].config_id
+    ), None

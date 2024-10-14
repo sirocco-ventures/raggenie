@@ -80,3 +80,30 @@ class SampleSQL(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     connectors = relationship('Connector', back_populates='sample_sql')
+
+class VectorDB(Base):
+    __tablename__ = "vectordb"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vectordb = Column(String, nullable=False)
+    vectordb_config = Column(JSON, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    vectordb_config_mapping = relationship('VectorDBConfigMapping', back_populates='vector_db')
+
+
+class VectorDBConfigMapping(Base):
+    __tablename__ = "vectordb_config_mapping"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vector_db_id = Column(Integer, ForeignKey('vectordb.id'), nullable=False)
+    config_id = Column(Integer, ForeignKey('configurations.id'), nullable=False)
+    enable = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    vector_db = relationship('VectorDB', back_populates='vectordb_config_mapping')
+    configuration = relationship('Configuration', back_populates='vectordb_config_mapping')
