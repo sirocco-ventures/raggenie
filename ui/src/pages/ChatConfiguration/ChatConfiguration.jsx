@@ -90,28 +90,40 @@ const BotConfiguration = () => {
       };
       
 
-    const restartChatBot = ()=>{
-        PostService(API_URL + `/connector/createyaml/${currentConfigID}`,{},{loaderText: "Restating Chatbot"}).then(()=>{
-            toast.success("Bot Restarted successfully:")
-        }).catch(()=>{
-            toast.error("Failed to restart bot")
-        })
-      }
-
-     
-   
-    const onBotConfigSave = (data) => {
-        saveBotConfiguration(currentConfigID, data ).then(response => {
-            toast(<ToastMessage message={`Please restart the bot to get
-            changes to take effect. `} />, { autoClose: true, hideProgressBar: true, className: style.ToastContainerClass, closeButton: <ToastCloseButton /> })
-            setActiveInferencepiontTab(false)
-            setCurrentConfigID(response.data.data.configuration.id)
-            setActiveInferencepiontTab(true)
-        })
-        .catch(() => {
-            toast.error("Configuration faild to save")
-        });
-    }
+      const restartChatBot = () => {
+        toast.dismiss("RAG001"); 
+        PostService(API_URL + `/connector/createyaml/${currentConfigID}`, {}, { loaderText: "Restarting Chatbot" })
+          .then(() => {
+            toast.success("Bot Restarted successfully:");
+          })
+          .catch(() => {
+            toast.error("Failed to restart bot");
+          });
+      };
+      
+      const onBotConfigSave = (data) => {
+        saveBotConfiguration(currentConfigID, data)
+          .then((response) => {
+            toast(
+              <ToastMessage message={`Please restart the bot to get changes to take effect.`} />,
+              {
+                toastId: "RAG001", 
+                autoClose: false, 
+                hideProgressBar: true,
+                className: style.ToastContainerClass,
+                closeButton: <ToastCloseButton />,
+              }
+            );
+      
+            setActiveInferencepiontTab(false);
+            setCurrentConfigID(response.data.data.configuration.id);
+            setActiveInferencepiontTab(true);
+          })
+          .catch(() => {
+            toast.error("Configuration failed to save");
+          });
+      };
+      
 
     const getCurrentConfig = (llmsList)=>{
         
