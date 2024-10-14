@@ -576,9 +576,9 @@ def create_vectordb_instance(vectordb, db:Session):
         return vectordb, "DB Error"
 
     return schemas.VectorDBResponse(
-        id=vectordb.id,
+        id=vectordb_instance.id,
         vectordb = vectordb_instance.vectordb,
-        vector_config = vectordb_instance.config,
+        vectordb_config = vectordb_instance.vectordb_config,
         config_id=vectordb_mapping.config_id
     ), None
 
@@ -602,7 +602,7 @@ def get_vectordb_instance(id: int, db: Session):
     return schemas.VectorDBResponse(
         id=vectordb_instance.id,
         vectordb=vectordb_instance.vectordb,
-        vector_config=vectordb_instance.vectordb_config,
+        vectordb_config=vectordb_instance.vectordb_config,
         config_id=vectordb_instance.vectordb_config_mapping[0].config_id
     ), None
 
@@ -625,7 +625,7 @@ def delete_vectordb_instance(id: int, db: Session):
 
     return success, None
 
-def update_vectordb_instance(id: int, vectordb: schemas.VectorDBBase, db: Session):
+def update_vectordb_instance(id: int, vectordb: schemas.VectorDBUpdateBase, db: Session):
     """
     Updates a VectorDB instance and its associated config mapping by ID.
 
@@ -646,6 +646,6 @@ def update_vectordb_instance(id: int, vectordb: schemas.VectorDBBase, db: Sessio
     return schemas.VectorDBResponse(
         id=updated_instance.id,
         vectordb=updated_instance.vectordb,
-        vector_config=updated_instance.vectordb_config,
+        vectordb_config=updated_instance.vectordb_config,
         config_id=updated_instance.vectordb_config_mapping[0].config_id
     ), None

@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
 import app.models.connector as models
+import app.models.provider as prov_models
 import app.schemas.connector as schemas
 from sqlalchemy.exc import SQLAlchemyError
 from typing import List
@@ -73,6 +74,7 @@ def get_all_configurations(db: Session):
             .options(
                 joinedload(models.Configuration.capabilities),
                 joinedload(models.Configuration.inference_mapping).joinedload(models.Inferenceconfigmapping.inference),
+                joinedload(models.Configuration.vectordb_config_mapping).joinedload(prov_models.VectorDBConfigMapping.vector_db),
             )
             .all(),
             False

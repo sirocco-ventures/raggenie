@@ -464,9 +464,9 @@ def delete_vectordb_instance(id: int, db: Session = Depends(get_db)):
     )
 
 
-@vectordb.put("/update/{id}", response_model=resp_schemas.CommonResponse)
+@vectordb.post("/update/{id}", response_model=resp_schemas.CommonResponse)
 def update_vectordb_instance(
-    id: int, vectordb: schemas.VectorDBBase, db: Session = Depends(get_db)
+    id: int, vectordb: schemas.VectorDBUpdateBase, db: Session = Depends(get_db)
 ):
     """
     Updates a VectorDB instance by its ID along with its associated config mapping.

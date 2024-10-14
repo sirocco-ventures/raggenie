@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Dict, Optional, Union
-
+from app.schemas.provider import VectorDBResponse
 class ConnectorBase(BaseModel):
     connector_type: int
     connector_name: str
@@ -92,6 +92,7 @@ class ConfigurationResponse(ConfigurationBase):
     id: int
     capabilities: List[CapabilitiesBase]
     inference: Optional[List[InferenceResponse]]=None
+    vectordb: Optional[List[VectorDBResponse]]=None
 
     class Config:
         from_attributes = True

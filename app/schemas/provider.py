@@ -114,12 +114,12 @@ class VectorDBConfigResponse(VectorDBConfigBase):
 
 class VectorDBUpdateBase(BaseModel):
     vectordb: Optional[str] = None
-    vector_config : Optional[List[Dict[str,Any]]] = None
+    vectordb_config : Optional[List[Dict[str,Any]]] = None
     config_id: Optional[int] = None
 
 class VectorDBBase(BaseModel):
     vectordb: str
-    vector_config : List[Dict[str,Any]]
+    vectordb_config : List[Dict[str,Any]]
     config_id: int
 
 class VectorDBResponse(VectorDBBase):

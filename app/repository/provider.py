@@ -236,11 +236,11 @@ def update_vectordb_instance(id: int, vectordb: schemas.VectorDBBase, db: Sessio
         if not db_vectordb:
             return "VectorDB instance not found", True
 
-        db_vectordb.vectordb = vectordb.vectordb
-        db_vectordb.vectordb_config = vectordb.vectordb_config
+        db_vectordb.vectordb = vectordb.vectordb if vectordb.vectordb else db_vectordb.vectordb
+        db_vectordb.vectordb_config = vectordb.vectordb_config if vectordb.vectordb_config else db_vectordb.vectordb_config
 
         for mapping in db_vectordb.vectordb_config_mapping:
-            mapping.config_id = vectordb.config_id
+            mapping.config_id = vectordb.config_id if vectordb.config_id else mapping.config_id
 
         db.commit()
         db.refresh(db_vectordb)

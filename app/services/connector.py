@@ -3,6 +3,7 @@ import app.repository.connector as repo
 import app.repository.provider as config_repo
 import app.schemas.connector as schemas
 from app.services import provider as provider_svc
+from app.schemas.provider import VectorDBResponse
 import requests
 import os
 import uuid
@@ -359,7 +360,13 @@ def list_configurations(db: Session):
             model=inference_mapping.inference.model,
             endpoint=inference_mapping.inference.endpoint,
             config_id=inference_mapping.config_id
-        ) for inference_mapping in config.inference_mapping]
+        ) for inference_mapping in config.inference_mapping],
+        vectordb=[VectorDBResponse(
+            id= vector_db.vector_db.id,
+            vectordb=vector_db.vector_db.vectordb,
+            vectordb_config=vector_db.vector_db.vectordb_config,
+            config_id=config.id,
+        ) for vector_db in config.vectordb_config_mapping]
     ) for config in configurations]
 
     return config_list, None
