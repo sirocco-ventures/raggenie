@@ -98,8 +98,8 @@ const BotConfiguration = () => {
                 setSelectedOptions(tempSelectedCapabilities)
                 
 
-                 if(configs[0].capabalities?.length>0){
-                    setCapabalities(configs[0].capabalities)
+                 if(configs[0].capabilities?.length>0){
+                    setCapabalities(configs[0].capabilities)
                  } 
 
                 if(configs[0].inference[0]?.id){
@@ -397,6 +397,7 @@ const BotConfiguration = () => {
                                <Button variant="secondary" className="icon-button" onClick={addNewCapability}>New Capability <GoPlus/> </Button>
                             </div>
                             <div>
+                                
                                 {capabalities?.map((item, index)=>{
                                     return <Capability  
                                                 key={index}
