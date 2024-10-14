@@ -26,8 +26,8 @@ class Configs(BaseSettings):
 
     # Auth
     auth_server: str = os.getenv("AUTH_SERVER", "localhost")
-    username: str = os.getenv("USERNAME","admin")
-    password: str = os.getenv("PASSWORD","password")
+    username: str = os.getenv("ADMIN_USERNAME","admin")
+    password: str = os.getenv("ADMIN_PASSWORD","password")
     secret_key: str = os.getenv("SECRET_KEY","secret")
     auth_enabled: bool = os.getenv("AUTH_ENABLED",False)
 
