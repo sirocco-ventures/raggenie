@@ -133,7 +133,8 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
                     chatSummary: item.chat_summary,
                     date: new Date(item.created_at), // Convert date string to Date object
                 });
-            });           
+            });     
+            chatHistory = chatHistory.reverse()      
             setchatHistory(chatHistory);
         })
     }
