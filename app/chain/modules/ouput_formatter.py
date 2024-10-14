@@ -48,7 +48,7 @@ class OutputFormatter(AbstractHandler):
             if intent_key in self.datasource:
                 response = self.datasource[intent_key].format(request.get("query_response"), input_data)
         elif "general_message" in input_data:
-            response["content"] = input_data.get('general_message')
+            response["content"] = str(input_data.get('general_message'))
 
 
         if "data" in response and isinstance(response["data"], list) and len(response["data"]) == 0:

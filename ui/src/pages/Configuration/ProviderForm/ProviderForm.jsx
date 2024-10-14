@@ -41,6 +41,7 @@ const ProviderForm = ()=>{
     const [progressTime, setProgressTime] = useState('');
     const pdfUploadRef = useRef(null);
     
+    
 
     const [disableConnectorSave, setDisableConnectorSave] = useState(true);
     
@@ -111,7 +112,8 @@ const ProviderForm = ()=>{
         window.localStorage.setItem("dbschema", JSON.stringify(tempTableDetails))
     
     }
-
+    
+     
 
     const rowExpandComponent = (row)=>{
         let tempTableDetails =  JSON.parse(window.localStorage.getItem("dbschema")) 
@@ -371,28 +373,35 @@ const onRemoveFile = (fileId) => {
             return firstItem.order > secondItem.order ? -1 : 1
         })
 
+
+
         return(
             <>
                 {providerConfig.map((item, index)=>{
                 
                     switch(item.config_type){
-                        case 1: return <Input key={index} type="text" label={item.name} placeholder={item.description}  required={item.required}   hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ? "This is required": false})} />     
-                        case 2: return <Input key={index} type="password" label={item.name} placeholder={item.description}  required={item.required}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message}  {...register(item.slug, {required: item.required ? "This is required": false})} />  
-                        case 3: return <Input key={index} type="number" label={item.name} placeholder={item.description}  required={item.required}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ? "This is required": false})} />  
-                        case 4: return <Input key={index} type="url" label={ <> {item.name} <span style={{color: "#C8C8C8"}}>(Include http or https in the url)</span> </>} required={item.required} placeholder="https://www.raggenie.com" hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})} />
-                        case 5: return <Input key={index} type="email" label={`${item.name}  `}  required={item.required}  placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})} /> 
+                        case 1: return <Input key={index} type="text" label={item.name} placeholder={item.description}  required={item.required}   hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ? "This is required": false})}  onChange={onChangesOption}/>     
+                        case 2: return <Input key={index} type="password" label={item.name} placeholder={item.description}  required={item.required}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message}  {...register(item.slug, {required: item.required ? "This is required": false})} onChange={onChangesOption}/>  
+                        case 3: return <Input key={index} type="number" label={item.name} placeholder={item.description}  required={item.required}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ? "This is required": false})}  onChange={onChangesOption}/>  
+                        case 4: return <Input key={index} type="url" label={ <> {item.name} <span style={{color: "#C8C8C8"}}>(Include http or https in the url)</span> </>} required={item.required} placeholder="https://www.raggenie.com" hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})}  onChange={onChangesOption}/>
+                        case 5: return <Input key={index} type="email" label={`${item.name}  `}  required={item.required}  placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})}  onChange={onChangesOption}/> 
                         case 6: return (
                             <div className={style.SelectDropDown}>
                                 <label className={style.SelectDropDownLabel}>{item.name} {item.required && <span className="span-important"></span>} </label>
-                                <select key={index} className={`${errors[item.slug]?.message ? style.SelectHasError : ""}`} {...register(item.slug, {required: "This is required"})}>
-                                    {item.value?.map((val, valIndex)=>{
-                                        return <option key={valIndex} value={val.value}>{val.label}</option>
+                                <select name="selectOption"  key={index}  className={`${errors[item.slug]?.message ? style.SelectHasError : ""}`}  {...register(item.slug, { required: "This is required" })}  onChange={(e) => onChangesOption(e)}>
+                                    {item.value?.map((val, valIndex) => {
+                                        return (
+                                            <option key={valIndex} value={val.value}>
+                                                {val.label}
+                                            </option>
+                                        );
                                     })}
                                 </select>
+
                                 {errors[item.slug]?.message != "" && <label className={style.SelectErrorMessage}>{errors[item.slug]?.message}</label>}
                             </div>
                         )
-                        case 7: return <Textarea key={index} rows="5" label={item.name}  required={item.required} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ?  "This is required" : false})} />  
+                        case 7: return <Textarea key={index} rows="5" label={item.name}  required={item.required} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ?  "This is required" : false})}  onChange={onChangesOption}/>  
                         case 8: return(
                             <FileUpload
                             pdfUploadRef={pdfUploadRef}
@@ -411,7 +420,7 @@ const onRemoveFile = (fileId) => {
                             multipleFileSupport={false}
                           />
                         )
-                        default : return <Input key={index} type="text" label={item.name} required={item.required} placeholder={item.description}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})} />     
+                        default : return <Input key={index} type="text" label={item.name} required={item.required} placeholder={item.description}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})}  onChange={onChangesOption}/>     
                     }
                 
                 })}
@@ -419,6 +428,11 @@ const onRemoveFile = (fileId) => {
             </>
         )
     }
+
+    const onChangesOption=()=>{
+        setDisableConnectorSave(true)
+    }
+
 
     const generateGeneralDetails = ()=>{
         return(
@@ -428,10 +442,10 @@ const onRemoveFile = (fileId) => {
                     <p>{providerDetails.description}</p>
                 </div>
                 <div>
-                    <Input label="Plugin Name" placeholder="Plugin Name" maxLength={20} required hasError={errors["pluginName"]?.message ? true : false} errorMessage={errors["pluginName"]?.message}  {...register("pluginName", {required: "This is required" ,minLength: {value: 10, message: "minimum length is 10"}})} />
-                    <Textarea label="Plugin Description" placeholder="Describe the plugin's purpose and content in a detailed and informative manner, emphasizing its key features and functionality." required rows={8} maxLength={200} hasError={errors["pluginDescription"]?.message ? true : false} errorMessage={errors["pluginDescription"]?.message}  {...register("pluginDescription", {required: "This is required", minLength: {value: 20, message: "minimum length is 20"}})} />
+                    <Input label="Plugin Name" placeholder="Plugin Name" maxLength={20} required hasError={errors["pluginName"]?.message ? true : false} errorMessage={errors["pluginName"]?.message}  {...register("pluginName", {required: "This is required" ,minLength: {value: 10, message: "minimum length is 10"}})} onChange={onChangesOption}/>
+                    <Textarea label="Plugin Description" placeholder="Describe the plugin's purpose and content in a detailed and informative manner, emphasizing its key features and functionality." required rows={8} maxLength={200} hasError={errors["pluginDescription"]?.message ? true : false} errorMessage={errors["pluginDescription"]?.message}  {...register("pluginDescription", {required: "This is required", minLength: {value: 20, message: "minimum length is 20"}})} onChange={onChangesOption}/>
                     {generateConfig()}
-                     
+        
                 </div>
             </>
         )
@@ -495,10 +509,6 @@ const onRemoveFile = (fileId) => {
         Object.keys(localTableDetails).map(table_id=>{
             let tempCols = [];
             Object.keys(localTableDetails[table_id].columns).map(col_id=>{
-                if(localTableDetails[table_id].columns[col_id].description == ""){
-                    fullFill = false
-                }
-
                 tempCols.push({
                     column_id: col_id,
                     column_name: localTableDetails[table_id].columns[col_id].column_name,
@@ -522,12 +532,12 @@ const onRemoveFile = (fileId) => {
        
 
         if(fullFill == false){
-            toast.error("Please complete form")
+            toast.error("Table description is a required field. Please provide a valid description.")
             return
         }
 
         updateSchema(connectorId, tempTableDetails).then(response=>{
-            toast.success("Successfuly saved")
+            toast.success("Data saved successfully.")
             setCurrentActiveTab("documentation") 
         })
     }
@@ -611,7 +621,9 @@ const onRemoveFile = (fileId) => {
                 <Tabs activeTab={currentActiveTab}>
                     <Tab  title="Configuration" tabKey="configuration" key={"configuration"}>
                         <form onSubmit={handleSubmit(onSaveConnector)}>
-                            {generateGeneralDetails()}
+                             
+                             {generateGeneralDetails()}
+                             
                             <div className={style.ActionDiv}>
                                 <div style={{flexGrow: 1}}>
                                     <Button type="transparent" className="icon-button" onClick={()=>navigate("/plugins")}> <FaArrowLeft/> Cancel</Button>
