@@ -1,4 +1,5 @@
 from app.plugins.postgresql.handler import Postresql
+from app.plugins.mysql.handler import Mysql
 from app.plugins.bigquery.handler import Bigquery
 from app.plugins.airtable.handler import Airtable
 from app.plugins.website.handler import Website
@@ -12,6 +13,7 @@ class DSLoader:
     def load_ds(self):
         db_classes = {
             "postgres": Postresql,
+            "mysql": Mysql,
             "bigquery": Bigquery,
             "airtable": Airtable,
             "website": Website,
