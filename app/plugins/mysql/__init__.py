@@ -113,7 +113,7 @@ __prompt__ = Prompt(**{
 
             {
                 "explanation": "Explain how you finalized the sql query using the schemas and rules provided",
-                "query" : "sysql query",
+                "query" : "mysql query",
                 "operation_kind" : "aggregation|list",
                 "schema": "used schema details separated by comma",
                 "confidence" : "confidence in 100",
