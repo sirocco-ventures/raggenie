@@ -1,47 +1,41 @@
+import React from 'react';
+import { Bar, BarChart as ReBarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { Bar, BarChart as ReBarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import style from "../style.module.css"
+const BarChart = ({ title = "Bar Chart", data = [], xAxis = "name", yAxis = "value", dataLength = 12 }) => {
+  const CustomBar = ({ x, y, height }) => (
+    <rect width={30} height={height} x={x + 20} y={y} fill="#74B3FF" rx={4} />
+  );
 
-const BarChart = ({title ="Bar Chart", data = [], xAxis = "name", yAxis = "value",  dataLength = 12,})=>{
+  const CustomLabel = ({ x, y, payload, textAnchor = "middle", offset = 0 }) => (
+    <text x={x - offset} y={y + 4} textAnchor={textAnchor} fill="#888787" fontSize={12} opacity={0.8}>
+      {payload.value}
+    </text>
+  );
 
+  return (
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '6px' }}>
+      <h3 style={{ textAlign: 'center', fontSize: '1.2em', marginBottom: '20px' }}>{title}</h3>
+      <ResponsiveContainer width="100%" height={320}>
+        <ReBarChart data={data.slice(0, dataLength)} barCategoryGap={10} barGap={2}>
+          <XAxis
+            dataKey={xAxis}  axisLine={false} tickLine={false}
+            tick={<CustomLabel />}
+            interval={0}  tickMargin={10} angle={0}
+          />
+          <YAxis
+            axisLine={false}  tickLine={false}
+            tick={<CustomLabel textAnchor="end" offset={5} />}
+            width={40}  tickMargin={5}
+          />
+          <Bar dataKey={yAxis} shape={<CustomBar />} />
+          <Tooltip cursor={false} />
+        </ReBarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
 
-    const customBar = (props)=>{
-        const {x, y, height } = props;
-       return (
-            <rect width={"28"} height={height} x={x + 10} y={y} fill="#74B3FF" rx="4"></rect>
-        )
-    }
-
-    const customAxisLabel = ({ payload, x, y, width, height })=>{
-        return(
-            <text orientation="bottom" width={width} height={height} stroke="none" x={x} y={y + 40}  textAnchor="middle" style={{fontSize:"11px",fontFamily:"Inter",color:"rgba(28, 28, 28, 0.40",textAlign:"center",fontStyle:"normal", fontWeight:"300", lineHeight:"18px",opacity:"60%"}} fill="#888787">
-                <tspan x={x} y={y + 12}>{payload.value}</tspan>
-            </text>
-        )
-    }
-
-    return(
-        <>
-            <div className={style.ChartContainer}>
-                <span className={style.ChartTitle}>{title}</span>
-               
-                <div className={style.BarChartResponsive}>
-                <ResponsiveContainer width={500} height={183}>
-                        <ReBarChart  data={data.slice(0, dataLength)} barCategoryGap={0} barGap={5}>
-                            <XAxis dataKey={xAxis} axisLine={false} tickLine={false} tick={customAxisLabel} />
-                            <YAxis axisLine={false} tickLine={false} tick={customAxisLabel} />
-                            <Bar dataKey={yAxis} shape={customBar} />
-                            <Tooltip cursor={false}  />
-                        </ReBarChart>
-                    </ResponsiveContainer>
-                </div>
-                
-            </div>
-        
-        </>
-    )
-
-}
+export default BarChart;
 
 
-export default BarChart
+
