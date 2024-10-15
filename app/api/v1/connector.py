@@ -40,7 +40,7 @@ def list_connectors(db: Session = Depends(get_db), provider_category_id: Optiona
     result, error = svc.list_connectors(db)
 
     if provider_category_id:
-        result = list(filter(lambda x: x["provider_category_id"] == provider_category_id, result))
+        result = list(filter(lambda x: x.connector_key == provider_category_id, result))
 
     if error:
         return commons.is_error_response("DB Error", result, {"connectors": []})
