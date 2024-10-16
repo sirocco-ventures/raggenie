@@ -184,16 +184,6 @@ const BotConfiguration = () => {
                     "inferenceEndpoint":  inferenceGetValues("inferenceEndpoint"),
                 }).then(()=>{
                     toast.success("Inference test successful")
-                    toast(
-                        <ToastMessage message={`Please restart the bot to get changes to take effect.`} />,
-                        {
-                          toastId: "RAG001", 
-                          autoClose: false, 
-                          hideProgressBar: true,
-                          className: style.ToastContainerClass,
-                          closeButton: <ToastCloseButton />,
-                        }
-                      );
                     setShowNotificationPanel(false);
                     setDisabledInferenceSave(false)
                 }).catch(err=>{
@@ -213,11 +203,21 @@ const BotConfiguration = () => {
             configSetError("inferenceProvider", { type:"required", message: "This field is required" });
             return
         }
-
+ 
 
         data["inferenceLLMProvider"] = selectedProvider.value
         saveBotInferene(currentConfigID, currentInferenceID, data).then(() => {
             toast.success("Inference saved successfully")
+            toast(
+                <ToastMessage message={`Please restart the bot to get changes to take effect.`} />,
+                {
+                  toastId: "RAG001", 
+                  autoClose: false, 
+                  hideProgressBar: true,
+                  className: style.ToastContainerClass,
+                  closeButton: <ToastCloseButton />,
+                }
+              );
             setShowNotificationPanel(false);
             setActiveTab("capabalities")
         })
