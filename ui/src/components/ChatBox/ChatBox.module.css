@@ -781,6 +781,14 @@
     padding: 10px;
 }
 
+.ErrorHeaderContainer {
+    display: flex;
+}
+
+.ErrorHeadingContainer{
+    flex-grow: 1;
+}
+
 .ErrorHeading {
     color: #323232;
     font-family: Inter;
@@ -790,6 +798,10 @@
     line-height: normal;
     margin: 0px;
     margin-bottom: 10px;
+}
+
+.ErrorCloseIcon {
+    cursor: pointer;
 }
 
 .ErrorDescription {
@@ -816,5 +828,26 @@
     gap: 8px;
     cursor: pointer;
 }
+
+.ErrorExpandButton {
+    color: #323232;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%;
+    text-decoration-line: underline;
+    cursor: pointer;
+}
+
+.MessageContainer p:has(+ .ErrorExpandButton){
+    display: inline-block;
+    color: #FF7F6D;
+}
+
+.MessageContainer:has(> .ErrorExpandButton){
+    margin-top: 10px;
+}
+
 
 /* Error Message Style */
