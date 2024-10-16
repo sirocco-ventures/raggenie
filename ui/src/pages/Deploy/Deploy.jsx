@@ -40,7 +40,7 @@ const Deploy = () => {
     }
 
   const generateYMAL = ()=>{
-    PostService(API_URL + `/connector/createyaml/${currentConfigID}`,{},{loaderText: "Restating Chatbot"}).then(()=>{
+    PostService(API_URL + `/connector/createyaml/${currentConfigID}`,{},{loaderText: "Restarting Chatbot"}).then(()=>{
         toast.success("Chatbot Restarted")
     }).catch(()=>{
         toast.error("Failed to restart bot")
