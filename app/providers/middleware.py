@@ -3,10 +3,22 @@ from app.providers.config import configs
 from fastapi import Request, status, HTTPException
 
 
-async def verify_token(request: Request):
+from fastapi import Request, HTTPException, status
+from typing import Optional
+
+async def verify_token(request: Request) -> Optional[str]:
     jwt_utils = JWTUtils(configs.secret_key)
+
     if configs.auth_enabled:
-        token = request.cookies.get("auth_token")
+        auth_header = request.headers.get("Authorization")
+        token = None
+
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header[len("Bearer "):]
+
+        if not token:
+            token = request.cookies.get("auth_token")
+
         if not token:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

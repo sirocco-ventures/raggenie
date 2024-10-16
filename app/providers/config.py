@@ -32,7 +32,7 @@ class Configs(BaseSettings):
     auth_enabled: bool = os.getenv("AUTH_ENABLED",False)
 
     retry_limit:int = os.getenv("RETRY_LIMIT",0)
-    application_port: int = os.getenv("APP_PORT", 8005)
+    application_port: int = os.getenv("APP_PORT", 8001)
 
 
 configs = Configs()
