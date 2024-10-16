@@ -3,6 +3,7 @@ from app.plugins.bigquery.handler import Bigquery
 from app.plugins.airtable.handler import Airtable
 from app.plugins.website.handler import Website
 from app.plugins.document.handler import Document
+from app.plugins.sharepoint.handler import SharePoint
 from loguru import logger
 
 class DSLoader:
@@ -15,7 +16,8 @@ class DSLoader:
             "bigquery": Bigquery,
             "airtable": Airtable,
             "website": Website,
-            "document" : Document,
+            "document": Document,
+            "sharepoint": SharePoint,
         }
         db_type = self.config.get("type")
         connection_params = self.config.get("params")
