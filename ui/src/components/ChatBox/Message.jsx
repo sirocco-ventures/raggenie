@@ -11,6 +11,7 @@ import LineChart from "../Chart/LineChart/LineChart"
 import AreaChart from "../Chart/AreaChart/AreaChart"
 import Summary from "./Summary"
 import Markdown from "react-markdown"
+import ErrorMessage from "./ErrorMessage"
 const Message = ({
     message = {},
     onLike = ()=>{}, 
@@ -20,6 +21,7 @@ const Message = ({
 
     const [showFeedback, setShowFeedback] = useState(false)
     const [showChatSummary, setShowChatSummary] = useState(false)
+    const [showChatError, setShowChatError] = useState(false)
 
 
     const handleOnLikeClick = (e)=>{
@@ -51,7 +53,7 @@ const Message = ({
                     {message.isBot && <div> <img src={botIcon} className={style.MessageAvatar} /></div>}
                     <div>
                         <div className={`${style.MessageContainer}  ${message.isBot == false ? style.UserMessage : style.BotMessage}`}>
-                            <Markdown>{message.message}</Markdown>
+                            <Markdown>{message.message}</Markdown> { (message.isBot == true && message.error != "") && <span className={style.ErrorExpandButton} onClick={()=>setShowChatError(!showChatError)}>click here</span>}
                             {message.isBot == true &&  <Time onLike={handleOnLikeClick} onDisLike={handleOnDislikeClick} onSummaryClick={handleOnSummaryOpen} summaryOpen ={showChatSummary}  time={"Today 12:30pm"} message={message}/>}
                         </div>
                     </div>
@@ -60,14 +62,13 @@ const Message = ({
             <div style={{marginLeft: "52px", marginBottom: "40px"}}>
                  {/* {showFeedback && message.isBot && <Feedback onSubmit={onFeedbackSubmit} onFeedBackClose={handleOnFeedbackClose} message={message} /> } */}
                 
-                 
-                 
                  { (message.kind == "list" || message.kind == "table" || message.kind == "single" || message.kind == "none") && <Table data={message.data?.chart?.data} />}
                  { message.kind == "bar_chart" && <BarChart title={message.data.chart.title} data={message.data.chart.data} xAxis={message.data.chart.xAxis[0]} yAxis={message.data.chart.yAxis[0]}  /> }
                  { message.kind == "pie_chart" && <PieChart title={message.data.chart.title} data={message.data.chart.data} labelKey={message.data.chart.xAxis[0]} dataKey={message.data.chart.yAxis[0]}  /> }
                  { message.kind == "line_chart" && <LineChart title={message.data.chart.title} data={message.data.chart.data} xAxis={message.data.chart.xAxis[0]} yAxis={message.data.chart.yAxis[0]}  /> }
                  { message.kind == "area_chart" && <AreaChart title={message.data.chart.title} data={message.data.chart.data} xAxis={message.data.chart.xAxis[0]} yAxis={message.data.chart.yAxis[0]}  /> }
-                 {message.isBot && <Summary onSummaryClose={handleOnSummaryClose} message={message} /> }
+                 { message.isBot && message.data.query && <Summary message={message} /> }
+                 { message.isBot && showChatError && message.error != "" && <ErrorMessage error={message.error} onClose={()=>setShowChatError(false)} />} 
             </div>
             
         </>
