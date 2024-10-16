@@ -10,6 +10,7 @@ from app.utils.module_reader import get_plugin_providers, get_vectordb_providers
 from app.models.provider import Provider, ProviderConfig, VectorDBConfig
 from loguru import logger
 from app.utils.module_reader import get_llm_providers
+from app.vectordb.loader import VectorDBLoader
 
 def test_inference_credentials(inference: conn_schemas.InferenceBase):
     """
@@ -226,8 +227,11 @@ def test_vectordb_credentials(config:schemas.TestVectorDBCredentials, db:Session
     """
     db_config, is_error = repo.get_vector_db_config(db, config.vectordb_config["key"])
 
+    if is_error:
+        return None, db_config
+
     match config.vectordb_config["key"]:
-        case ("chromadb" | "mongodb"):
+        case ("chroma" | "mongodb"):
             return test_vector_db_credentials(db_config,config, config.vectordb_config["key"])
         case _:
             return None, "Unsupported Vector Database Provider"
@@ -649,3 +653,33 @@ def update_vectordb_instance(id: int, vectordb: schemas.VectorDBUpdateBase, db: 
         vectordb_config=updated_instance.vectordb_config,
         config_id=updated_instance.vectordb_config_mapping[0].config_id
     ), None
+
+def create_vectorstore_instance(db:Session):
+    """
+    Creates a new vector store instance.
+
+    Args:
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: VectorStoreConfigResponse schema and error message (if any).
+    """
+    configs, is_error = conn_repo.getbotconfiguration(db)
+    vectore_store=None
+
+    if is_error:
+        return configs, "DB Error"
+
+    if configs:
+
+        vectore_store, is_error = repo.get_mapped_vector_store(db, configs.id)
+
+        if is_error:
+            return vectore_store, "DB Error"
+    vectorloader = VectorDBLoader(config={"name":vectore_store.vectordb, "params":vectore_store.vectordb_config}) if vectore_store else VectorDBLoader(config={"name":"chroma", "params":{"path":"./chromadb"}})
+
+    return vectorloader.load_class(), None
+
+
+
+

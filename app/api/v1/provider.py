@@ -118,9 +118,9 @@ def test_vectordb_credentials(config: schemas.TestVectorDBCredentials, db: Sessi
     Returns:
         CommonResponse: A response indicating the success or failure of the credential test.
     """
-    success, message = svc.test_vectordb_credentials(config, db)
+    message, is_error = svc.test_vectordb_credentials(config, db)
 
-    if not success:
+    if is_error:
         return resp_schemas.CommonResponse(
             status=False,
             status_code=422,

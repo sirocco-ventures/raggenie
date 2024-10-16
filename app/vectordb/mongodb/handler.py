@@ -30,6 +30,36 @@ class AltasMongoDB(BaseVectorDB):
             logger.critical(f"Failed connecting Altas MongoDB Vector Database: {e}")
             return str(e)
 
+    def health_check(self):
+        try:
+            sample = {
+                    "_id": "doc1",
+                    "datasource":"psql_db",
+                    "document": "This referes to the user data which consist of username, password, email and address",
+                    "metadata":{
+                        "username": "username"
+                    }
+                }
+            sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
+
+            self.doc_collection.insert_many([sample])
+
+            self._create_index(self.doc_collection, self.doc_index_name)
+
+            search = self._find_similar([sample["datasource"]], "what are all the fields related to psql_db", self.doc_collection, 5, self.doc_index_name)
+
+            self.clear_collection()
+
+            logger.info(f"Fetched {len(search)} fields")
+            if len(search) > 0:
+                return None
+            else:
+                return "No fields found"
+        except Exception as e:
+            logger.error(f"Health check failed: {e}")
+            return f"Failed to connect with Altas MongoDB {e}"
+
+
     def clear_collection(self):
         self.schema_collection.delete_many({})  # Delete all documents in the collection
         self.doc_collection.delete_many({})
@@ -116,23 +146,24 @@ class AltasMongoDB(BaseVectorDB):
         self._create_index(self.schema_collection, self.schema_index_name)
         self._create_index(self.cache_collection, self.cache_index_name)
 
-    def _find_similar(self, datasources, query, collection, count):
+    def _find_similar(self, datasources, query, collection, count, index_name):
         output = []
         for datasource in datasources:
             res = collection.aggregate([
-                {
-                '$match': {
-                    'datasource': datasource  # Filter for the specified datasource
-                }
-                },
+
                 {
                     '$vectorSearch': {
-                        "index": self.schema_index_name,
+                        "index": index_name,
                         "path": self.EMBEDDING_FIELD_NAME,
                         "queryVector": self.generate_embedding(query),
                         "numCandidates": 50,
                         "limit": count,
                     }
+                },
+                {
+                '$match': {
+                    'datasource': datasource  # Filter for the specified datasource
+                }
                 },
                 {
                 "$project": {
@@ -147,14 +178,14 @@ class AltasMongoDB(BaseVectorDB):
             results = list(res)
             for result in results:
                 result['distances'] = 1 - result['score']
-            output.extend(result)
+                output.extend(result)
         return output
 
     def find_similar_schema(self, datasource, query,count):
-       return self. _find_similar(self,datasource, self.schema_collection, query, count)
+       return self. _find_similar(self,datasource, self.schema_collection, query, count, self.schema_index_name)
 
     def find_similar_documentation(self, datasource, query, count):
-       return self. _find_similar(self,datasource, self.doc_collection, query, count)
+       return self. _find_similar(self,datasource, self.doc_collection, query, count, self.doc_index_name)
 
     def find_similar_cache(self, datasource, query,count = 3):
-       return self. _find_similar(self,datasource, self.cache_collection, query, count)
+       return self. _find_similar(self,datasource, self.cache_collection, query, count, self.cache_index_name)

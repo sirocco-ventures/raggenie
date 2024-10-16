@@ -90,17 +90,22 @@ def test_vector_db_credentials(db_config, config, key):
         flag = any(con == d_conf for con in configs for d_conf in config.vectordb_config)
 
         if not flag:
-            return False, f"Missing required config key: {db_config.key}"
+            return f"Missing required config key: {db_config.key}", True
 
         vectordb_config = config.vectordb_config.copy()
         vectordb_config.pop("key", None)
         vectorloader = loader.VectorDBLoader(config={"name":db_config.key, "params":vectordb_config}).load_class()
-        err=vectorloader.connect()
+        err = vectorloader.connect()
 
         if err is not None:
-            return False, f"Failed to connect to {db_config.key}: {err}"
+            return f"Failed to connect to {db_config.key}: {err}", True
 
-    return True, f"{db_config.key} Test Credential Successfully Completed"
+        err = vectorloader.health_check()
+
+        if err is not None:
+            return f"Failed to connect to {db_config.key}: {err}", True
+
+    return f"{db_config.key} Test Credential Successfully Completed", False
 
 
 

@@ -51,6 +51,9 @@ class ChromaDataBase(BaseVectorDB):
             logger.critical(f"Failed connecting ChromaDB: {e}")
             return str(e)
 
+    def health_check(self):
+        pass
+
 
 
     def load_yaml_data(self, yaml_path):

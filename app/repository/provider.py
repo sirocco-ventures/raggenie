@@ -250,3 +250,12 @@ def update_vectordb_instance(id: int, vectordb: schemas.VectorDBBase, db: Sessio
     except SQLAlchemyError as e:
         db.rollback()
         return str(e), True
+
+def get_mapped_vector_store(db:Session, config_id:int):
+    try:
+        return db.query(models.VectorDB).join(models.VectorDBConfigMapping, models.VectorDB.id == models.VectorDBConfigMapping.vector_db_id)\
+            .options(joinedload(models.VectorDB.vectordb_config_mapping))\
+            .filter(models.VectorDBConfigMapping.config_id == config_id).first()  , False
+    except SQLAlchemyError as e:
+        db.rollback()
+        return str(e), True

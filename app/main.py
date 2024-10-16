@@ -52,8 +52,10 @@ def create_app(config):
 
 
     logger.info("initializing vector store")
-    vectore_store = container.vectorstore().load_class()
-    vectore_store.connect()
+    vectore_store, is_error = provider_svc.create_vectorstore_instance(session)
+    if is_error is not None:
+        logger.critical(is_error)
+    err = vectore_store.connect()
 
     logger.info("initializing plugin providers")
     err = provider_svc.initialize_plugin_providers(session)

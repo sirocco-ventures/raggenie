@@ -3,7 +3,7 @@ from app.models.request import ConnectionArgument
 
 # Plugin Metadata
 __version__ = '1.0.0'
-__vectordb_name__ = 'chromadb'
+__vectordb_name__ = 'chroma'
 __display_name__ = 'ChromaDB'
 __description__ = 'ChromaDB for Vector Storage'
 __icon__ = '/assets/vectordb/logos/chromadb.svg'
