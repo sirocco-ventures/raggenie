@@ -165,7 +165,7 @@ If you encounter an error while running Python, please check the following
     
     This issue arises when the system is running a version of SQLite that is below 3.35. Chroma requires SQLite version 3.35 or higher.
    
-   Please use the follwing links for suggested solutions
+   Please use the following links for suggested solutions
 
    - https://docs.trychroma.com/troubleshooting#sqlite
    - https://discuss.streamlit.io/t/issues-with-chroma-and-sqlite/47950/4
