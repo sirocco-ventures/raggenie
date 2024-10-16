@@ -636,6 +636,32 @@ def update_inference(inference_id: int, inference: schemas.InferenceBaseUpdate, 
         data={"inference": result}
     )
 
+@inference_router.post("/get/models", response_model=resp_schemas.CommonResponse)
+def get_llm_provider_models(llm_provider: schemas.LLMProviderBase):
+    """
+    Retrieves the models associated with the specified LLM provider.
+
+    Args:
+        llm_provider (schemas.LLMProviderBase): The details of the LLM provider.
+        db (Session): The database session dependency.
+
+    Returns:
+        CommonResponse: A response containing the list of LLM provider models or an error message.
+    """
+
+    data, is_error = svc.get_llm_provider_models(llm_provider)
+
+    if is_error:
+        return commons.is_error_response("LLM Provider Models Not Found", data, {"provider_models": []})
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message="LLM Provider Models Found",
+        error=None,
+        data={"provider_models": [data]}
+    )
+
 
 
 @actions.get("/list", response_model=resp_schemas.CommonResponse)
@@ -819,3 +845,4 @@ def delete_action(action_id: int, db: Session = Depends(get_db)):
         message="Action Deleted",
         error=None
     )
+

@@ -88,6 +88,10 @@ class InferenceBaseUpdate(BaseModel):
 class InferenceResponse(InferenceBase):
     id:int
 
+class LLMProviderBase(BaseModel):
+    key:str
+    api_key:str
+
 class ConfigurationResponse(ConfigurationBase):
     id: int
     capabilities: List[CapabilitiesBase]
