@@ -1,31 +1,49 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import style from './Auth.module.css';
 import logo from './assets/gennie-logo.svg';
 import Input from 'src/components/Input/Input';
 import Button from 'src/components/Button/Button';
-import { AuthService } from 'src/services/Auth';
+import { AuthLoginService } from 'src/services/Auth';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import GeneralLayout from '../general/GeneralLayout';
+import { v4  as uuid4} from "uuid"
+import { storeToken } from 'src/store/authStore';
+
 
 const AuthLogin = () => {
-    // Initialize useForm for form handling
+    const [activeLoginButton,setActiveLoginButton] = useState(true)
+
     const { register: authRegister, setValue: authSetValue, handleSubmit: authHandleSubmit, formState: authFormState, setError: authSetError, clearErrors: authClearErrors, watch: authWatch } = useForm({ mode: 'all' });
 
     const { errors: authFormError } = authFormState;
 
+    const navigate = useNavigate()
 
-
-    // Handle form submission
     const onSubmit = (data) => {
-        const authCredentials ={
+        const authCredentials = {
             "username": data.username,
             "password": data.password
-        }
-        AuthService(authCredentials)
+        };
+        AuthLoginService(authCredentials).then((response) => {
+            const authResponse = response.data
+            const token = authResponse.data.token
+            storeToken(token)
+            if (authResponse.status == true && authResponse.status_code == 200) {
+                toast.success(authResponse.message);
+                navigate(`/preview/${uuid4()}/chat`)
+            }
+        }).catch(() => {
+            toast.error("Incorrect username or password. Please try again");
+        });
     };
+    
 
     return (
         <>
-            <div className={style.AuthBackground}>
+        <GeneralLayout>
+           <div className={style.AuthBackground}>
                 <div className={style.FIeldContainer}>
                     <img src={logo} alt="Gennie Logo" />
                     <h2 className={style.Welcome}>Welcome Back</h2>
@@ -47,13 +65,15 @@ const AuthLogin = () => {
                                 {...authRegister('password', { required: 'Password is required' })}
                             />
 
-                            <Button buttonType="submit" className={style.SubmitButton}>
+                            <Button disabled={!activeLoginButton} buttonType="submit" className={style.SubmitButton}>
                                 Login
                             </Button>
                         </form>
                     </div>
                 </div>
-            </div>
+            </div> 
+        </GeneralLayout>
+            
         </>
     );
 };

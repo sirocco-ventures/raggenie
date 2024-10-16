@@ -5,7 +5,7 @@ import raggenieLogo from "../../assets/logo/logo.svg"
 import userIcon from "../../assets/icons/header-user-avatar.svg"
 import downArrowIcon from "../../assets/icons/chevron-right.svg"
 import { NavLink } from "react-router-dom"
-const SideMenu = ()=>{
+const SideMenu = ({username})=>{
 
     return(
         <div className={style.SideMenu}>
@@ -17,7 +17,7 @@ const SideMenu = ()=>{
                     <div>
                         <img src={userIcon} />
                     </div>
-                    <div className={style.UsernameDiv}>Ashmil Hussian</div>
+                    <div className={style.UsernameDiv}>{username}</div>
                     <div>
                         <img src={downArrowIcon} />
                     </div>

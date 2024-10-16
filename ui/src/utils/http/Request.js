@@ -1,4 +1,7 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useTokenStore } from "src/store/authStore";
 
 const defaultConfig = {
     showLoader: true,
@@ -15,39 +18,62 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
     let loaderContainer = document.querySelector(".dashboard-loader-container")
     let loaderTextPara = document.querySelector(".dashboard-loader-message")
 
-    if(allConfig.showLoader){
-        loaderContainer.style.display = "block"
-    }
+    const token = useTokenStore.getState().token;
+        console.log(token);
 
-    if(allConfig.fullLoader){
-        loaderContainer.style.width = "100%"
-        loaderContainer.style.h = "100%"
-    }
+    if (loaderContainer && allConfig.showLoader) {
 
-    if(allConfig.loaderText){
-        loaderTextPara.innerHTML = allConfig.loaderText
+        if(allConfig.showLoader){
+            loaderContainer.style.display = "block"
+        }
+    
+        if(allConfig.fullLoader){
+            loaderContainer.style.width = "100%"
+            loaderContainer.style.h = "100%"
+        }
+    
+        if(allConfig.loaderText){
+            loaderTextPara.innerHTML = allConfig.loaderText
+        }
     }
-
 
     let requestConfig = {
         method: method,
         url: url,
         data: data,
-        params: params, 
+        params: params,
+        headers: {
+
+        },
+        withCredentials: true,
         ...allAxiosConfig
     }
 
-    return axios.request(requestConfig).then(response=>{
-        loaderContainer.style.display = "none"
+    return axios.request(requestConfig).then(response => {
+        
+        if (loaderContainer) {
+            loaderContainer.style.display = "none";
+        }
+        
         if (response.data?.status == false) {
             return new Promise((resolve, reject) => reject(response));
         }
-        return new Promise((resolve)=>resolve(response))
+        return new Promise((resolve) => resolve(response))
 
-    }).catch(error=>{
-        loaderContainer.style.display = "none"
-        return new Promise((resolve, reject)=>reject(error))
-    })
+    }).catch(error => {
+        if (loaderContainer) {
+            loaderContainer.style.display = "none";
+        }
+    
+        if (error.response?.status === 401) {
+            window.location.href = '/login';
+        }
+        if (!error.response) {
+            toast.error("Network error");
+        }
+        return Promise.reject(error);
+    });
+   
 }
 
 export default Request
