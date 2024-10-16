@@ -19,7 +19,6 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
     let loaderTextPara = document.querySelector(".dashboard-loader-message")
 
     const token = useTokenStore.getState().token;
-        console.log(token);
 
     if (loaderContainer && allConfig.showLoader) {
 
@@ -43,11 +42,12 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
         data: data,
         params: params,
         headers: {
-
+            Authorization: `Bearer ${token}`,
         },
-        withCredentials: true,
+        withCredentials: true, 
         ...allAxiosConfig
-    }
+    };
+    
 
     return axios.request(requestConfig).then(response => {
         
@@ -64,8 +64,10 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
         if (loaderContainer) {
             loaderContainer.style.display = "none";
         }
-    
         if (error.response?.status === 401) {
+            window.location.href = '/login';
+        }
+        if (error?.code === "ERR_NETWORK") {
             window.location.href = '/login';
         }
         if (!error.response) {
@@ -73,6 +75,7 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
         }
         return Promise.reject(error);
     });
+    
    
 }
 
