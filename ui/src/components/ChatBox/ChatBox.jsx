@@ -23,7 +23,18 @@ const ChatBox = forwardRef(({messageBoxRef = null, handleNavigateChatContext=()=
     const toggleContainer = (e, setIsHidden) => {
         setIsHidden(prev => !prev); 
       };
-
+      
+    const handlePaste = (event) => {
+        // Prevent the default paste behavior
+        event.preventDefault();
+    
+        // Get the text from the clipboard
+        const pastedText = event.clipboardData.getData('text/plain');
+    
+        // Insert the plain text into the input field
+        document.execCommand('insertText', false, pastedText);
+    };
+    
     useEffect(()=>{
         document.querySelector("#messageBody").scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
     },[conversations])
@@ -46,7 +57,7 @@ const ChatBox = forwardRef(({messageBoxRef = null, handleNavigateChatContext=()=
 
                     <div>
                         <div className={style.ChatBoxTextContainer}>
-                            <div ref={messageBoxRef} className={style.ChatBoxTextBox} contentEditable="true" onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
+                            <div ref={messageBoxRef} className={style.ChatBoxTextBox} contentEditable="true" onKeyDown={onKeyDown} onKeyUp={onKeyUp} onPaste={handlePaste}>
                             </div>
                             <div>
                                 <div className={style.ChatBoxSendIcon} onClick={onSendClick}></div>
