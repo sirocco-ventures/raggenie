@@ -84,12 +84,12 @@ def client(app: FastAPI, db_session: Session) -> Generator[TestClient, None, Non
 def provider_fixture(db_session: Session) -> Provider:
     # Sample provider data for creating a Provider instance
     provider_data = {
-        "name": "postgres Provider",
-        "description": "Provider for postgres connectors",
+        "name": "website provider",
+        "description": "Provider for website connectors",
         "enable": True,
-        "icon": "postgres-icon.png",
-        "category_id": 2,
-        "key": "postgres",
+        "icon": "website.png",
+        "category_id": 1,
+        "key": "website",
     }
     new_provider = Provider(**provider_data)  # Create a new Provider instance
     db_session.add(new_provider)  # Add the provider to the session

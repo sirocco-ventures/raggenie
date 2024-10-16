@@ -16,12 +16,7 @@ class TestConnectorAPI:
         # Mocking the return value of get_config_types to simulate a response from the provider config
         mock_get_config_types.return_value = (
             [
-                ProviderConfig(slug="db_name", field="db_name"),
-                ProviderConfig(slug="db_host", field="db_host"),
-                ProviderConfig(slug="db_port", field="db_port"),
-                ProviderConfig(slug="db_user", field="db_user"),
-                ProviderConfig(slug="db_password", field="db_password"),
-                ProviderConfig(slug="db_sslmode", field="db_sslmode"),
+                ProviderConfig(slug="website_url", field="website_url"),
             ],
             False
         )
@@ -29,15 +24,10 @@ class TestConnectorAPI:
         # Prepare the connector data for the POST request
         connector_data = {
             "connector_type": provider_fixture.id,  # Use the provider ID from the fixture
-            "connector_name": "Test PSQL Connector",  # Name of the connector
-            "connector_description": "Connector for PSQL database",  # Description of the connector
+            "connector_name": "Test Website Connector",  # Name of the connector
+            "connector_description": "Connector for Website database",  # Description of the connector
             "connector_config": {
-                "db_host": "localhost",  # Database host
-                "db_port": 5432,  # Database port
-                "db_name": "sampledb",  # Database name
-                "db_user": "postgres",  # Database user
-                "db_password": "root",  # Database password
-                "db_sslmode": "disable"  # SSL mode for database connection
+                "website_url":"https://www.siroccoventures.com/"
             }
         }
 
