@@ -15,6 +15,7 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
     let allConfig = {...defaultConfig, ...config}
     let allAxiosConfig = {...defaultAxiosConfig, ...axiosConfig}
 
+
     let loaderContainer = document.querySelector(".dashboard-loader-container")
     let loaderTextPara = document.querySelector(".dashboard-loader-message")
 
@@ -43,10 +44,12 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
         params: params,
         headers: {
             Authorization: `Bearer ${token}`,
+            ...axiosConfig.headers
         },
         withCredentials: true, 
         ...allAxiosConfig
     };
+
     
 
     return axios.request(requestConfig).then(response => {
@@ -67,9 +70,7 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
         if (error.response?.status === 401) {
             window.location.href = '/login';
         }
-        if (error?.code === "ERR_NETWORK") {
-            window.location.href = '/login';
-        }
+
         if (!error.response) {
             toast.error("Network error");
         }
