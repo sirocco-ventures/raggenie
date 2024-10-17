@@ -7,12 +7,24 @@ This project includes functional, integration, and unit testing using pytest. Te
 - `integration/`: Contains integration tests (`test_*.py`).
 - `unittest/`: Contains unit tests (`test_*.py`).
 
+## Requirements
+- `pip install pytest pytest-cov`
+
+
 ### Running Tests
 - Run all tests: `pytest`
 - To run specific tests:
   - Functional tests: `pytest functional/`
   - Integration tests: `pytest integration/`
   - Unit tests: pytest `unittest/`
+
+### Test Coverage
+To measure test coverage using pytest-cov:
+- Run tests with coverage: `pytest --cov=.`
+- To view detailed missing line coverage in the terminal: `pytest --cov=. --cov-report=term-missing`
+- To generate an HTML coverage report: `pytest --cov=. --cov-report=term-missing --cov-report=html`
+
+
 
 ### Configuration
 Test configurations and database setups are defined in conftest.py. The test environment uses SQLite for isolated testing.
