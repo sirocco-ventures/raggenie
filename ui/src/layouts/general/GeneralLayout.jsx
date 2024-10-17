@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom"
+
 import style from "src/layouts/dashboard/Dashboard.module.css"
 
 const GeneralLayout = ({children})=>{
