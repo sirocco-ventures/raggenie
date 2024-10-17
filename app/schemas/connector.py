@@ -118,3 +118,7 @@ class ActionsUpdate(BaseModel):
     table : Optional[str] = None
     connector_id: Optional[int] = None
     body : Optional[Dict] = None
+
+class LLMProviderBase(BaseModel):
+    key:str
+    api_key:str
