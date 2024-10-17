@@ -1,6 +1,7 @@
 
 import style from "./ChatBox.module.css"
 import botIcon from "./assets/bot-icon.svg"
+import botErrorIcon from "./assets/bot-error-icon.svg"
 import Time from "./Time"
 import { useState } from "react"
 import Feedback from "./Feedback"
@@ -50,7 +51,7 @@ const Message = ({
         <>
             <div className={style.Message}>
                 <div className={message.isBot == false ? style.UserMessageContainer : style.BotMessageContainer}>
-                    {message.isBot && <div> <img src={botIcon} className={style.MessageAvatar} /></div>}
+                    {message.isBot && <div> <img src={ message.error != "" ? botErrorIcon : botIcon} className={style.MessageAvatar} /></div>}
                     <div>
                         <div className={`${style.MessageContainer}  ${message.isBot == false ? style.UserMessage : style.BotMessage}`}>
                             <Markdown>{message.message}</Markdown> { (message.isBot == true && message.error != "") && <span className={style.ErrorExpandButton} onClick={()=>setShowChatError(!showChatError)}>click here</span>}
