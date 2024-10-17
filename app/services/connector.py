@@ -833,7 +833,9 @@ def get_llm_provider_models(llm_provider: schemas.LLMProviderBase):
         Tuple: List of models and error message (if any).
     """
     if llm_provider.key:
-        return BaseLoader.model_reader(provider=llm_provider)
+        llm_provider.kind = llm_provider.key
+        llm_provider.unique_name = llm_provider.key
+        return BaseLoader(model_configs=[dict(llm_provider)]).load_model(unique_name=llm_provider.key).get_models()
     else:
         return None, "Missing LLM provider key"
 

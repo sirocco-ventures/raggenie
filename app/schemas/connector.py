@@ -122,3 +122,5 @@ class ActionsUpdate(BaseModel):
 class LLMProviderBase(BaseModel):
     key:str
     api_key:str
+    kind:Optional[str]=None
+    unique_name: Optional[str]=None
