@@ -23,9 +23,17 @@ function Summary({message={}}) {
           <div>
               <div className={style.ChatSummayContainer}>
                   <div>
-                      <p className={style.ChatSQLSummary}>
-                        Showing {message?.data?.chart?.data?.length > 12 ? 12 : message?.data?.chart?.data?.length } out of {message.data?.chart?.data?.length} items retreived
-                      </p>
+                     
+                        <p className={style.ChatSQLSummary}>
+                          { message?.data?.chart?.data?.length > 0 && <>
+                            Showing {message?.data?.chart?.data?.length > 12 ? 12 : message?.data?.chart?.data?.length } out of {message.data?.chart?.data?.length} items retreived
+                          </> }
+                          { message?.data?.chart?.data?.length == 0 && <>
+                            There are no entries to show at the moment.
+                          </> }
+                        </p>
+                     
+                     
                   </div>
                   <div onClick={()=>setQueryOpen(!queryOpen)}>
                       <div className={style.QueryTitle}>
