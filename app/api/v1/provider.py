@@ -492,3 +492,27 @@ def update_vectordb_instance(
         error=None,
         data={"VectorDB": result}
     )
+
+#get all embeddings(not related to vectors)
+@vectordb.get("/embedding/all", response_model=resp_schemas.CommonResponse)
+def get_all_embeddings():
+
+    """
+    Retrieves all embeddings from module.
+
+    Returns:
+        CommonResponse: A response containing the embeddings or an error message.
+    """
+
+    result, error = svc.get_all_embeddings()
+
+    if error:
+        return commons.is_error_response("Fetching Error", result, {"embeddings": []})
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message="Embeddings Retrieved Successfully",
+        error=None,
+        data={"embeddings": result}
+    )

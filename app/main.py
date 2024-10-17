@@ -67,6 +67,11 @@ def create_app(config):
     if err is not None:
         logger.critical(err)
 
+    logger.info("initializing Vector Embeddings")
+    err = provider_svc.initialize_embeddings(session)
+    if err is not None:
+        logger.critical(err)
+
     err = commonservices.check_configurations_availability(session)
     datasources = []
 

@@ -64,3 +64,22 @@ def get_llm_providers():
                 logger.info(f"failed loading {module_info.name} cause {e}")
 
     return modules
+
+def get_all_embedding():
+    embeddings = importlib.import_module("app.embeddings")
+    modules = []
+    for module_info in pkgutil.iter_modules(embeddings.__path__):
+        module_name = f"{embeddings.__name__}.{module_info.name}"
+        try:
+            module = importlib.import_module(module_name)
+            modules.append({
+                "provider": getattr(module, '__provider_name__'),
+                "vector_dbs": getattr(module, '__unique_name__'),
+                "models": getattr(module, '__models__'),
+                "config": getattr(module, '__config'),
+            })
+
+        except Exception as e:
+            logger.info(f"failed loading {module_info.name} cause {e}")
+
+    return modules

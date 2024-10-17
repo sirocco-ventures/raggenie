@@ -92,6 +92,8 @@ class VectorDB(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     vectordb_config_mapping = relationship('VectorDBConfigMapping', back_populates='vector_db')
+    vector_embedding_mapping = relationship('VectorEmbeddingMapping', back_populates='vector_db')
+
 
 
 class VectorDBConfigMapping(Base):
@@ -107,3 +109,31 @@ class VectorDBConfigMapping(Base):
 
     vector_db = relationship('VectorDB', back_populates='vectordb_config_mapping')
     configuration = relationship('Configuration', back_populates='vectordb_config_mapping')
+
+class Embeddings(Base):
+    __tablename__ = "embeddings_configs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    provider = Column(String, nullable=False)
+    model_name = Column(String, nullable=False)
+    config = Column(JSON, nullable=False)
+    enable = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    vector_embedding_mapping = relationship("VectorEmbeddingMapping", back_populates= "embeddings_config")
+
+class VectorEmbeddingMapping(Base):
+    __tablename__ = "vector_embedding_mapping"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vector_db_id = Column(Integer, ForeignKey('vectordb.id'), nullable=False)
+    embedding_id = Column(Integer, ForeignKey('embeddings_configs.id'), nullable=False)
+    enable = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    vector_db = relationship('VectorDB', back_populates='vector_embedding_mapping')
+    embeddings_config = relationship('Embeddings', back_populates='vector_embedding_mapping')

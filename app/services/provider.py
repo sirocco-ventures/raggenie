@@ -9,7 +9,7 @@ from fastapi import Request
 from app.utils.module_reader import get_plugin_providers, get_vectordb_providers
 from app.models.provider import Provider, ProviderConfig, VectorDBConfig
 from loguru import logger
-from app.utils.module_reader import get_llm_providers
+from app.utils.module_reader import get_llm_providers, get_all_embedding
 from app.vectordb.loader import VectorDBLoader
 
 def test_inference_credentials(inference: conn_schemas.InferenceBase):
@@ -69,6 +69,9 @@ def initialize_vectordb_provider(db:Session):
 
         if is_error:
             logger.error(f"Error inserting {i['vectordb_name']} {data}")
+
+def initialize_embeddings(db:Session):
+    pass
 
 
 def initialize_plugin_providers(db:Session):
@@ -676,10 +679,24 @@ def create_vectorstore_instance(db:Session):
 
         if is_error:
             return vectore_store, "DB Error"
+
     vectorloader = VectorDBLoader(config={"name":vectore_store.vectordb, "params":vectore_store.vectordb_config}) if vectore_store else VectorDBLoader(config={"name":"chroma", "params":{"path":"./chromadb"}})
 
     return vectorloader.load_class(), None
 
 
+def get_all_embeddings():
 
+    """
+    Returns a list of available LLM providers.
 
+    Args:
+        request (Request): Request object used for handling incoming requests.
+
+    Returns:
+        dict: List of available LLM providers.
+    """
+
+    embeddings = get_all_embedding()
+
+    return embeddings, None
