@@ -145,6 +145,7 @@ const  confirmDialog = (title, message, onConfirm = ()=>{}, config = {} )=>{
                         </button>
                     </div>
                 </div>
+                </div>
             );
         }
     });
