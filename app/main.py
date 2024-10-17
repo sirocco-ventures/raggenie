@@ -131,7 +131,7 @@ def create_app(config):
     app.include_router(inference_router, prefix="/api/v1/inference")
     app.include_router(actions, prefix="/api/v1/actions")
     app.include_router(sample_sql, prefix="/api/v1/sql")
-    app.include_router(login, prefix="/api/v1/login")
+    app.include_router(login, prefix="/api/v1/auth")
 
     curr_schema = app.openapi()
     curr_schema["info"]["title"] = "Rag genie Chat API"

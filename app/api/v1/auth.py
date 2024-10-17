@@ -9,7 +9,7 @@ from app.providers.middleware import verify_token
 login = APIRouter()
 
 
-@login.post("")
+@login.post("/login")
 def login_user(response: Response, user: LoginData):
     if user.username == configs.username and user.password == configs.password:
         jwt_utils = JWTUtils(configs.secret_key)
