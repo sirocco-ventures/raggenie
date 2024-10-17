@@ -12,3 +12,6 @@ class ModelLoader:
 
     def get_usage(self, prompt, response, out) -> dict:
         raise NotImplementedError("load_model method must be implemented in subclass")
+
+    def get_models(self):
+        raise NotImplementedError("load_model method must be implemented in subclass")

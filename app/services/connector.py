@@ -10,7 +10,7 @@ from loguru import logger
 from app.services.connector_details import get_plugin_metadata
 from fastapi import Request
 from app.providers.data_preperation import SourceDocuments
-from app.services.model_reader import model_reader
+from app.loaders.base_loader import BaseLoader
 
 
 
@@ -833,7 +833,7 @@ def get_llm_provider_models(llm_provider: schemas.LLMProviderBase):
         Tuple: List of models and error message (if any).
     """
     if llm_provider.key:
-        return model_reader(llm_provider)
+        return BaseLoader.model_reader(provider=llm_provider)
     else:
         return None, "Missing LLM provider key"
 

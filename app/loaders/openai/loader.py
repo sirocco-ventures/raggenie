@@ -4,6 +4,7 @@ from typing import Any
 from loguru import logger
 from app.base.loader_metadata_mixin import LoaderMetadataMixin
 import json
+import requests
 
 class OpenAiModelLoader(ModelLoader, LoaderMetadataMixin):
 
@@ -42,7 +43,7 @@ class OpenAiModelLoader(ModelLoader, LoaderMetadataMixin):
             if "message" in error:
                 return {"content" : "", "error" : error["message"]}
         return {"content" : "", "error" : "Empty Response from LLM Provider"}
-        
+
     def get_response_metadata(self, prompt, response, out) -> dict:
         response_metadata = {}
         if "usage" in out:
@@ -87,3 +88,24 @@ class OpenAiModelLoader(ModelLoader, LoaderMetadataMixin):
 
         logger.info(f"messages:{messages}")
         return messages
+
+    def get_models(self):
+        """
+        Retrieve models from the OpenAI API.
+        Returns:
+            List of OpenAI model names or an error message.
+        """
+        url = "https://api.openai.com/v1/models"
+        headers = {
+            "Authorization": f"Bearer {self.model_config.api_key}",
+        }
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                data = response.json()
+                models = [{"display_name": model["id"], "id": model["id"]} for model in data.get("data", [])]
+                return models, False
+            else:
+                return f"Failed to retrieve OpenAI models: {response.status_code} {response.text}", True
+        except requests.RequestException as e:
+            return f"Error occurred: {str(e)}", True

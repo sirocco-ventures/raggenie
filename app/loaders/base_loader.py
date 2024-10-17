@@ -25,6 +25,24 @@ class BaseLoader:
 
         raise ValueError(f"Model with unique name '{unique_name}' not found")
 
+    def model_reader(provider):
+        """
+        Retrieves the models for a given LLM provider based on its key.
+        Args:
+            llm_provider: The LLM provider object with API key and key.
+        Returns:
+            List of model names or an error message.
+        """
+        match provider.key:
+            case "openai":
+                return OpenAiModelLoader(model_config = provider).get_models()
+            case "togethor":
+                return TogethorModelLoader(model_config = provider).get_models()
+            case "ai71":
+                return Ai71ModelLoader(model_config = provider).get_models()
+            case _:
+                return "Invalid LLM provider key", False
+
     def load_model_config(self, unique_name):
         for model in self.model_configs:
             if model['unique_name'] == unique_name:
