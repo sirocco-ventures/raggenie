@@ -87,7 +87,7 @@ def get_connector(connector_id: int, db: Session = Depends(get_db)):
 async def upload_document_datsource(
     file: UploadFile = File(...)
 ):
-    
+
     """
     Uploads an document data source file to the server.
 
@@ -102,12 +102,12 @@ async def upload_document_datsource(
 
     if error:
         return commons.is_error_response("Invalid File", error, {"file_path": None})
-    
+
     result, error = await svc.upload_pdf(file)
 
     if error:
         return commons.is_error_response("document not uploaded", error, {"file_path": None})
-    
+
     return resp_schemas.CommonResponse(
         status=True,
         status_code=201,
@@ -535,6 +535,26 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
         "error":None
     }
 
+@inference_router.post("/get/models", response_model=resp_schemas.CommonResponse)
+def get_llm_provider_models(llm_provider: schemas.LLMProviderBase):
+    """
+    Retrieves the models associated with the specified LLM provider.
+    Args:
+        llm_provider (schemas.LLMProviderBase): The details of the LLM provider.
+        db (Session): The database session dependency.
+    Returns:
+        CommonResponse: A response containing the list of LLM provider models or an error message.
+    """
+    data, is_error = svc.get_llm_provider_models(llm_provider)
+    if is_error:
+        return commons.is_error_response("LLM Provider Models Not Found", data, {"provider_models": []})
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message="LLM Provider Models Found",
+        error=None,
+        data={"provider_models": [data]}
+    )
 
 @inference_router.get("/get/{inference_id}", response_model=resp_schemas.CommonResponse)
 def get_inference(inference_id: int, db: Session = Depends(get_db)):
