@@ -13,8 +13,9 @@ export const GetUserDetails = () =>{
     return GetService(API_URL + `/login/user_info`)
 }
 
+
 export const AuthLogoutService = () => {
-    return PostService(API_URL + `/login/logout`,{ 
-    },{});  
+    return PostService(API_URL + `/login/logout`, {}, {});  
 };
+
 

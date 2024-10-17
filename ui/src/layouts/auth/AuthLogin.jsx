@@ -27,13 +27,12 @@ const AuthLogin = () => {
             "password": data.password
         };
         AuthLoginService(authCredentials).then((response) => {
+            console.log(response)
             const authResponse = response.data
             const token = authResponse.data.token
             storeToken(token)
-            if (authResponse.status == true && authResponse.status_code == 200) {
                 toast.success(authResponse.message);
                 navigate(`/preview/${uuid4()}/chat`)
-            }
         }).catch(() => {
             toast.error("Incorrect username or password. Please try again");
         });
