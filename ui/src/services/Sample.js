@@ -24,5 +24,5 @@ export const saveSamples = (sampleId, data) => {
 }
 
 export const deleteSample = (sampleId) => {
-  return DeleteService(`${API_URL}/sql/delete/${sampleId}`);
+  return DeleteService(`${API_URL}/sqldelete/${sampleId}`);
 }
