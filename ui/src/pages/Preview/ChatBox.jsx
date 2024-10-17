@@ -9,6 +9,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import EmptyPreview from "./EmptyPreview"
 import { getConnectors } from "src/services/Connectors"
 import { getBotConfiguration } from "src/services/BotConfifuration"
+import { isEmptyJSON } from "src/utils/utils"
 
 
 const PreviewChatBox = ({urlPrex = "/preview"})=>{ 
@@ -46,7 +47,7 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
                        
                 let res = response.data
                 let chatMessage =  res.response.content
-                let chatError = res.response.error ?? ""
+                let chatError = isEmptyJSON(res.response.error) ? "" : res.response.error
                 let chatEntity =  res.response.main_entity
                 let chatFormat = res.response.main_format
                 let chatKind = res.response.kind
@@ -109,9 +110,9 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
                     query: chat.chat_answer.query
                 }
 
-
-                tempChat.push({isBot:false, message: chat.chat_query, chat_context_id: chat.chat_context_id, chat_id: chat.chat_id, feedback_status: 0, })
-                tempChat.push({isBot: true, message: chat.chat_answer.content, error: chat.chat_answer.error ?? "", entity: chat.chat_answer.main_entity, format: chat.chat_answer.main_format, kind: chat.chat_answer.kind, data: chatData })
+               
+                tempChat.push({isBot: false, message: chat.chat_query, chat_context_id: chat.chat_context_id, chat_id: chat.chat_id, feedback_status: 0, })
+                tempChat.push({isBot: true, message: chat.chat_answer.content, error:  isEmptyJSON(chat.chat_answer.error) ? "" : chat.chat_answer.error, entity: chat.chat_answer.main_entity, format: chat.chat_answer.main_format, kind: chat.chat_answer.kind, data: chatData })
             })
             setConversation(tempChat)
         })
