@@ -41,8 +41,6 @@ class ProviderInDBBase(ProviderBase):
     updated_at: Optional[datetime] = None
     deleted_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
 
 class Provider(ProviderInDBBase):
     pass

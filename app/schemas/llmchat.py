@@ -21,8 +21,6 @@ class ChatHistoryCreate(ChatHistoryBase):
 class ChatHistory(ChatHistoryBase):
     chat_id: int
 
-    class Config:
-        from_attributes= True
 
 class ChatResponse(ChatHistory):
     created_at: datetime
@@ -40,6 +38,3 @@ class ListPrimaryContext(BaseModel):
     chat_answer: Dict
     user_id: int
     primary_chat: bool
-
-    class Config:
-        from_attributes= True
