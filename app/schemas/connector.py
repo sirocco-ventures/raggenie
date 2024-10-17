@@ -65,10 +65,6 @@ class ConfigurationUpdate(BaseModel):
     capabilities: Optional[List[int]]=None
 
 
-    class Config:
-        from_attributes = True
-
-
 class InferenceBase(BaseModel):
     name:str
     apikey:str
@@ -92,9 +88,6 @@ class ConfigurationResponse(ConfigurationBase):
     id: int
     capabilities: List[CapabilitiesBase]
     inference: Optional[List[InferenceResponse]]=None
-
-    class Config:
-        from_attributes = True
 
 class Actions(BaseModel):
     name: str

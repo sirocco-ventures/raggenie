@@ -41,8 +41,6 @@ class ProviderInDBBase(ProviderBase):
     updated_at: Optional[datetime] = None
     deleted_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
 
 class Provider(ProviderInDBBase):
     pass
@@ -98,3 +96,6 @@ class SampleSQLUpdate(BaseModel):
 
 class SampleSQLResponse(SampleSQLBase):
     id: int
+
+class CredentialsHelper(BaseModel):
+    provider_config: Dict[str, Any]

@@ -89,7 +89,7 @@ def list_chat_by_context(db: Session = Depends(get_db)):
         return commons.is_error_response("DB Error", error, {"chats": []})
 
     if not result:
-        return commons.is_none_reponse("Context Not found", {"chat": {}})
+        return commons.is_none_reponse("Context Not found", {"chats": []})
 
 
     return resp_schemas.CommonResponse(
