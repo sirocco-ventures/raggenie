@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import SampleForm from "./SampleForm"
 import { getSamples, deleteSample } from "src/services/Sample"
 import SampleList from "./SampleList"
-import { confirmDailog } from "src/utils/confirmDialog"
+import { confirmDialog } from "src/utils/confirmDialog"
 import { toast } from "react-toastify"
 
 const Samples = () => {
@@ -46,7 +46,7 @@ const Samples = () => {
       })
     }
 
-    confirmDailog(
+    confirmDialog(
       "Are you sure you want to delete this sample?",
       "",
       deleteIcon,
