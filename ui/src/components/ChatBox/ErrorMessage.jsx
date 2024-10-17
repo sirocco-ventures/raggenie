@@ -10,7 +10,7 @@ const ErrorMessage = ({ error = "", onClose = ()=>{}})=>{
         <div className={style.ErrorContainer}>
             <div className={style.ErrorHeaderContainer}>
                 <div className={style.ErrorHeadingContainer}>
-                    <h1 className={style.ErrorHeading}>500 internal server issue</h1>
+                    <h1 className={style.ErrorHeading}>An unexpected error has occurred</h1>
                 </div>
                 <div>
                     <img src={closeIcon} className={style.ErrorCloseIcon} onClick={onClose} />
