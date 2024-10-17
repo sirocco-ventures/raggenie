@@ -11,9 +11,9 @@ const MainRoute = () => {
     return (
         <Routes>
 
-            <Route path="/auth" element={<AuthLogin />} />
+            <Route path="/login" element={<AuthLogin />} />
             <Route path="/:contextId/chat" element={<Chat/>} />
-            <Route path="/"  element={ <Navigate to={`/auth`} repalce={true} /> } />
+            <Route path="/"  element={ <Navigate to={`/login`} repalce={true} /> } />
             <Route path='/' element={<DashboardLayout/>}>
                 {
                 routes.map((item, index)=>{
