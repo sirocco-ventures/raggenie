@@ -5,24 +5,24 @@ import raggenieLogo from "../../assets/logo/logo.svg";
 import userIcon from "../../assets/icons/header-user-avatar.svg";
 import downArrowIcon from "../../assets/icons/chevron-right.svg";
 import { NavLink, useNavigate } from "react-router-dom";
-import userProfile from "../../assets/icons/user-profile.svg";
-import userLogout from "../../assets/icons/log-out.svg";
+import userLogout from "../../assets/icons/menu-icons/log-out.svg";
 import { AuthLogoutService } from "src/services/Auth";
 import { toast } from "react-toastify";
 
 const SideMenu = ({ username }) => {
+
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navigate = useNavigate(); 
 
 
     const UserNameDetails = [
+        // {
+        //     action:"profile",
+        //     icon: userProfile,
+        //     title: "Profile"
+        // },
         {
-            id:1,
-            icon: userProfile,
-            title: "Profile"
-        },
-        {
-            id:2,
+            action:"logout",
             icon: userLogout,
             title: "Logout"
         }
@@ -32,16 +32,18 @@ const SideMenu = ({ username }) => {
         setIsDropdownOpen(!isDropdownOpen);
     };
 
-    const onHandleClick = (id) => {
-    
-        if (id === 2) {
-            AuthLogoutService().then((response) => {
-                console.log(response);
-                toast.success(response.data.message); // Show success message
-                navigate("/login"); // Navigate to login page
-            }).catch((error) => {
-                console.error("Logout failed:", error); 
-            });
+    const onHandleClick = (action) => {
+        switch (action) {
+            case "logout":
+                AuthLogoutService().then((response) => {
+                    toast.success(response.data.message); 
+                    navigate("/login"); 
+                }).catch((error) => {
+                    console.error("Logout failed:", error); 
+                });
+                break;
+            default:
+                break;
         }
     };
     
@@ -65,7 +67,7 @@ const SideMenu = ({ username }) => {
                 {isDropdownOpen && (
                     <div className={style.DropdownMenu}>
                         {UserNameDetails.map((item, index) => (
-                            <ul key={index} className={style.MenuList} onClick={() => onHandleClick(item.id)}>
+                            <ul key={index} className={style.MenuList} onClick={() => onHandleClick(item.action)}>
                                         <li className={style.menu}>
                                             <img src={item.icon} alt={item.title} /> <span>{item.title}</span>
                                         </li>

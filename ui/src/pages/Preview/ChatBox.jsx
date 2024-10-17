@@ -1,4 +1,3 @@
-import DashboardBody from "src/layouts/dashboard/DashboadBody"
 import ChatBox from "src/components/ChatBox/ChatBox"
 import {  useEffect, useRef, useState } from "react"
 import GetService from "src/utils/http/GetService"
@@ -92,7 +91,7 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
     }
 
     const getChatByContexts =(contextId)=>{
-        GetService(API_URL + `/chat/get/${contextId}`).then(response=>{
+        GetService(API_URL + `/chat/get/${contextId}`,{},{allowHeaders:false}).then(response=>{
             const chats = response.data.data.chats
             let tempChat = [];
             let tempChatDetails = [];

@@ -33,7 +33,7 @@ const AuthLogin = () => {
             storeToken(token)
                 toast.success(authResponse.message);
                 navigate(`/preview/${uuid4()}/chat`)
-        }).catch(() => {
+        }).catch((error) => {
             toast.error("Incorrect username or password. Please try again");
         });
     };

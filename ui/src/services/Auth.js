@@ -4,18 +4,18 @@ import PostService from "src/utils/http/PostService";
 
 export const AuthLoginService = (authCredentials) => {
     return PostService(API_URL + `/login`, authCredentials, { 
-        showLoader: false, 
+        showLoader: false,allowHeaders:false
     },{});  
 };
 
 
 export const GetUserDetails = () =>{
-    return GetService(API_URL + `/login/user_info`)
+    return GetService(API_URL + `/login/user_info`,{},{allowHeaders:false})
 }
 
 
 export const AuthLogoutService = () => {
-    return PostService(API_URL + `/login/logout`, {}, {});  
+    return PostService(API_URL + `/login/logout`, {}, {allowHeaders:false});  
 };
 
 

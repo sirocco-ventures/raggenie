@@ -1,17 +1,18 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useTokenStore } from "src/store/authStore";
 
 const defaultConfig = {
     showLoader: true,
     fullLoader: false,
-    loaderText: "Getting Data"
+    loaderText: "Getting Data",
+    allowHeaders: true,
 }
 
 const defaultAxiosConfig = { }
 
+
 const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig = {} )=>{
+    
     let allConfig = {...defaultConfig, ...config}
     let allAxiosConfig = {...defaultAxiosConfig, ...axiosConfig}
 
@@ -42,42 +43,37 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
         url: url,
         data: data,
         params: params,
-        headers: {
+        headers: allConfig.allowHeaders ? { 
             Authorization: `Bearer ${token}`,
             ...axiosConfig.headers
-        },
+        } : {}, 
         withCredentials: true, 
         ...allAxiosConfig
     };
-
     
 
-    return axios.request(requestConfig).then(response => {
-        
-        if (loaderContainer) {
-            loaderContainer.style.display = "none";
-        }
-        
-        if (response.data?.status == false) {
-            return new Promise((resolve, reject) => reject(response));
-        }
-        return new Promise((resolve) => resolve(response))
-
-    }).catch(error => {
-        if (loaderContainer) {
-            loaderContainer.style.display = "none";
-        }
-        if (error.response?.status === 401) {
-            window.location.href = '/login';
-        }
-
-        if (!error.response) {
-            toast.error("Network error");
-        }
-        return Promise.reject(error);
-    });
+    return new Promise((resolve, reject)=> {
+        axios.request(requestConfig).then(response => {
+            if (loaderContainer) {
+                loaderContainer.style.display = "none";
+            }
+            
+            if (response.data?.status == false) {
+                return  reject(response);
+            }
+            return  resolve(response)
     
-   
+        }).catch(error => {
+            if (loaderContainer) {
+                loaderContainer.style.display = "none";
+            }
+            if (error.response?.status === 401) {
+                window.location.href = '/login';
+            }
+            return reject(error)
+        });
+    })
+       
 }
 
 export default Request
