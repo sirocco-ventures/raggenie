@@ -118,7 +118,7 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
 
 // ===================CHAT HISTROY START==============================
     const getChatHistory = () => {
-        GetService(API_URL + "/chat/list/context/all").then(response => {  
+        GetService(API_URL + "/chat/list/context/all",{},{allowHeaders:false}).then(response => {  
             let chatHistory = []; 
             let chats = response.data.data.chats;
     
