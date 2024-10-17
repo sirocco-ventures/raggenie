@@ -1,11 +1,11 @@
-import {confirmAlert} from "react-confirm-alert"
+import { confirmAlert } from "react-confirm-alert";
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
 const defaultValue = {
-    icon:<svg xmlns="http://www.w3.org/2000/svg" width="31" height="30" viewBox="0 0 31 30" fill="none">
-            <path d="M15.5 20V15M15.5 10H15.5125M28 15C28 21.9036 22.4036 27.5 15.5 27.5C8.59644 27.5 3 21.9036 3 15C3 8.09644 8.59644 2.5 15.5 2.5C22.4036 2.5 28 8.09644 28 15Z" stroke="#FF7F6D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>,
-    cancelButtonText : "Cancel",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="31" height="30" viewBox="0 0 31 30" fill="none">
+        <path d="M15.5 20V15M15.5 10H15.5125M28 15C28 21.9036 22.4036 27.5 15.5 27.5C8.59644 27.5 3 21.9036 3 15C3 8.09644 8.59644 2.5 15.5 2.5C22.4036 2.5 28 8.09644 28 15Z" stroke="#FF7F6D" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>,
+    cancelButtonText: "Cancel",
     confirmButtonText: "Delete",
     cancelButtonIcon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                             <g clip-path="url(#clip0_3063_7829)">
@@ -34,7 +34,7 @@ const confirmDialogStyle = {
         width: "329px"
     },
     iconContainer: {
-        textAlign: "center"    
+        textAlign: "center"
     },
     icon: {
         margin: "auto",
@@ -90,9 +90,9 @@ const confirmDialogStyle = {
         background: "#FFF2F0",
         color: "#FF7F6D",
     },
-    buttonContentAlign:{
-        display:"flex",
-        flexDirection:"row"
+    buttonContentAlign: {
+        display: "flex",
+        flexDirection: "row"
     },
     actionButtonIcon: {
         display: "flex",
@@ -145,9 +145,9 @@ const  confirmDialog = (title, message, onConfirm = ()=>{}, config = {} )=>{
                         </button>
                     </div>
                 </div>
-            </div>)
+            );
         }
-    })
-}
+    });
+};
 
 export default confirmDialog

@@ -113,13 +113,11 @@ const BotConfiguration = () => {
                     tempSelectedCapabilities.push({ value: cap.id, label: cap.name })
                 })
                 setSelectedOptions(tempSelectedCapabilities)
-                console.log({k :configs[0].inference[0]?.id})
+                
 
-                if(configs[0].capabilities?.length == 0) {
-                    setCapabalities([{id: undefined, title:`Capability 1`, name:"", description:"", requirements: [], isCollapse: false}])
-                }else{
+                 if(configs[0].capabilities?.length>0){
                     setCapabalities(configs[0].capabilities)
-                }
+                 } 
 
                 if(configs[0].inference[0]?.id){
                     let inference = configs[0].inference[0];
@@ -191,6 +189,7 @@ const BotConfiguration = () => {
         saveBotInferene(currentConfigID, currentInferenceID, data).then(() => {
             toast.success("Inference saved successfully")
             setShowNotificationPanel(false);
+            setActiveTab("capabalities")
         })
         .catch(() => {
             setShowNotificationPanel(true);
@@ -359,7 +358,7 @@ const BotConfiguration = () => {
                     <p className={style.ConfigDescription}>Provide your database connection details and database data description can make your application more efficient.</p>
                     <form onSubmit={configHandleSubmit(onBotConfigSave)}>
                         <div>
-                            <Input 
+                        <Input 
                                 label="Bot Configuration Name" 
                                 maxLength={50} 
                                 value={configWatch("botName")} 
@@ -376,7 +375,7 @@ const BotConfiguration = () => {
                                     message: "The minimum length is 20 characters"
                                     }
                                 })} 
-                            />
+                                />
                             <Input label="Bot Short Description" placeholder="brief detail about the use case of the bot" minLength={20} maxLength={200} value={configWatch("botShortDescription")} hasError={configFormError["botShortDescription"]?.message ? true : false} errorMessage={configFormError["botShortDescription"]?.message}  {...configRegister("botShortDescription", { required: "This field is required", minLength: {value: 20, message : "minimun length is 20"}, maxLength: {value: 200, message: "maximum length is 200"}})}  />
                             <Textarea label="Bot Long Description" placeholder="detailed information about the bot, including its full use case and functionalities" rows={10} minLength={50} maxLength={400} value={configWatch("botLongDescription")} hasError={configFormError["botLongDescription"]?.message ? true : false} errorMessage={configFormError["botLongDescription"]?.message}  {...configRegister("botLongDescription", { required: "This field is required", minLength:{value: 50, message: "minimun length is 50"}, maxLength: {value: 400, message: "maximum length is 400"}})} />
                             
@@ -412,7 +411,7 @@ const BotConfiguration = () => {
                         { showNotificationPanel && <NotificationPanel message={notificationMessage} containerStyle={{marginBottom: "30px"}} /> }
                         <div className={`${style.SaveConfigContainer} ${style.InferenceSaveContainer}`}>
                             <div style={{flexGrow: 1}}>
-                                <Button type="transparent" className="icon-button" onClick={()=>setActiveTab("configuration")} > <FaArrowLeft/> Back</Button>
+                                <Button type="transparent" className="icon-button" onClick={()=>{setActiveTab("configuration")}} > <FaArrowLeft/> Back</Button>
                             </div>
                             <div>
                                  { disabledInferenceSave && <Button onClick={onTestInference} style={{marginRight: "10px"}}> Test <LiaToolsSolid/>  </Button> }
@@ -430,6 +429,7 @@ const BotConfiguration = () => {
                                <Button variant="secondary" className="icon-button" onClick={addNewCapability}>New Capability <GoPlus/> </Button>
                             </div>
                             <div>
+                                
                                 {capabalities?.map((item, index)=>{
                                     return <Capability  
                                                 key={index}
@@ -453,11 +453,9 @@ const BotConfiguration = () => {
                             </div>
                             <div className={style.ActionDiv}>
                                 <div style={{flexGrow: 1}}>
-                                    <Button type="transparent" className="icon-button" onClick={()=>setCurrentActiveTab("documentation")}> <FaArrowLeft/> Back</Button>
+                                    <Button type="transparent" className="icon-button" onClick={()=>setActiveTab("inferenceendpoint")}> <FaArrowLeft/> Back</Button>
                                 </div>
-                                <div>
-                                    <Button buttonType="submit" className="icon-button" onClick={()=>navigate("/plugins")}>  Finish  <FiCheckCircle/></Button>
-                                </div>
+                              
                             </div>
                     </Tab>
             </Tabs>
