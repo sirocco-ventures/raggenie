@@ -11,7 +11,6 @@ from loguru import logger
 from app.services.connector_details import get_plugin_metadata
 from fastapi import Request
 from app.providers.data_preperation import SourceDocuments
-from app.services.model_reader import model_reader
 
 
 
@@ -924,23 +923,6 @@ def update_inference(inference_id: int, inference: schemas.InferenceBaseUpdate, 
     )
 
     return data, None
-
-def get_llm_provider_models(llm_provider: schemas.LLMProviderBase):
-    """
-    Retrieves the models available for a given LLM provider.
-
-    Args:
-        llm_provider (schemas.LLMProviderBase): The LLM provider object.
-
-    Returns:
-        Tuple: List of models and error message (if any).
-    """
-
-    if llm_provider.key:
-        return model_reader(llm_provider)
-    else:
-        return None, "Missing LLM provider key"
-
 
 def list_actions(db:Session):
 
