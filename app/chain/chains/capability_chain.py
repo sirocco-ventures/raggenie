@@ -27,7 +27,7 @@ class CapabilityChain:
     for a specific part of the processing pipeline. This allows for flexibility
     and easy extension of functionality.
     """
-    def __init__(self, model_configs, context_storage, general_chain):
+    def __init__(self, model_configs, context_storage, datasources):
 
         logger.info("loading modules into capability chain")
 
@@ -37,7 +37,7 @@ class CapabilityChain:
         self.input_formatter = InputFormatter()
         self.context_retriver = ContextRetreiver(self.common_context, context_storage)
         self.followup_handler = FollowupHandler(self.common_context, model_configs)
-        self.followup_interpreter = FollowupInterpreter(self.common_context, general_chain)
+        self.followup_interpreter = FollowupInterpreter(self.common_context, datasources)
         self.post_processor = PostProcessor()
 
 

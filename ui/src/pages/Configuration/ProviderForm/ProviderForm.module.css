@@ -109,10 +109,27 @@
 .SelectHasError:focus ~ .SelectErrorMessage {
     color: #FF7F6D;
 }
+
 .Hint {
     font-size: 12px;
     color:#6b7280;
-     
     margin-bottom: 30px;
     display: block;
+}
+
+
+.ActionCreateNewContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 11px;
+}
+
+.ActionCreateNewLabel {
+    color: var(--neural-1);
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    flex-grow: 1;
 }
