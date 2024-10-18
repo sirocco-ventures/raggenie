@@ -1,10 +1,11 @@
 from app.schemas.common import LoginData
 import os
-from fastapi import APIRouter, Response, Depends, Request, Response, HTTPException
+from fastapi import APIRouter, Response, Depends, Request, Response, HTTPException, status
 from app.providers.config import configs
 from app.utils.jwt import JWTUtils
 from app.schemas.common import CommonResponse
 from app.providers.middleware import verify_token
+from typing import Optional
 
 login = APIRouter()
 
@@ -57,16 +58,17 @@ def logout_user(response: Response):
     )
 
 @login.get("/user_info", dependencies=[Depends(verify_token)])
-def get_user_info(request: Request):
-    token = request.cookies.get("auth_token")
-
-    jwt_utils = JWTUtils(configs.secret_key)
-    payload = jwt_utils.decode_jwt_token(token)
+def get_user_info(request: Request, sub: Optional[str] = Depends(verify_token)):
+    if sub is None:
+        raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="User not authenticated"
+    )
 
     return CommonResponse(
         status=True,
         status_code=200,
         message="User info retrieved successfully",
-        data={"username": payload.get("sub")},
+        data={"username": sub},
         error=None
     )
