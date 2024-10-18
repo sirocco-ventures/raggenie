@@ -77,7 +77,7 @@ class Webhook(BasePlugin, PluginMetadataMixin, MessagePlugin, Formatter):
         url = self.params.get('url')
         method = self.params.get('method').upper()
         header_string = self.params.get('headers', '{}')
-        
+        params_string = json.dumps(params)
         try:
             headers = json.loads(header_string)
         except Exception as e:
@@ -87,11 +87,11 @@ class Webhook(BasePlugin, PluginMetadataMixin, MessagePlugin, Formatter):
         try:
             match method:
                 case 'POST':
-                    response = requests.post(url, headers=headers, data=params)
+                    response = requests.post(url, headers=headers, data=params_string)
                 case 'PUT':
-                    response = requests.put(url, headers=headers, data=params)
+                    response = requests.put(url, headers=headers, data=params_string)
                 case 'GET':
-                    response = requests.get(url, headers=headers, params=params)
+                    response = requests.get(url, headers=headers, params=params_string)
                 case _:
                     logger.error(f"Unsupported method: {method}")
                     return False, f"Unsupported method: {method}"
