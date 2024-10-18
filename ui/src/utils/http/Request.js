@@ -47,13 +47,13 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
             Authorization: `Bearer ${token}`,
             ...axiosConfig.headers
         } : {}, 
-        withCredentials: true, 
         ...allAxiosConfig
     };
     
 
     return new Promise((resolve, reject)=> {
         axios.request(requestConfig).then(response => {
+            console.log(response);
             if (loaderContainer) {
                 loaderContainer.style.display = "none";
             }
