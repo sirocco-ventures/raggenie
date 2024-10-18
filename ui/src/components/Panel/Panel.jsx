@@ -21,7 +21,7 @@ const Panel = ({title = "Panel", children, isExpanded = false, expandable = fals
     return(
         <div className={`${style.PanelContainer} ${expand == true ? "" : style.PanelContainerCollapse}`} {...props}>
             <div className={style.PanelHeader}>
-                {expandable && <div onClick={onExpandClick} style={{cursor: "pointer"}}> {expand == true ? <img src={panelExpandIcon}/> : <img src={panelCollapseIcon}/>  } </div> }
+                {expandable && <div onClick={onExpandClick} style={{cursor: "pointer", marginTop: "-4px"}}> {expand == true ? <img src={panelExpandIcon}/> : <img src={panelCollapseIcon}/>  } </div> }
                 <div className={style.PanelTitle}>
                     {title}
                 </div>
