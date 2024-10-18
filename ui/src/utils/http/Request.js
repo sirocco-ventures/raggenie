@@ -53,7 +53,6 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
 
     return new Promise((resolve, reject)=> {
         axios.request(requestConfig).then(response => {
-            console.log(response);
             if (loaderContainer) {
                 loaderContainer.style.display = "none";
             }

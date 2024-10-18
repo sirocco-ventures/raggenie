@@ -10,10 +10,24 @@ import { toast } from 'react-toastify';
 import GeneralLayout from '../general/GeneralLayout';
 import { v4  as uuid4} from "uuid"
 import { storeToken } from 'src/store/authStore';
+import { PiSmileySadLight } from "react-icons/pi";
 
+
+const ErrorContainer = ({ message }) => {
+    return (
+        <div className={style.ErrorDiv}>
+            <div className={style.WarningMessage}>
+            <div className={style.SimileIcon}> <PiSmileySadLight color={"#FCBD73"} size={24}/> </div> <div> {message}</div>
+            </div>
+        </div>
+    );
+};
 
 const AuthLogin = () => {
     const [activeLoginButton,setActiveLoginButton] = useState(true)
+
+    const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const { register: authRegister, setValue: authSetValue, handleSubmit: authHandleSubmit, formState: authFormState, setError: authSetError, clearErrors: authClearErrors, watch: authWatch } = useForm({ mode: 'all' });
 
@@ -27,14 +41,14 @@ const AuthLogin = () => {
             "password": data.password
         };
         AuthLoginService(authCredentials).then((response) => {
-            console.log(response)
             const authResponse = response.data
             const token = authResponse.data.token
             storeToken(token)
                 toast.success(authResponse.message);
                 navigate(`/preview/${uuid4()}/chat`)
-        }).catch((error) => {
-            toast.error("Incorrect username or password. Please try again");
+        }).catch(() => {
+            setErrorMessage("Incorrect username or password. Please try again.");
+            setShowError(true);
         });
     };
     
@@ -47,7 +61,8 @@ const AuthLogin = () => {
                     <img src={logo} alt="Gennie Logo" />
                     <h2 className={style.Welcome}>Welcome Back</h2>
                     <p>Login to your Ragggenie account</p>
-                    <div style={{ width: "100%", backgroundColor: "#FFF", paddingTop: "50px" }}>
+                    {showError && <ErrorContainer message={errorMessage} />}
+                    <div style={{ width: "100%", backgroundColor: "#FFF"}}>
                         <form onSubmit={authHandleSubmit(onSubmit)}>
                             <Input
                                 label="Username"

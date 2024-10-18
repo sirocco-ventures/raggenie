@@ -53,8 +53,46 @@
     line-height: 150%;
     /* 24px */
 }
-.SubmitButton{
+
+.SubmitButton {
     width: 100%;
     text-align: center;
     justify-content: center;
+}
+
+.ErrorDiv {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    height: 21px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    border-radius: 10px;
+    background: #FDF5EC;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    color: #323232;
+    text-align: center;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    padding: 9px 18px;
+
+}
+
+.WarningMessage{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:7px ;
+}
+
+.SimileIcon{
+    padding-top: 5px;
 }

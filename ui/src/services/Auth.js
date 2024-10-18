@@ -4,8 +4,7 @@ import PostService from "src/utils/http/PostService";
 
 export const AuthLoginService = (authCredentials) => {
     return PostService(API_URL + `/auth/login`, authCredentials, { 
-        showLoader: false,allowHeaders:false
-    },{});  
+        showLoader: false,allowHeaders:false},{});  
 };
 
 
