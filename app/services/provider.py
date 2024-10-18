@@ -575,32 +575,40 @@ def insert_vector_store(request, sql, db: Session):
 
         return str(e)
 
-def create_vectordb_instance(vectordb, db:Session):
+def create_vectordb_and_embedding(vectordb, db):
+
     """
-    Creates a new vector database instance in the database.
+    Creates a new VectorDB instance and inserts an embedding into the vector store.
 
     Args:
-        request (Request): Request object to access app components.
-        vectordb (schemas.VectorDBBase): Data for the new vector database instance.
+        vectordb (schemas.VectorDB): VectorDB instance data.
         db (Session): Database session object.
 
     Returns:
-        Tuple: VectorDBConfigResponse schema and error message (if any).
+        Tuple: VectorDBResponse schema and error message (if any).
     """
+    if not vectordb.embedding_config:
+        vectordb.embedding_config.provider="default",
+        vectordb.embedding_config.params = {}
 
+    if not vectordb.vectordb:
+        vectordb.vectordb = "chroma"
+        vectordb.vectordb_config= {"path":"./vector_db"}
 
-
-    (vectordb_instance, vectordb_mapping), is_error = repo.create_vectordb_instance(vectordb, db)
+    db_data, is_error = repo.create_vectordb_with_embedding(vectordb, db)
 
     if is_error:
         return vectordb, "DB Error"
 
-    return schemas.VectorDBResponse(
-        id=vectordb_instance.id,
-        vectordb = vectordb_instance.vectordb,
-        vectordb_config = vectordb_instance.vectordb_config,
-        config_id=vectordb_mapping.config_id
-    ), None
+    response_data = {
+        'id': db_data['vectordb'].id,
+        'vectordb': db_data['vectordb'].vectordb,
+        'vectordb_config': db_data['vectordb'].vectordb_config,
+        'config_id': db_data['vectordb_mapping'].config_id,
+    }
+
+    return schemas.VectorDBResponse(**response_data), None
+
 
 def get_vectordb_instance(id: int, db: Session):
     """

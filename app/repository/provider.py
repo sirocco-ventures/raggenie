@@ -134,9 +134,9 @@ def get_sql_by_key(key: str, db: Session):
     except SQLAlchemyError as e:
         db.rollback()
         return str(e),True
-
-def create_vectordb_instance(vectordb, db: Session):
+def create_vectordb_with_embedding(vectordb, db: Session):
     try:
+        # Create the VectorDB instance
         db_vectordb = models.VectorDB(
             vectordb=vectordb.vectordb,
             vectordb_config=vectordb.vectordb_config,
@@ -145,6 +145,7 @@ def create_vectordb_instance(vectordb, db: Session):
         db.commit()
         db.refresh(db_vectordb)
 
+        # Create the VectorDBConfigMapping instance
         db_vectordb_mapping = models.VectorDBConfigMapping(
             vector_db_id=db_vectordb.id,
             config_id=vectordb.config_id,
@@ -153,35 +154,33 @@ def create_vectordb_instance(vectordb, db: Session):
         db.commit()
         db.refresh(db_vectordb_mapping)
 
-        return (db_vectordb, db_vectordb_mapping), False
+        if vectordb.embedding_config:
+            db_embedding = models.Embeddings(
+                provider=vectordb.embedding_config['provider'],
+                config=vectordb.embedding_config['params'],
+            )
+            db.add(db_embedding)
+            db.commit()
+            db.refresh(db_embedding)
+
+            db_embedding_mapping = models.VectorEmbeddingMapping(
+                vector_db_id=db_vectordb.id,
+                config_id=vectordb.config_id,
+            )
+            db.add(db_embedding_mapping)
+            db.commit()
+            db.refresh(db_embedding_mapping)
+
+            return {
+                'vectordb': db_vectordb,
+                'vectordb_mapping': db_vectordb_mapping,
+                'embedding': db_embedding,
+            }, False
 
     except SQLAlchemyError as e:
         db.rollback()
         return str(e), True
 
-def create_embedding_instance(vector_db_id,vectordb, db: Session):
-    try:
-        db_embedding = models.Embeddings(
-            provider=vectordb.embedding_config.provider,
-            config = vectordb.embedding_config.params
-        )
-        db.add(db_embedding)
-        db.commit()
-        db.refresh(db_embedding)
-
-        db_embedding_mapping = models.VectorEmbeddingMapping(
-            vector_db_id=vector_db_id,
-            config_id=vectordb.config_id,
-        )
-        db.add(db_embedding_mapping)
-        db.commit()
-        db.refresh(db_embedding_mapping)
-
-        return (db_embedding, db_embedding_mapping), False
-
-    except SQLAlchemyError as e:
-        db.rollback()
-        return str(e), True
 
 
 def get_vectordb_instance(id: int, db: Session):

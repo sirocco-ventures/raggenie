@@ -92,7 +92,7 @@ class EmbeddingBase(BaseModel):
 
 class TestVectorDBCredentials(BaseModel):
     vectordb_config: Dict[str, Any]
-    embedding_config: Dict[EmbeddingBase]
+    embedding_config: Dict[str, EmbeddingBase]
 
 class SampleSQLBase(BaseModel):
     description: str
@@ -126,7 +126,7 @@ class VectorDBBase(BaseModel):
     vectordb: str
     vectordb_config : Dict[str,Any]
     config_id: int
-    embedding_config: Optional[Dict[EmbeddingBase]] = None
+    embedding_config: Optional[Dict[str,EmbeddingBase]] = None
 
 
 class VectorDBResponse(VectorDBBase):
