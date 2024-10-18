@@ -349,10 +349,19 @@ def list_configurations(db: Session):
         capabilities=[schemas.CapabilitiesBase(
             id=capabilities.id,
             name=capabilities.name,
+            actions= [{
+                "id": mapping.actions.id,
+                "name": mapping.actions.name,
+                "description": mapping.actions.description,
+                "types": mapping.actions.types,
+                "table": mapping.actions.table,
+                "enable": mapping.actions.enable,
+                } for mapping in capabilities.cap_actions_mapping],
             requirements=capabilities.requirements,
             description=capabilities.description,
             config_id=capabilities.config_id,
         ) for capabilities in config.capabilities],
+        
         inference=[schemas.InferenceResponse(
             id=inference_mapping.inference.id,
             name=inference_mapping.inference.name,
