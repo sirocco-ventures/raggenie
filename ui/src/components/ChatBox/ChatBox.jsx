@@ -46,7 +46,7 @@ const ChatBox = forwardRef(({messageBoxRef = null, handleNavigateChatContext=()=
 
                     <div>
                         <div className={style.ChatBoxTextContainer}>
-                            <div ref={messageBoxRef} className={style.ChatBoxTextBox} contentEditable="true" onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
+                            <div ref={messageBoxRef} className={style.ChatBoxTextBox} contentEditable="plaintext-only" onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
                             </div>
                             <div>
                                 <div className={style.ChatBoxSendIcon} onClick={onSendClick}></div>
