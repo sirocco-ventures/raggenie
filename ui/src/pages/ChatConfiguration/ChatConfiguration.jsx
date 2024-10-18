@@ -439,7 +439,7 @@ const BotConfiguration = () => {
                                                 name={item.name}
                                                 description={item.description} 
                                                 parameters={item.requirements}
-                                                actions={item.actions_list}
+                                                actions={item.actions}
                                                 actionsList={actions}
                                                 isCollapse={item.isCollapse}
                                                 onCapabilitySave={onSaveCapability}
