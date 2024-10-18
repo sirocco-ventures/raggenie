@@ -4,10 +4,10 @@ from app.models.request import ConnectionArgument
 
 # Plugin Metadata
 __version__ = '1.0.0'
-__plugin_name__ = 'postgres'
-__display_name__ = "Postgres DB"
-__description__ = 'Postgres integration for handling Postgres database operations.'
-__icon__ = '/assets/plugins/logos/postgresql.svg'
+__plugin_name__ = 'mysql'
+__display_name__ = "MySQL DB"
+__description__ = 'MySQL integration for handling MySQL database operations.'
+__icon__ = '/assets/plugins/logos/mysql.svg'
 __category__ = 2
 
 
@@ -15,7 +15,7 @@ __category__ = 2
 __connection_args__ = OrderedDict(
     db_name= ConnectionArgument(
         type = 1,
-        generic_name= 'Database name',
+        generic_name= 'MySQL Database name',
         description = 'Database name',
         order= 5,
         required = True,
@@ -24,7 +24,7 @@ __connection_args__ = OrderedDict(
     ),
     db_user=ConnectionArgument(
         type= 1,
-        generic_name= 'User name',
+        generic_name= 'MySQL User name',
         description= 'Database username',
         order= 2,
         required = True,
@@ -33,7 +33,7 @@ __connection_args__ = OrderedDict(
     ),
     db_password=ConnectionArgument(
         type= 2,
-        generic_name= 'Password',
+        generic_name= 'MySQL Password',
         description= 'Database password',
         order= 3,
         required = True,
@@ -42,7 +42,7 @@ __connection_args__ = OrderedDict(
     ),
     db_host=ConnectionArgument(
         type= 1,
-        generic_name= 'Database host',
+        generic_name= 'MySQL Database host',
         description= 'Database hostname',
         order= 1,
         required = True,
@@ -51,22 +51,13 @@ __connection_args__ = OrderedDict(
     ),
     db_port=ConnectionArgument(
         type= 3,
-        generic_name= 'Database port',
+        generic_name= 'MySQL Database port',
         description= 'Database port',
         order = 4,
         required = True,
         value = None,
         slug = "db_port"
     ),
-    db_sslmode=ConnectionArgument(
-        type= 6,
-        generic_name= 'Database sslmode',
-        description= 'SSL mode',
-        order= 6,
-        required = True,
-        value=[{"label":"prefer", "value": "prefer"}, {"label":"disable", "value": "disable"}, {"label":"require", "value": "require"}],
-        slug = "db_sslmode"
-    )
 )
 
 # Prompt
@@ -74,7 +65,7 @@ __prompt__ = Prompt(**{
         "base_prompt": "{system_prompt}{user_prompt}",
         "system_prompt": {
             "template": """
-            You are an Postgresql expert. Your job is to answer questions about a Postgres database using only the provided schema details and rules.
+            You are an Mysql expert. Your job is to answer questions about a Mysql database using only the provided schema details and rules.
 
             go through the schema details given below
             -- start db schema section--
@@ -104,7 +95,7 @@ __prompt__ = Prompt(**{
             - Do not use JSON_BUILD_OBJECT operation
             - Do not use unwanted joins
             - Do not return incomplete queries
-            - Adher to postgresql query syntax
+            - Adher to sysql query syntax
             -- end rules section --
             """
         },
@@ -122,7 +113,7 @@ __prompt__ = Prompt(**{
 
             {
                 "explanation": "Explain how you finalized the sql query using the schemas and rules provided",
-                "query" : "postgresql query",
+                "query" : "mysql query",
                 "operation_kind" : "aggregation|list",
                 "schema": "used schema details separated by comma",
                 "confidence" : "confidence in 100",
@@ -169,7 +160,7 @@ __prompt__ = Prompt(**{
 
             {
                 "explanation": "Explain how you finalized the sql query using the schemas and rules provided",
-                "query" : "postgresql query",
+                "query" : "mysql query",
                 "operation_kind" : "aggregation|list",
                 "visualisation": {
                     "type": "chart type (bar chart, line chart, pie chart) or 'table' for tabular format; 'none' if operation_kind is 'list'",
