@@ -3,7 +3,10 @@ import DeleteService from "src/utils/http/DeleteService";
 import GetService from "src/utils/http/GetService";
 import PostService from "src/utils/http/PostService";
 
-export const getConnectors = ()=>{
+export const getConnectors = (provider_category_id = null)=>{
+    if (provider_category_id) {
+        return GetService(API_URL + `/connector/list?provider_category_id=${provider_category_id}`);
+    }
     return GetService(API_URL + "/connector/list")
 }
 

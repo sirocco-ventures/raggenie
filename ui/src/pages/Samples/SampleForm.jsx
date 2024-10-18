@@ -20,7 +20,7 @@ const SampleForm = ({ sample = {}, afterCreate = ()=>{}, onCancel = ()=>{}})=>{
 
 
     const getAllConnectors = ()=>{
-        getConnectors().then(response=>{
+        getConnectors(2).then(response=>{
 
             let tempOptions = [];
             response.data?.data?.connectors?.map(item=>{
@@ -29,7 +29,7 @@ const SampleForm = ({ sample = {}, afterCreate = ()=>{}, onCancel = ()=>{}})=>{
             setConnectors(tempOptions)
         })
     }
-    
+
 
     const saveSample = (data)=>{
         saveSamples(sample.id, {
@@ -66,23 +66,23 @@ const SampleForm = ({ sample = {}, afterCreate = ()=>{}, onCancel = ()=>{}})=>{
                     <Input label={<span className="span-important">Question</span>} hasError={errors["question"]?.message} errorMessage={errors["question"]?.message} {...register("question", {required: "This is required"})} />
                 </div>
                 <div>
-                    <Controller 
+                    <Controller
                         control={control}
                         name="connector"
                         rules={{
                             required: "This field is required"
                         }}
                         render={({ field: { onChange, value, ref } })=>(
-                            <Select 
-                                inputRef={ref} 
-                                label={ <span className="span-important">Connector</span> } 
+                            <Select
+                                inputRef={ref}
+                                label={ <span className="span-important">Connector</span> }
                                 value={connectors.find(c => c.value === value)}
-                                options={connectors} 
+                                options={connectors}
                                 onChange={val=>onChange(val.value)} />
                         )}
-                    
+
                     />
-                    
+
                 </div>
                 <div>
                     <Textarea label={<span className="span-important">Query</span>} rows={6} style={{resize: "vertical"}} hasError={errors["query"]?.message} errorMessage={errors["query"]?.message} {...register("query", {required: "This is required"})}  />
@@ -91,11 +91,11 @@ const SampleForm = ({ sample = {}, afterCreate = ()=>{}, onCancel = ()=>{}})=>{
                     <Textarea label="Metadata" rows={6} style={{resize: "vertical"}} hasError={errors["metadata"]?.message} errorMessage={errors["metadata"]?.message} {...register("metadata")} />
                 </div>
                 <div className="flex flex-gap-10 justify-content-end">
-                    <div> 
-                        <Button variant="secondary-danger" onClick={onCancel}>Cancel <FiXCircle/></Button> 
+                    <div>
+                        <Button variant="secondary-danger" onClick={onCancel}>Cancel <FiXCircle/></Button>
                     </div>
-                    <div> 
-                        <Button  buttonType="submit" disabled={isFormValid ? false: true} onClick={onCancel}>Save <FiCheckCircle/></Button> 
+                    <div>
+                        <Button  buttonType="submit" disabled={isFormValid ? false: true} onClick={onCancel}>Save <FiCheckCircle/></Button>
                     </div>
                 </div>
             </form>
