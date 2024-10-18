@@ -78,7 +78,7 @@ class FollowupInterpreter(AbstractHandler):
                             else:
                                 logger.warning("actions are not enabled in connector")
                         else:
-                            logger.warning("failed to load connector for action {action.name}")
+                            logger.warning(f"failed to load connector for action {action.get("name","")}")
                 else:
                     logger.info("missing parameters")
 
