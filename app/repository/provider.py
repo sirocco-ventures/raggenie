@@ -159,6 +159,30 @@ def create_vectordb_instance(vectordb, db: Session):
         db.rollback()
         return str(e), True
 
+def create_embedding_instance(vector_db_id,vectordb, db: Session):
+    try:
+        db_embedding = models.Embeddings(
+            provider=vectordb.embedding_config.provider,
+            config = vectordb.embedding_config.params
+        )
+        db.add(db_embedding)
+        db.commit()
+        db.refresh(db_embedding)
+
+        db_embedding_mapping = models.VectorEmbeddingMapping(
+            vector_db_id=vector_db_id,
+            config_id=vectordb.config_id,
+        )
+        db.add(db_embedding_mapping)
+        db.commit()
+        db.refresh(db_embedding_mapping)
+
+        return (db_embedding, db_embedding_mapping), False
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        return str(e), True
+
 
 def get_vectordb_instance(id: int, db: Session):
     """

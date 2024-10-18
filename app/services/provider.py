@@ -11,6 +11,7 @@ from app.models.provider import Provider, ProviderConfig, VectorDBConfig
 from loguru import logger
 from app.utils.module_reader import get_llm_providers, get_all_embedding
 from app.vectordb.loader import VectorDBLoader
+from app.embeddings.loader import EmLoader
 
 def test_inference_credentials(inference: conn_schemas.InferenceBase):
     """
@@ -233,11 +234,21 @@ def test_vectordb_credentials(config:schemas.TestVectorDBCredentials, db:Session
     if is_error:
         return None, db_config
 
+    return vector_embedding_connector(config, db_config)
+
+def vector_embedding_connector(config, db_config):
+
+    err = EmLoader(config.embedding_config).load_embclass().health_check()
+    if err:
+        return err, False
+
     match config.vectordb_config["key"]:
         case ("chroma" | "mongodb"):
             return test_vector_db_credentials(db_config,config, config.vectordb_config["key"])
         case _:
             return None, "Unsupported Vector Database Provider"
+
+
 
 
 def test_credentials(provider_id: int, config: schemas.TestCredentials, db: Session):
@@ -576,6 +587,8 @@ def create_vectordb_instance(vectordb, db:Session):
     Returns:
         Tuple: VectorDBConfigResponse schema and error message (if any).
     """
+
+
 
     (vectordb_instance, vectordb_mapping), is_error = repo.create_vectordb_instance(vectordb, db)
 
