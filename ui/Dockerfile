@@ -1,5 +1,7 @@
 FROM node:20-alpine AS build
 
+ARG BACKEND_URL
+
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -7,7 +9,7 @@ RUN npm ci
 
 COPY . .
 
-COPY .env .env
+ENV VITE_BACKEND_URL=$BACKEND_URL
 
 RUN npm run build
 

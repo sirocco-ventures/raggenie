@@ -55,5 +55,7 @@ class Generator(AbstractHandler):
                         return Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
 
                 response["inference"] = parse_llm_response(output['content'])
+                if not response["inference"]:
+                        return Formatter.format("Oops! Something went wrong. Try Again!","")
 
                 return super().handle(response)

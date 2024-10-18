@@ -640,116 +640,214 @@
 }
 
 
+
+
+
 /* Chat Summary */
 
-
-.SummaryMenuContainer {
+.SummaryContainer{
     display: flex;
-    gap: 13px;
+    flex-direction: column ;
+    
+    width: 401px;
+    height: 20px;
+    padding: 12px 13px;
+    margin-top: 20px;
+
+    border-radius: 8px;
+    background: #F1F1F1;
+    margin-bottom: 20px;
+    overflow: hidden;
+    
+}
+
+.SummaryContainer.SummaryContainerOpen {
+    height: auto;
+}
+
+.SummartyHeader {
+    display: flex;
+    flex-direction: row;
     align-items: center;
+    gap: 13px;
     cursor: pointer;
 }
 
-.Summarylabel {
-    color: #C8C8C8;
-    font-family: Inter;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 150%;
+.SummaryToggleButton {
+    border-radius: 4px;
+    border: 0px;
+    background: #F9F9F9;
+    width: 18px;
+    height: 18px;
+    padding: 0px;
+    cursor: pointer;  
+    padding-top: 3px;  
 }
 
-.SummaryClose {
-    content: url('./assets/summary-down.svg');
-}
 
-.SummaryOpen {
+
+.SummaryToggleIconOpen {
     content: url('./assets/summary-up.svg');
 }
 
+.SummaryToggleIconClose {
+    content: url('./assets/summary-down.svg');
+}
 
-.SummaryImgContainer {
-    border-radius: 4px;
-    width: 18px;
-    height: 18px;
+
+.SummaryHeaderTitle {
+    color: #888787;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    margin: 0px;
+}
+
+
+.ChatSummayContainer {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    margin: 20px 5px;
+    margin-top: 25px;
+    cursor: pointer;
+    margin-bottom: 0px;
 }
 
-.SummaryCloseImgContainer  {
-    background: #F0F0F0;
+.ChatSQLSummary {
+    color: #9EA1A4;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
 }
 
-.SummaryOpenImgContainer{
-    background: #ECF5FF;
-}
 
 
-.SummaryTitle {
-    color: #C8C8C8;
+.QueryTitle {
+    color: #888787;
     font-family: Inter;
     font-size: 12px;
     font-style: normal;
     font-weight: 400;
     line-height: 150%;
+    margin-top: 25px;
+    margin-bottom: 12px;
+}
+
+.QueryTitle::before,
+.QueryTitle::after {
+    display: inline-block;
+    content: "";
+    border-top: 1px solid #F9F9F9;;
+    width: 38%;
+    transform: translateY(-6px);
+}
+
+.QueryTitle::before {
+    margin-right:  10px;
+}
+
+.QueryTitle::after {
+    margin-left:  10px;
+}
+
+.QueryInnerTitle{
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.SQLQueryOpen {
+    margin-bottom: 12px;
+}
+
+.SQLQueryClose {
+    display: none;
 }
 
 
 
-.SummaryContainer{
-    display: block;
+/* Chat Summary */
+
+
+/* Error Message Style */
+.ErrorContainer {
     width: 401px;
-    height: auto;
+    border-radius: 4px;
+    border: 1px solid #F0F0F0;
+    background: #FFF;
     padding: 10px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    flex-shrink: 0;
-    margin-top: 20px;
-
-    border-radius: var(--4, 4px);
-    border: 1px solid #F5FAFF;
-    background: #F5FAFF;
-    margin-bottom: 20px;
 }
 
-
-
-.SummartyHeading{
+.ErrorHeaderContainer {
     display: flex;
-    width: 100%;
-    justify-content: space-between;
 }
 
-
-.SummaryCloseButton{
-    background: none;
-    outline: none;
-    border: none;
-    outline: navajowhite;
-    cursor: pointer;
+.ErrorHeadingContainer{
+    flex-grow: 1;
 }
 
-.ChatSummay {
-    border-radius: 5px;
-    border: 1px solid var(--white-100, #FFF);
-    background: var(--white-100, #FFF);
-    padding: 16px;
-}
-
-.ChatSummay .ChatSQLQuery, .ChatDataSummary {
-    color: #828282;
-    font-family: Lato;
+.ErrorHeading {
+    color: #323232;
+    font-family: Inter;
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+    margin: 0px;
+    margin-bottom: 10px;
 }
 
-.ChatSummay .ChatDataSummary {
-    font-weight: bolder;
+.ErrorCloseIcon {
+    cursor: pointer;
+}
+
+.ErrorDescription {
+    color: #858585;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 23px !important;
+}
+
+.ErrorButtonAnchor {
+    text-decoration: none;
+}
+
+.ErrorActionButton {
+    border-radius: 4px;
+    background: #ECF5FF;
+    border: 0px;
+    padding: 6px 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.ErrorExpandButton {
+    color: #323232;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%;
+    text-decoration-line: underline;
+    cursor: pointer;
+}
+
+.MessageContainer p:has(+ .ErrorExpandButton){
+    display: inline-block;
+    color: #FF7F6D;
+}
+
+.MessageContainer:has(> .ErrorExpandButton){
+    margin-top: 10px;
 }
 
 
-/* Chat Summary */
+/* Error Message Style */
