@@ -87,7 +87,7 @@ def get_connector(connector_id: int, db: Session = Depends(get_db)):
 async def upload_document_datsource(
     file: UploadFile = File(...)
 ):
-
+    
     """
     Uploads an document data source file to the server.
 
@@ -102,12 +102,12 @@ async def upload_document_datsource(
 
     if error:
         return commons.is_error_response("Invalid File", error, {"file_path": None})
-
+    
     result, error = await svc.upload_pdf(file)
 
     if error:
         return commons.is_error_response("document not uploaded", error, {"file_path": None})
-
+    
     return resp_schemas.CommonResponse(
         status=True,
         status_code=201,
