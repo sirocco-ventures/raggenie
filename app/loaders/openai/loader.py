@@ -97,7 +97,7 @@ class OpenAiModelLoader(ModelLoader, LoaderMetadataMixin):
         """
         url = "https://api.openai.com/v1/models"
         headers = {
-            "Authorization": f"Bearer {self.model_config.api_key}",
+            "Authorization": f"Bearer {self.model_config.get('api_key', '')}",
         }
         try:
             response = requests.get(url, headers=headers)
