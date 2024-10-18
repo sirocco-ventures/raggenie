@@ -18,11 +18,7 @@ const ConfigurationList = ({ configurations = [], onPluginDelete }) => {
   const handleDelete = (pluginId) => {
     confirmDialog(
       "Confirmation",
-      "Are you sure you want to delete this?",
-      undefined,
-      undefined,
-      "Delete",
-      () => {
+      "Are you sure you want to delete this?",() => {
         onPluginDelete(pluginId);
       }
     );
