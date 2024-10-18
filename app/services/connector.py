@@ -10,6 +10,8 @@ from loguru import logger
 from app.services.connector_details import get_plugin_metadata
 from fastapi import Request
 from app.providers.data_preperation import SourceDocuments
+from app.loaders.base_loader import BaseLoader
+
 
 
 
@@ -822,6 +824,20 @@ def formatting_datasource(connector, provider):
     else:
         return None
 
+def get_llm_provider_models(llm_provider: schemas.LLMProviderBase):
+    """
+    Retrieves the models available for a given LLM provider.
+    Args:
+        llm_provider (schemas.LLMProviderBase): The LLM provider object.
+    Returns:
+        Tuple: List of models and error message (if any).
+    """
+    if llm_provider.key:
+        llm_provider.kind = llm_provider.key
+        llm_provider.unique_name = llm_provider.key
+        return BaseLoader(model_configs=[dict(llm_provider)]).load_model(unique_name=llm_provider.key).get_models()
+    else:
+        return None, "Missing LLM provider key"
 
 def get_inference(inference_id: int, db: Session):
 
