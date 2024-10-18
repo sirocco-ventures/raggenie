@@ -10,6 +10,22 @@ export const hideDashboardLoader = ()=>{
     loaderDiv.style.display = "none"
 }
 
+export const isEmptyJSON = (json)=>{
+
+    if(!json){
+        return true
+    }
+
+    if(typeof(json) == "string" && json == ""){
+        return true
+    }
+    if(typeof(json) == "object" && Object.keys(json).length == 0){
+        return true
+    }
+
+    return false
+}
+
 
 export const isJSON = (json)=>{
 
