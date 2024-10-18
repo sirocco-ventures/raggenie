@@ -785,7 +785,9 @@ def create_yaml_file(request:Request, config_id: int, db: Session):
                         "description": mapping.actions.description,
                         "action": mapping.actions.types,
                         "table": mapping.actions.table,
-                        "connector": mapping.actions.connector_id,
+                        "connector": {
+                                "name": str(mapping.actions.connectors.connector_name).replace(" ", "_").lower(),
+                        } if mapping.actions.connectors else None,
                         "body": mapping.actions.body,
                     } for mapping in cap.cap_actions_mapping
                 ]
