@@ -1,0 +1,98 @@
+.AuthBackground {
+    width: 100vw;
+    height: 100vh;
+    background: #FFF;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    flex-direction: column-reverse;
+    flex-wrap: wrap;
+}
+
+.FIeldContainer {
+    display: flex;
+    padding: var(--spacing-xxxl, 40px) 60px;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    width: 440px;
+    max-height: fit-content;
+    border-radius: 8px;
+    border: 0.5px solid #F0F0F0;
+    background: #FFF;
+    box-shadow: 0px 0px 30px 0px rgba(33, 33, 52, 0.08);
+    padding-bottom: 83px;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.Welcome {
+    color: #323232;
+    text-align: center;
+    margin: 0;
+    color: #323232;
+    text-align: center;
+    font-family: Inter;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 150%;
+    /* 36px */
+}
+
+.FIeldContainer p {
+    margin: 0;
+    color: #858585;
+    text-align: center;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    /* 24px */
+}
+
+.SubmitButton {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+}
+
+.ErrorDiv {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    height: 21px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    border-radius: 10px;
+    background: #FDF5EC;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    color: #323232;
+    text-align: center;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    padding: 9px 18px;
+
+}
+
+.WarningMessage{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:7px ;
+}
+
+.SimileIcon{
+    padding-top: 5px;
+}

@@ -1,4 +1,3 @@
-
 import app.schemas.common as resp_schemas
 
 def is_error_response(message:str, err:str, data:dict):
