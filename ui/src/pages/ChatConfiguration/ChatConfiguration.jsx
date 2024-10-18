@@ -106,6 +106,19 @@ const BotConfiguration = () => {
           .then((response) => {
             toast.success("Configuration Saved Successfully")
             setCurrentConfigID(response.data.data.configuration.id);
+            if(currentInferenceID != undefined){
+                toast(
+                    <ToastMessage message={`Please restart the bot to get changes to take effect.`} />,
+                    {
+                      toastId: "RAG001", 
+                      autoClose: false, 
+                      hideProgressBar: true,
+                      className: style.ToastContainerClass,
+                      closeButton: <ToastCloseButton />,
+                    }
+                  ); 
+            }
+
             setActiveTab("inferenceendpoint")
           })
           .catch(() => {
