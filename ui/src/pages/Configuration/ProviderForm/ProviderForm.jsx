@@ -473,6 +473,29 @@ const onRemoveFile = (fileId) => {
     }
 
 
+    const navigateToTab = (category, connectorId, refresh = false)=>{
+        let tabName = "documentation"
+        let url = window.location.href.split('/');
+        switch (category) {
+            case 2:
+                tabName = "database-table"
+                break;
+            case 3:
+                tabName = "action"
+                break;
+            default:
+                tabName = "documentation"
+                break;
+        }
+
+        if(refresh){
+            window.location.href = url.join("/") + `/${connectorId}/details?activeTab=${tabName}`
+        }else{
+            setCurrentActiveTab(tabName)
+        }
+    }
+
+
     const onSaveConnector = async (data) => {
 
         let { formValues } = await getConfigFormData();
@@ -483,18 +506,9 @@ const onRemoveFile = (fileId) => {
         saveConnector(connectorId, providerId, data.pluginName, data.pluginDescription, formValues).then(response => {
             toast.success("Successfuly plugin added")
             if (connectorId == undefined) {
-                let url = window.location.href.split('/');
-                if(providerDetails.category_id == 2){
-                    window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=database-table`
-                }else{
-                    window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=documentation`
-                }
+                navigateToTab(providerDetails.category_id, connectorId, true)
             } else {
-                if(providerDetails.category_id == 2){
-                    setCurrentActiveTab("database-table")
-                }else{
-                    setCurrentActiveTab("documentation")
-                }
+                navigateToTab(providerDetails.category_id, connectorId)
             }
         }).catch(e => {
             toast.error("Plugin saving failed")
