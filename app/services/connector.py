@@ -41,7 +41,8 @@ def list_connectors(db: Session):
         connector_docs=connector.connector_docs,
         connector_key=connector.provider.key,
         enable=connector.enable,
-        icon=connector.provider.icon
+        icon=connector.provider.icon,
+        provider_id=connector.provider.connector_id
     ) for connector in connectors]
 
     return connectors_response, None
