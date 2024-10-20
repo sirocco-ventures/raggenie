@@ -128,10 +128,10 @@ const ProviderForm = () => {
                             <div style={{ cursor: "pointer", zIndex: "10000", flexGrow: 1 }}>
                                 <div className="child-textarea-container" style={{ width: "100%", height: "22px" }}>
                                     <div style={{ display: "flex", alignItems: "center" }}>
-                                        <div style={{ flexGrow: 1 }}>
-                                            <textarea className="textarea" data-type="column" data={`${JSON.stringify(row.data)}`} data-table-id={`${row.data.table_id}`} data-table-name={`${row.data.table_name}`} data-column-id={`${column.column_id}`} data-column-name={`${column.column_name}`} style={{ display: "none", width: "100%", height: "33px", marginTop: "-8px" }} defaultValue={column.description}>{}</textarea>
-                                            <span className="span" style={{ pointerEvents: "none", height: "24px", overflow: "hidden", fontSize: "13px" }}>{tempTableDetails[row.data.table_id].columns[column.column_id].description != "" ? tempTableDetails[row.data.table_id].columns[column.column_id].description : column.description}</span>
-                                        </div>
+                                        <textarea className="textarea" data-type="column" data={`${JSON.stringify(row.data)}`} data-table-id={`${row.data.table_id}`} data-table-name={`${row.data.table_name}`} data-column-id={`${column.column_id}`} data-column-name={`${column.column_name}`} style={{ display: "none", width: "100%", height: "33px", marginTop: "-8px" }} defaultValue={column.description}>{}</textarea>
+                                        <span className="span" style={{ pointerEvents: "none", height: "24px", overflow: "hidden", fontSize: "13px", flex: 1, width: "1px", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+                                            {tempTableDetails[row.data.table_id].columns[column.column_id].description != "" ? tempTableDetails[row.data.table_id].columns[column.column_id].description : column.description}
+                                        </span>
                                         <div className="field-edit" style={{ paddingRight: "48px" }}>
                                             <FaPen color="#7298ff" size={12} style={{ pointerEvents: "none" }} />
                                         </div>
