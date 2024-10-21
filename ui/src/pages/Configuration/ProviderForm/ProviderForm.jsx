@@ -81,7 +81,7 @@ const ProviderForm = () => {
                 return (
                     <div className="textarea-container" style={{ position: "relative", zIndex: "10000" }}>
                         <div style={{ display: "flex", alignItems: "center" }}>
-                            <div>
+                            <div title={row.description}>
                                 <textarea key={`textarea-${row.table_id}`} className="textarea" data-type="table" data={`${JSON.stringify(row)}`} data-table-name={`${row.table_name}`} data-table-id={`${row.table_id}`} style={{ display: "none", width: "100%", height: "48px", }} defaultValue={row.description}>{}</textarea>
                                 <span key={`span-${row.table_id}`} className="span" style={{ pointerEvents: "none", height: "32px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.description}</span>
                             </div>
@@ -116,9 +116,18 @@ const ProviderForm = () => {
     }
 
 
-
     const rowExpandComponent = (row) => {
         let tempTableDetails = JSON.parse(window.localStorage.getItem("dbschema"))
+
+        const getRowExpandComponentDescription = (column) => {
+            const description = tempTableDetails[row.data.table_id].columns[column.column_id].description;
+            if (description === "") {
+                return column.description
+            }
+
+            return tempTableDetails[row.data.table_id].columns[column.column_id].description
+        }
+
         return (<>
             <div className={style.ExpandRowContainer}>
                 {row?.data?.columns?.map((column, index) => {
@@ -127,10 +136,10 @@ const ProviderForm = () => {
                             <div className={`inline-flex-align-center ${style.ExpandRowCol}`}> <FiTable color="#BEBEBE" /> <span style={{ fontSize: "13px" }}>{column.column_name}</span> </div>
                             <div style={{ cursor: "pointer", zIndex: "10000", flexGrow: 1 }}>
                                 <div className="child-textarea-container" style={{ width: "100%", height: "22px" }}>
-                                    <div style={{ display: "flex", alignItems: "center" }}>
+                                    <div style={{ display: "flex", alignItems: "center" }} title={getRowExpandComponentDescription(column)}>
                                         <textarea className="textarea" data-type="column" data={`${JSON.stringify(row.data)}`} data-table-id={`${row.data.table_id}`} data-table-name={`${row.data.table_name}`} data-column-id={`${column.column_id}`} data-column-name={`${column.column_name}`} style={{ display: "none", width: "100%", height: "33px", marginTop: "-8px" }} defaultValue={column.description}>{}</textarea>
                                         <span className="span" style={{ pointerEvents: "none", height: "24px", overflow: "hidden", fontSize: "13px", flex: 1, width: "1px", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
-                                            {tempTableDetails[row.data.table_id].columns[column.column_id].description != "" ? tempTableDetails[row.data.table_id].columns[column.column_id].description : column.description}
+                                            {getRowExpandComponentDescription(column)}
                                         </span>
                                         <div className="field-edit" style={{ paddingRight: "48px" }}>
                                             <FaPen color="#7298ff" size={12} style={{ pointerEvents: "none" }} />
