@@ -318,6 +318,36 @@ def updateschemas(connector_id: int, connector: schemas.SchemaUpdate, db: Sessio
     return connector_response, None
 
 
+def get_inference_by_config_id(config_id:int , db:Session):
+    """
+    Retrieves the inference configuration based on the configuration ID.
+
+    Args:
+        config_id (int): The ID of the configuration.
+        db (Session): Database session dependency.
+
+    Returns:
+        Tuple: Inference configuration response and error message (if any).
+    """
+
+    inference_mapping, is_error = repo.get_inference_by_config(config_id, db)
+
+    if is_error:
+        return inference_mapping, "DB Error"
+
+    if inference_mapping is None:
+        return schemas.InferenceResponse(), None
+
+    return schemas.InferenceResponse(
+        id=inference_mapping.inference.id,
+        name=inference_mapping.inference.name,
+        apikey=inference_mapping.inference.apikey,
+        config_id=inference_mapping.inference.config_id,
+        llm_provider=inference_mapping.inference.llm_provider,
+        model=inference_mapping.inference.model,
+        endpoint=inference_mapping.inference.endpoint,
+    ), None
+
 
 def list_configurations(db: Session):
 

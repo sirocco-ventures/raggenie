@@ -134,6 +134,7 @@ def get_sql_by_key(key: str, db: Session):
     except SQLAlchemyError as e:
         db.rollback()
         return str(e),True
+
 def create_vectordb_with_embedding(vectordb, db: Session):
     try:
         # Create the VectorDB instance

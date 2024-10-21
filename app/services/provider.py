@@ -587,13 +587,25 @@ def create_vectordb_and_embedding(vectordb, db):
     Returns:
         Tuple: VectorDBResponse schema and error message (if any).
     """
-    if not vectordb.embedding_config:
-        vectordb.embedding_config.provider="default",
-        vectordb.embedding_config.params = {}
+
+    inference, is_error = conn_repo.get_inference_by_config(vectordb.config_id, db)
+
+    if is_error:
+        return "Inference not found", is_error
+
+    if vectordb.embedding_config is None:
+        vectordb.embedding_config = schemas.EmbeddingBase(
+            provider="default",
+            params={}
+        )
 
     if not vectordb.vectordb:
         vectordb.vectordb = "chroma"
-        vectordb.vectordb_config= {"path":"./vector_db"}
+        vectordb.vectordb_config = {"path": "./vector_db"}
+
+    if not vectordb.embedding_config.provider == inference.llm_provider and not vectordb.embedding_config.params.get("api_key"):
+        vectordb.embedding_config.params["api_key"] = inference.apikey
+
 
     db_data, is_error = repo.create_vectordb_with_embedding(vectordb, db)
 
