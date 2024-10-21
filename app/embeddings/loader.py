@@ -19,7 +19,7 @@ class EmLoader:
             "google": GoogleEm,
             "openai": OpenAIEm,
             "cohere": CohereEm,
-            "default": DefaultEmbedding,
+            # "default": DefaultEmbedding,
 
         }
         emb_provider = self.config.get("provider")
@@ -32,4 +32,4 @@ class EmLoader:
             return emb_class(**connection_params if connection_params else {})
         else:
             logger.info("No specified embedding providers")
-            return DefaultEmbedding()
+            return DefaultEmbedding(self.config.get("vectordb"))

@@ -89,6 +89,7 @@ class TestCredentials(BaseModel):
 class EmbeddingBase(BaseModel):
     provider: str
     params: Dict[str, Any]
+    key: Optional[str] = None
 
 class TestVectorDBCredentials(BaseModel):
     vectordb_config: Dict[str, Any]

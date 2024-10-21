@@ -11,7 +11,7 @@ from app.base.base_vectordb import BaseVectorDB
 
 
 class ChromaDataBase(BaseVectorDB):
-    def __init__(self, path:str="./vector_db", embeddings: dict={"provider": "cohere", "params": {"api_key": "", "model_name": "large"}}):
+    def __init__(self, path:str="./vector_db", embeddings: dict={"provider": "chroma_default", "vectordb": "chroma"}):
         logger.info("initializing with configs")
         self.client = None
         self.embedding_function = None

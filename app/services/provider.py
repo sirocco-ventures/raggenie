@@ -233,7 +233,7 @@ def test_vectordb_credentials(config:schemas.TestVectorDBCredentials, db:Session
 
     if is_error:
         return None, db_config
-
+    config.embedding_config["vectordb"] = config.vectordb_config["key"]
     return vector_embedding_connector(config, db_config)
 
 def vector_embedding_connector(config, db_config):
@@ -603,7 +603,7 @@ def create_vectordb_and_embedding(vectordb, db):
         vectordb.vectordb = "chroma"
         vectordb.vectordb_config = {"path": "./vector_db"}
 
-    if not vectordb.embedding_config.provider == inference.llm_provider and not vectordb.embedding_config.params.get("api_key"):
+    if vectordb.embedding_config.provider == inference.llm_provider and not vectordb.embedding_config.params.get("api_key"):
         vectordb.embedding_config.params["api_key"] = inference.apikey
 
 
