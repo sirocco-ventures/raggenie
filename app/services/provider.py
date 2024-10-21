@@ -11,6 +11,7 @@ from app.models.provider import Provider, ProviderConfig, VectorDBConfig
 from loguru import logger
 from app.utils.module_reader import get_llm_providers, get_all_embedding
 from app.vectordb.loader import VectorDBLoader
+from app.embeddings.loader import EmLoader
 
 def test_inference_credentials(inference: conn_schemas.InferenceBase):
     """
@@ -233,11 +234,21 @@ def test_vectordb_credentials(config:schemas.TestVectorDBCredentials, db:Session
     if is_error:
         return None, db_config
 
+    return vector_embedding_connector(config, db_config)
+
+def vector_embedding_connector(config, db_config):
+
+    err = EmLoader(config.embedding_config).load_embclass().health_check()
+    if err:
+        return err, False
+
     match config.vectordb_config["key"]:
         case ("chroma" | "mongodb"):
             return test_vector_db_credentials(db_config,config, config.vectordb_config["key"])
         case _:
             return None, "Unsupported Vector Database Provider"
+
+
 
 
 def test_credentials(provider_id: int, config: schemas.TestCredentials, db: Session):
@@ -564,30 +575,52 @@ def insert_vector_store(request, sql, db: Session):
 
         return str(e)
 
-def create_vectordb_instance(vectordb, db:Session):
+def create_vectordb_and_embedding(vectordb, db):
+
     """
-    Creates a new vector database instance in the database.
+    Creates a new VectorDB instance and inserts an embedding into the vector store.
 
     Args:
-        request (Request): Request object to access app components.
-        vectordb (schemas.VectorDBBase): Data for the new vector database instance.
+        vectordb (schemas.VectorDB): VectorDB instance data.
         db (Session): Database session object.
 
     Returns:
-        Tuple: VectorDBConfigResponse schema and error message (if any).
+        Tuple: VectorDBResponse schema and error message (if any).
     """
 
-    (vectordb_instance, vectordb_mapping), is_error = repo.create_vectordb_instance(vectordb, db)
+    inference, is_error = conn_repo.get_inference_by_config(vectordb.config_id, db)
+
+    if is_error:
+        return "Inference not found", is_error
+
+    if vectordb.embedding_config is None:
+        vectordb.embedding_config = schemas.EmbeddingBase(
+            provider="default",
+            params={}
+        )
+
+    if not vectordb.vectordb:
+        vectordb.vectordb = "chroma"
+        vectordb.vectordb_config = {"path": "./vector_db"}
+
+    if not vectordb.embedding_config.provider == inference.llm_provider and not vectordb.embedding_config.params.get("api_key"):
+        vectordb.embedding_config.params["api_key"] = inference.apikey
+
+
+    db_data, is_error = repo.create_vectordb_with_embedding(vectordb, db)
 
     if is_error:
         return vectordb, "DB Error"
 
-    return schemas.VectorDBResponse(
-        id=vectordb_instance.id,
-        vectordb = vectordb_instance.vectordb,
-        vectordb_config = vectordb_instance.vectordb_config,
-        config_id=vectordb_mapping.config_id
-    ), None
+    response_data = {
+        'id': db_data['vectordb'].id,
+        'vectordb': db_data['vectordb'].vectordb,
+        'vectordb_config': db_data['vectordb'].vectordb_config,
+        'config_id': db_data['vectordb_mapping'].config_id,
+    }
+
+    return schemas.VectorDBResponse(**response_data), None
+
 
 def get_vectordb_instance(id: int, db: Session):
     """

@@ -86,8 +86,13 @@ class ProviderConfigList(BaseModel):
 class TestCredentials(BaseModel):
     provider_config: Dict[str, Any]
 
+class EmbeddingBase(BaseModel):
+    provider: str
+    params: Dict[str, Any]
+
 class TestVectorDBCredentials(BaseModel):
     vectordb_config: Dict[str, Any]
+    embedding_config: Dict[str, EmbeddingBase]
 
 class SampleSQLBase(BaseModel):
     description: str
@@ -121,6 +126,8 @@ class VectorDBBase(BaseModel):
     vectordb: str
     vectordb_config : Dict[str,Any]
     config_id: int
+    embedding_config: Optional[Dict[str,EmbeddingBase]] = None
+
 
 class VectorDBResponse(VectorDBBase):
     id: int

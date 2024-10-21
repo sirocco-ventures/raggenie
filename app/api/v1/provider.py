@@ -397,7 +397,7 @@ def create_vectordb_instance(vectordb: schemas.VectorDBBase, db: Session = Depen
         CommonResponse: A response indicating the success or failure of the VectorDB instance creation process.
     """
 
-    result, error = svc.create_vectordb_instance(vectordb, db)
+    result, error = svc.create_vectordb_and_embedding(vectordb, db)
 
     if error:
         return commons.is_error_response("DB error", result, {"vectordb": {}})
@@ -493,7 +493,6 @@ def update_vectordb_instance(
         data={"VectorDB": result}
     )
 
-#get all embeddings(not related to vectors)
 @vectordb.get("/embedding/all", response_model=resp_schemas.CommonResponse)
 def get_all_embeddings():
 
