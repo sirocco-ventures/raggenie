@@ -10,8 +10,7 @@ class DefaultEmbedding:
     def load_emb(self):
         match self.vectordb:
             case "chroma":
-                print("================>>>, here")
-                return ChromaDefaultEmbedding()
+                return ChromaDefaultEmbedding().load_emb()
             case "mongodb":
                 return DefaultEmbeddingModel()
             case _:
