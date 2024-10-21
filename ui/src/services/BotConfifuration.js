@@ -13,14 +13,10 @@ export const getLLMProviders = ()=>{
 
 
 export const saveBotConfiguration = (configID, saveData = {})=>{
-
-
     let apiURL = "/connector/configuration/create"
-
     if(configID){
        apiURL = `/connector/configuration/update/${configID}`
     }
-
    return PostService(`${API_URL}${apiURL}`, {
        short_description: saveData.botShortDescription,
        long_description: saveData.botLongDescription,
@@ -57,4 +53,9 @@ export const saveBotInferene = (configID, inferenceID, saveData = {})=>{
         "config_id": configID,
         "endpoint": saveData.inferenceEndpoint
     })
+}
+
+
+export const getVectorFields=()=>{
+    return GetService(API_URL + "/vectordb/list/all")
 }
