@@ -397,7 +397,7 @@ def create_vectordb_instance(vectordb: schemas.VectorDBBase, db: Session = Depen
         CommonResponse: A response indicating the success or failure of the VectorDB instance creation process.
     """
 
-    result, error = svc.create_vectordb_instance(vectordb, db)
+    result, error = svc.create_vectordb_and_embedding("create",0,vectordb, db)
 
     if error:
         return commons.is_error_response("DB error", result, {"vectordb": {}})
@@ -411,7 +411,36 @@ def create_vectordb_instance(vectordb: schemas.VectorDBBase, db: Session = Depen
         data={"VectorDB": result}
     )
 
-@vectordb.get("/get/{id}", response_model=resp_schemas.CommonResponse)
+@vectordb.post("/update/{id}", response_model=resp_schemas.CommonResponse)
+def update_vectordb_instance(id:int,vectordb: schemas.VectorDBUpdateBase, db: Session = Depends(get_db)):
+
+    """
+    Updates VectorDB instance in the database.
+
+    Args:
+        request (Request): The HTTP request object.
+        sql (VectorDBBase): The data for the new VectorDB instance.
+        db (Session): Database session dependency.
+
+    Returns:
+        CommonResponse: A response indicating the success or failure of the VectorDB instance creation process.
+    """
+
+    result, error = svc.create_vectordb_and_embedding(key="update",id=id,vectordb=vectordb, db=db)
+
+    if error:
+        return commons.is_error_response("DB error", result, {"vectordb": {}})
+
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=201,
+        message="VectorDB Instance Updated Successfully",
+        error=None,
+        data={"VectorDB": result}
+    )
+
+@vectordb.get("/get/{config_id}", response_model=resp_schemas.CommonResponse)
 def get_vectordb_instance(id: int, db: Session = Depends(get_db)):
     """
     Retrieves a VectorDB instance by its ID.
@@ -463,37 +492,6 @@ def delete_vectordb_instance(id: int, db: Session = Depends(get_db)):
         data={"VectorDB": result}
     )
 
-
-@vectordb.post("/update/{id}", response_model=resp_schemas.CommonResponse)
-def update_vectordb_instance(
-    id: int, vectordb: schemas.VectorDBUpdateBase, db: Session = Depends(get_db)
-):
-    """
-    Updates a VectorDB instance by its ID along with its associated config mapping.
-
-    Args:
-        id (int): The ID of the VectorDB instance to update.
-        vectordb (schemas.VectorDBBase): The updated data for the VectorDB instance.
-        db (Session): Database session dependency.
-
-    Returns:
-        CommonResponse: A response indicating the success or failure of the update process.
-    """
-
-    result, error = svc.update_vectordb_instance(id, vectordb, db)
-
-    if error:
-        return commons.is_error_response("DB error or VectorDB not found", result, {"vectordb": {}})
-
-    return resp_schemas.CommonResponse(
-        status=True,
-        status_code=200,
-        message="VectorDB Instance Updated Successfully",
-        error=None,
-        data={"VectorDB": result}
-    )
-
-#get all embeddings(not related to vectors)
 @vectordb.get("/embedding/all", response_model=resp_schemas.CommonResponse)
 def get_all_embeddings():
 

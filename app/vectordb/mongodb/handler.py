@@ -6,7 +6,7 @@ import urllib.parse
 
 
 class AltasMongoDB(BaseVectorDB):
-    def __init__(self, uri: str , embeddings: dict={"provider": "default"}):
+    def __init__(self, uri: str , embeddings: dict={"provider": "default", "vectordb": "mongodb"}):
         self.uri = uri
         self.client = None
         self.embeddings = embeddings

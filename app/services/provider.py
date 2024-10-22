@@ -11,6 +11,7 @@ from app.models.provider import Provider, ProviderConfig, VectorDBConfig
 from loguru import logger
 from app.utils.module_reader import get_llm_providers, get_all_embedding
 from app.vectordb.loader import VectorDBLoader
+from app.embeddings.loader import EmLoader
 
 def test_inference_credentials(inference: conn_schemas.InferenceBase):
     """
@@ -233,11 +234,26 @@ def test_vectordb_credentials(config:schemas.TestVectorDBCredentials, db:Session
     if is_error:
         return None, db_config
 
+    if config.embedding_config:
+        config.embedding_config["vectordb"] = config.vectordb_config["key"]
+
+
+    return vector_embedding_connector(config, db_config)
+
+def vector_embedding_connector(config, db_config):
+
+    if config.embedding_config:
+        err = EmLoader(config.embedding_config).load_embclass().health_check()
+        if err:
+            return err, False
+
     match config.vectordb_config["key"]:
         case ("chroma" | "mongodb"):
             return test_vector_db_credentials(db_config,config, config.vectordb_config["key"])
         case _:
             return None, "Unsupported Vector Database Provider"
+
+
 
 
 def test_credentials(provider_id: int, config: schemas.TestCredentials, db: Session):
@@ -564,30 +580,63 @@ def insert_vector_store(request, sql, db: Session):
 
         return str(e)
 
-def create_vectordb_instance(vectordb, db:Session):
+def create_vector_db_default_config(vectordb):
+    if vectordb.embedding_config is None:
+        vectordb.embedding_config = {"provider": "default", "params": {}}
+
+    if not vectordb.vectordb:
+        vectordb.vectordb = "chroma"
+        vectordb.vectordb_config = {"path": "./vector_db"}
+
+    return vectordb
+
+def attach_vector_config_if_missing(vectordb, db):
+
+    inference, is_error = conn_repo.get_inference_by_config(vectordb.config_id, db)
+
+    if is_error:
+        return "Inference not found", is_error
+
+    if vectordb.embedding_config.get("provider") == inference.llm_provider and not vectordb.embedding_config["params"].get("api_key"):
+        vectordb.embedding_config["params"]["api_key"] = inference.apikey
+
+    return vectordb, None
+
+
+def create_vectordb_and_embedding(key,id,vectordb, db):
+
     """
-    Creates a new vector database instance in the database.
+    Creates a new VectorDB instance and inserts an embedding into the vector store.
 
     Args:
-        request (Request): Request object to access app components.
-        vectordb (schemas.VectorDBBase): Data for the new vector database instance.
+        vectordb (schemas.VectorDB): VectorDB instance data.
         db (Session): Database session object.
 
     Returns:
-        Tuple: VectorDBConfigResponse schema and error message (if any).
+        Tuple: VectorDBResponse schema and error message (if any).
     """
 
-    (vectordb_instance, vectordb_mapping), is_error = repo.create_vectordb_instance(vectordb, db)
+    vectordb = create_vector_db_default_config(vectordb)
+
+    vectordb, is_error = attach_vector_config_if_missing(vectordb, db)
+
+    if is_error:
+        return vectordb, is_error
+
+    db_data, is_error = repo.create_vectordb_with_embedding(key,id, vectordb, db)
 
     if is_error:
         return vectordb, "DB Error"
 
-    return schemas.VectorDBResponse(
-        id=vectordb_instance.id,
-        vectordb = vectordb_instance.vectordb,
-        vectordb_config = vectordb_instance.vectordb_config,
-        config_id=vectordb_mapping.config_id
-    ), None
+    response_data = {
+        'id': db_data['vectordb'].id,
+        'vectordb': db_data['vectordb'].vectordb,
+        'vectordb_config': db_data['vectordb'].vectordb_config,
+        'config_id': db_data['vectordb_mapping'].config_id,
+    }
+
+    return schemas.VectorDBResponse(**response_data), None
+
 
 def get_vectordb_instance(id: int, db: Session):
     """
@@ -601,16 +650,18 @@ def get_vectordb_instance(id: int, db: Session):
         Tuple: VectorDBResponse schema and error message (if any).
     """
 
-    vectordb_instance, is_error = repo.get_vectordb_instance(id, db)
+    (vectordb_instance, embedding), is_error = repo.get_vectordb_instance(id, db)
 
     if is_error:
         return vectordb_instance, "DB Error"
+
 
     return schemas.VectorDBResponse(
         id=vectordb_instance.id,
         vectordb=vectordb_instance.vectordb,
         vectordb_config=vectordb_instance.vectordb_config,
-        config_id=vectordb_instance.vectordb_config_mapping[0].config_id
+        config_id=vectordb_instance.vectordb_config_mapping[0].config_id,
+        embedding_config={"provider": embedding.provider,"config": embedding.config}
     ), None
 
 def delete_vectordb_instance(id: int, db: Session):
@@ -625,37 +676,12 @@ def delete_vectordb_instance(id: int, db: Session):
         Tuple: Success message and error message (if any).
     """
 
-    success, is_error = repo.delete_vectordb_instance(id, db)
+    success, is_error = repo.revoke_existing_vectordb_confg(id, db)
 
     if is_error:
         return success, "DB Error or VectorDB not found"
 
     return success, None
-
-def update_vectordb_instance(id: int, vectordb: schemas.VectorDBUpdateBase, db: Session):
-    """
-    Updates a VectorDB instance and its associated config mapping by ID.
-
-    Args:
-        id (int): The ID of the VectorDB instance to update.
-        vectordb (schemas.VectorDBBase): The updated data for the VectorDB instance.
-        db (Session): Database session object.
-
-    Returns:
-        Tuple: Updated VectorDB instance and error message (if any).
-    """
-
-    updated_instance, is_error = repo.update_vectordb_instance(id, vectordb, db)
-
-    if is_error:
-        return updated_instance, "DB Error or VectorDB not found"
-
-    return schemas.VectorDBResponse(
-        id=updated_instance.id,
-        vectordb=updated_instance.vectordb,
-        vectordb_config=updated_instance.vectordb_config,
-        config_id=updated_instance.vectordb_config_mapping[0].config_id
-    ), None
 
 def create_vectorstore_instance(db:Session):
     """
@@ -668,7 +694,7 @@ def create_vectorstore_instance(db:Session):
         Tuple: VectorStoreConfigResponse schema and error message (if any).
     """
     configs, is_error = conn_repo.getbotconfiguration(db)
-    vectore_store=None
+    vector_store_formatting=None
 
     if is_error:
         return configs, "DB Error"
@@ -677,10 +703,25 @@ def create_vectorstore_instance(db:Session):
 
         vectore_store, is_error = repo.get_mapped_vector_store(db, configs.id)
 
-        if is_error:
-            return vectore_store, "DB Error"
+    if vectore_store:
+        vector_store_formatting = {
+            "name": vectore_store.get("vectordb"),
+        }
 
-    vectorloader = VectorDBLoader(config={"name":vectore_store.vectordb, "params":vectore_store.vectordb_config}) if vectore_store else VectorDBLoader(config={"name":"chroma", "params":{"path":"./chromadb"}})
+        vectordb_config = vectore_store.get("vectordb_config", {})
+
+        if vectordb_config:
+            embeddings = vectore_store.get("embedding_config", {})
+
+            vector_store_formatting["embeddings"] = {
+                **embeddings,
+                "provider": vectore_store.get("em_provider"),
+                "vectordb": vectore_store.get("vectordb")
+            }
+
+            vector_store_formatting={**vector_store_formatting,**vectordb_config}
+
+    vectorloader = VectorDBLoader(vector_store_formatting) if vector_store_formatting else VectorDBLoader(config={"name":"chroma", "params":{"path":"./chromadb"}})
 
     return vectorloader.load_class(), None
 

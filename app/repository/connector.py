@@ -82,6 +82,29 @@ def get_all_configurations(db: Session):
     except SQLAlchemyError as e:
         return str(e), True
 
+def get_inference_by_config(config_id: int, db: Session):
+    """
+    Retrieves the Inference based on the config_id, using joinedload to load related data.
+
+    Args:
+        config_id (int): The configuration ID to query.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: Inference instance, error message (if any).
+    """
+    try:
+        result = db.query(models.Inferenceconfigmapping).options(joinedload(models.Inferenceconfigmapping.inference)).options(joinedload(models.Inferenceconfigmapping.configuration)).filter(models.Inferenceconfigmapping.config_id == config_id).first()
+
+        if result:
+            return result.inference, False
+        else:
+            return None, "Inference not found for the given config_id"
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        return None, str(e)
+
 def getbotconfiguration(db:Session):
 
     try:

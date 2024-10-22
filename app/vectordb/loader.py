@@ -24,5 +24,5 @@ class VectorDBLoader:
         if vectordb_class:
             return vectordb_class(**connection_params)
         else:
-            logger.info("No specified embedding providers")
+            logger.info("No specified vectordb providers")
             return ChromaDataBase()

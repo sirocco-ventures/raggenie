@@ -88,6 +88,7 @@ class TestCredentials(BaseModel):
 
 class TestVectorDBCredentials(BaseModel):
     vectordb_config: Dict[str, Any]
+    embedding_config: Optional[Dict[str, Any]] = None
 
 class SampleSQLBase(BaseModel):
     description: str
@@ -116,11 +117,14 @@ class VectorDBUpdateBase(BaseModel):
     vectordb: Optional[str] = None
     vectordb_config : Optional[Dict[str,Any]] = None
     config_id: Optional[int] = None
+    embedding_config: Optional[Dict[str,Any]] = None
 
 class VectorDBBase(BaseModel):
-    vectordb: str
-    vectordb_config : Dict[str,Any]
+    vectordb: Optional[str] = None
+    vectordb_config : Optional[Dict[str,Any]] = None
     config_id: int
+    embedding_config: Optional[Dict[str,Any]] = None
+
 
 class VectorDBResponse(VectorDBBase):
     id: int

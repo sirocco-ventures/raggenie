@@ -11,3 +11,6 @@ class GoogleEm:
     def load_emb(self):
         return self.ef
 
+    def health_check(self) -> None:
+        pass
+

@@ -135,7 +135,42 @@ def get_sql_by_key(key: str, db: Session):
         db.rollback()
         return str(e),True
 
-def create_vectordb_instance(vectordb, db: Session):
+def revoke_existing_vectordb_confg(id: int, db: Session):
+    """
+    Revoke (delete) existing VectorDB configurations based on vector_db_id.
+
+    Args:
+        id (int): The vector_db_id to delete the mappings for.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: (Success message or error, Boolean indicating if an error occurred)
+    """
+    try:
+        existing_mappings = db.query(models.VectorDB).join(models.VectorDBConfigMapping)\
+            .filter(models.VectorDBConfigMapping.vector_db_id == id).all()
+
+        for mapping in existing_mappings:
+            db.delete(mapping)
+
+        db.commit()
+
+        return "VectorDB configurations revoked successfully", False
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        return str(e), True
+
+
+
+def create_vectordb_with_embedding(key,id, vectordb, db: Session):
+
+    if key == "update":
+        result, is_error = revoke_existing_vectordb_confg(id, db)
+
+        if is_error:
+            return result, True
+
     try:
         db_vectordb = models.VectorDB(
             vectordb=vectordb.vectordb,
@@ -145,6 +180,7 @@ def create_vectordb_instance(vectordb, db: Session):
         db.commit()
         db.refresh(db_vectordb)
 
+
         db_vectordb_mapping = models.VectorDBConfigMapping(
             vector_db_id=db_vectordb.id,
             config_id=vectordb.config_id,
@@ -153,11 +189,33 @@ def create_vectordb_instance(vectordb, db: Session):
         db.commit()
         db.refresh(db_vectordb_mapping)
 
-        return (db_vectordb, db_vectordb_mapping), False
+        if vectordb.embedding_config:
+            db_embedding = models.Embeddings(
+                provider=vectordb.embedding_config['provider'],
+                config=vectordb.embedding_config['params'],
+            )
+            db.add(db_embedding)
+            db.commit()
+            db.refresh(db_embedding)
+
+            db_embedding_mapping = models.VectorEmbeddingMapping(
+                vector_db_id=db_vectordb.id,
+                embedding_id=db_embedding.id,
+            )
+            db.add(db_embedding_mapping)
+            db.commit()
+            db.refresh(db_embedding_mapping)
+
+            return {
+                'vectordb': db_vectordb,
+                'vectordb_mapping': db_vectordb_mapping,
+                'embedding': db_embedding,
+            }, False
 
     except SQLAlchemyError as e:
         db.rollback()
         return str(e), True
+
 
 
 def get_vectordb_instance(id: int, db: Session):
@@ -171,91 +229,51 @@ def get_vectordb_instance(id: int, db: Session):
     Returns:
         Tuple: The VectorDB instance and its associated config mapping, or an error message.
     """
-
     try:
-        db_vectordb = db.query(models.VectorDB).options(
-            joinedload(models.VectorDB.vectordb_config_mapping)
-        ).filter(models.VectorDB.id == id).first()
+        db_vectordb = db.query(models.VectorDB).join(models.VectorDBConfigMapping)\
+            .options(joinedload(models.VectorDB.vectordb_config_mapping))\
+            .filter(models.VectorDBConfigMapping.config_id == id).first()
+
+        embedding = db.query(models.Embeddings).join(models.VectorEmbeddingMapping)\
+                    .filter(models.VectorEmbeddingMapping.vector_db_id == db_vectordb.id).first()
 
         if not db_vectordb:
             return "VectorDB not found", True
 
+        if not embedding:
+            return "No embedding found for VectorDB", True
 
-        return db_vectordb, False
+        return (db_vectordb, embedding), False
 
     except SQLAlchemyError as e:
         return str(e), True
 
-def delete_vectordb_instance(id: int, db: Session):
-    """
-    Deletes a VectorDB instance and its associated config mapping by ID.
-
-    Args:
-        id (int): The ID of the VectorDB instance to delete.
-        db (Session): Database session object.
-
-    Returns:
-        Tuple: Success message and error flag.
-    """
+def get_mapped_vector_store(db: Session, config_id: int):
     try:
-        db_vectordb = db.query(models.VectorDB).filter(models.VectorDB.id == id).first()
 
-        if not db_vectordb:
-            return "VectorDB instance not found", True
-
-        db.query(models.VectorDBConfigMapping).filter(
-            models.VectorDBConfigMapping.vector_db_id == id
-        ).delete()
-
-        db.delete(db_vectordb)
-        db.commit()
-
-        return "VectorDB instance deleted successfully", False
-
-    except SQLAlchemyError as e:
-        db.rollback()
-        return str(e), True
-
-def update_vectordb_instance(id: int, vectordb: schemas.VectorDBBase, db: Session):
-    """
-    Updates a VectorDB instance and its associated config mapping by ID.
-
-    Args:
-        id (int): The ID of the VectorDB instance to update.
-        vectordb (schemas.VectorDBBase): The updated data for the VectorDB instance.
-        db (Session): Database session object.
-
-    Returns:
-        Tuple: Updated VectorDB instance and error flag.
-    """
-    try:
-        db_vectordb = db.query(models.VectorDB).options(
-            joinedload(models.VectorDB.vectordb_config_mapping)
-        ).filter(models.VectorDB.id == id).first()
-
-        if not db_vectordb:
-            return "VectorDB instance not found", True
-
-        db_vectordb.vectordb = vectordb.vectordb if vectordb.vectordb else db_vectordb.vectordb
-        db_vectordb.vectordb_config = vectordb.vectordb_config if vectordb.vectordb_config else db_vectordb.vectordb_config
-
-        for mapping in db_vectordb.vectordb_config_mapping:
-            mapping.config_id = vectordb.config_id if vectordb.config_id else mapping.config_id
-
-        db.commit()
-        db.refresh(db_vectordb)
-
-        return db_vectordb, False
-
-    except SQLAlchemyError as e:
-        db.rollback()
-        return str(e), True
-
-def get_mapped_vector_store(db:Session, config_id:int):
-    try:
-        return db.query(models.VectorDB).join(models.VectorDBConfigMapping, models.VectorDB.id == models.VectorDBConfigMapping.vector_db_id)\
+        vectordb = db.query(models.VectorDB).join(models.VectorDBConfigMapping, models.VectorDB.id == models.VectorDBConfigMapping.vector_db_id)\
             .options(joinedload(models.VectorDB.vectordb_config_mapping))\
-            .filter(models.VectorDBConfigMapping.config_id == config_id).first()  , False
+            .filter(models.VectorDBConfigMapping.config_id == config_id).first()
+
+        if not vectordb:
+            return None, False
+
+        embedding = db.query(models.Embeddings).join(models.VectorEmbeddingMapping, models.Embeddings.id == models.VectorEmbeddingMapping.embedding_id)\
+            .filter(models.VectorEmbeddingMapping.vector_db_id == vectordb.id).first()
+
+        embedding_details = {
+            "vectordb": vectordb.vectordb,
+            "vectordb_config": vectordb.vectordb_config,
+        }
+
+        if embedding:
+            embedding_details.update({
+                "em_provider": embedding.provider,
+                "embedding_config": embedding.config
+            })
+
+        return embedding_details, False
+
     except SQLAlchemyError as e:
         db.rollback()
         return str(e), True
