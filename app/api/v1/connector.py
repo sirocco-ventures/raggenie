@@ -37,10 +37,10 @@ def list_connectors(db: Session = Depends(get_db), provider_category_id: Optiona
         CommonResponse: A response containing either the list of connectors or an error message.
     """
 
-    result, error = svc.list_connectors(db)
-
     if provider_category_id:
-        result = list(filter(lambda x: x.provider_id == provider_category_id, result))
+        result, error = svc.list_connectors_by_provider_category(provider_category_id, db)
+    else:
+        result, error = svc.list_connectors(db)
 
     if error:
         return commons.is_error_response("DB Error", result, {"connectors": []})

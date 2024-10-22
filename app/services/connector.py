@@ -47,6 +47,28 @@ def list_connectors(db: Session):
 
     return connectors_response, None
 
+def list_connectors_by_provider_category(category_id: int, db: Session):
+    """
+    Retrieves all connector records from the database filtered by provider category.
+
+    Args:
+        category_id (int): The ID of the provider category.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: List of connector responses and error message (if any).
+    """
+    connectors, error = list_connectors(db)
+
+    if error:
+        return [], error
+
+    filtered_connectors = [connector for connector in connectors if connector.provider_id == category_id]
+
+    return filtered_connectors, None
+
+
+
 def get_connector(connector_id: int, db: Session):
 
     """
