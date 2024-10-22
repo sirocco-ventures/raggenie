@@ -8,24 +8,26 @@ import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from "react-router-dom"
 import EmptyPreview from "./EmptyPreview"
 import { getConnectors } from "src/services/Connectors"
-import { getBotConfiguration } from "src/services/BotConfifuration"
+import { getBotConfiguration, restartBot } from "src/services/BotConfifuration"
+import { toast } from "react-toastify"
 import { isEmptyJSON } from "src/utils/utils"
 
 
 const PreviewChatBox = ({urlPrex = "/preview"})=>{ 
 
     const [feedbackStatus, setFeedbackStatus] = useState(false); // for dislike and like activation
-
+    const [currentConfigID, setCurrentConfigID] = useState(0)
     const [conversations, setConversation] = useState([])
     const [chatHistory,setchatHistory] = useState([])
     const [currentChat, setCurrentChat] = useState({})
     const [isChatLoading, setIsChatLoading] = useState(false) 
-    // const [contextId, setContextId] = useState("")
     const [enableChatbox, setEnableChatbox] = useState(false)
-    const [currentState, setCurrentState] = useState(0)
-    const [messageBoxText, setMessageBox] = useState(`You don't have any sources added, to get started go \r\n to plugin section and add a source`)
-    const [emptyURL, setEmptyURL] = useState("/plugins/sources")
-    const [messageBoxButtonText, setMessageBoxButtonText] = useState("Add Plugin")
+    const [currentState, setCurrentState] = useState(1)
+    // currentState Values
+    // 1. to add plungs
+    // 2. setup bot configuration
+    // 3. restart bot
+
 
     let { contextId } = useParams()
     const navigate = useNavigate()
@@ -132,7 +134,8 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
                     chatSummary: item.chat_summary,
                     date: new Date(item.created_at), // Convert date string to Date object
                 });
-            });           
+            });     
+            chatHistory = chatHistory.reverse()      
             setchatHistory(chatHistory);
         })
     }
@@ -156,7 +159,7 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
                 if (response.data.data.connectors?.length > 0){
                     getConfig()
                 }else{
-                    setCurrentState(false)
+                    setCurrentState(1)
                 }
             })
     }
@@ -165,20 +168,18 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
         getBotConfiguration().then(response=>{
             let configs = response.data?.data?.configurations
             if(configs?.length > 0){
-                setEnableChatbox(true)
+                setCurrentConfigID(configs[0].id)
                 if(configs[0].inference[0]?.id){
-                    setEnableChatbox(true)
+                    if(configs[0].status == 1){
+                        setCurrentState(3)
+                    }else{
+                        setEnableChatbox(true)
+                    }
                 }else {
-                    setEnableChatbox(false)
-                    setEmptyURL("/bot-configuration")
-                    setMessageBoxButtonText("Add Inference")
-                    setMessageBox("Please configure the inference endpoint details in the bot configuration to proceed.")
+                    setCurrentState(2)
                 }
             }else{
-                setEnableChatbox(false)
-                setEmptyURL("/bot-configuration")
-                setMessageBoxButtonText("Add Configuration")
-                setMessageBox("You need to configure chat box")
+                setCurrentState(2)
             }
         })
     }
@@ -196,6 +197,17 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
             setFeedbackStatus(response.data.feedback_status === 1 ? true : false );
         })
     };
+
+    const restartChatBot = ()=>{
+        restartBot(currentConfigID).then(()=>{
+            toast.success("Chatbot Restarted")
+            setEnableChatbox(true)
+        }).catch(()=>{
+            toast.error("Failed to restart bot")
+        })
+    }
+
+
     
     useEffect(()=>{
         if(currentChat.message){
@@ -221,7 +233,8 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
 
     return(
         <>
-            {enableChatbox ? <ChatBox messageBoxRef={messageBoxRef} handleNavigateChatContext={handleNavigateChatContext} onCreateNewChat={onCreateNewChat} chatHistory={chatHistory} isLoading={isChatLoading} conversations={conversations} onKeyDown={onChatBoyKeyDown} onSendClick={onSendClick}  /> : <EmptyPreview message={messageBoxText} url={emptyURL} buttonText={messageBoxButtonText} />} 
+            {enableChatbox ? <ChatBox messageBoxRef={messageBoxRef} handleNavigateChatContext={handleNavigateChatContext} onCreateNewChat={onCreateNewChat} chatHistory={chatHistory} isLoading={isChatLoading} conversations={conversations} onKeyDown={onChatBoyKeyDown} onSendClick={onSendClick}  /> :<EmptyPreview currentState={currentState} onRestartBot={restartChatBot} />} 
+            
         </>
     )
 }
