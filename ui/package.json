@@ -11,6 +11,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
     "axios": "^1.7.2",
     "eslint": "^9.11.0",
     "react": "^18.3.1",
@@ -26,7 +27,8 @@
     "react-toastify": "^10.0.5",
     "recharts": "^2.12.7",
     "styled-components": "^6.1.12",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "vite-plugin-svgr": "^4.2.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.5.0",
