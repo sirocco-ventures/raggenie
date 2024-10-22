@@ -91,8 +91,8 @@ class VectorDB(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
-    vectordb_config_mapping = relationship('VectorDBConfigMapping', back_populates='vector_db')
-    vector_embedding_mapping = relationship('VectorEmbeddingMapping', back_populates='vector_db')
+    vectordb_config_mapping = relationship('VectorDBConfigMapping', back_populates='vector_db',cascade="all,delete")
+    vector_embedding_mapping = relationship('VectorEmbeddingMapping', back_populates='vector_db', cascade="all,delete")
 
 
 
@@ -134,5 +134,5 @@ class VectorEmbeddingMapping(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
-    vector_db = relationship('VectorDB', back_populates='vector_embedding_mapping')
-    embeddings_config = relationship('Embeddings', back_populates='vector_embedding_mapping')
+    vector_db = relationship('VectorDB', back_populates='vector_embedding_mapping', cascade="all,delete")
+    embeddings_config = relationship('Embeddings', back_populates='vector_embedding_mapping', cascade="all,delete")
