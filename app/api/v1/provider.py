@@ -69,7 +69,7 @@ def get_provider(provider_id: int, db: Session = Depends(get_db)):
         status=True,
         status_code=200,
         data={"provider": result},
-        message="Provider not Found",
+        message="Provider Found",
         error=None
     )
 
@@ -142,11 +142,11 @@ def test_inference_connections(inference: conn_schemas.InferenceBase):
     Tests the inference connections by validating the credentials for a specific LLM provider.
 
     Args:
-        inference (conn_schemas.InferenceBase): 
+        inference (conn_schemas.InferenceBase):
             Configuration object containing the provider details, including model name, API key, and endpoint, for testing the connections.
 
     Returns:
-        resp_schemas.CommonResponse: 
+        resp_schemas.CommonResponse:
             - Response object containing:
                 - status (bool): Indicates whether the credentials validation was successful.
                 - status_code (int): HTTP status code (200 for success, 422 for failure).
