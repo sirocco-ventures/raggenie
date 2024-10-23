@@ -4,7 +4,7 @@ from app.models.request import ConnectionArgument
 
 __provider_name__ = "cohere"
 __vectordb_name__ = ["chroma"]
-__icon__ = '/assets/embeddings/logos/cohere.png'
+__icon__ = '/assets/embeddings/logos/cohere.svg'
 __connection_args__ = [
     {
         "config": ["api_key"],
