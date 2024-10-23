@@ -5,7 +5,7 @@ import Textarea from 'src/components/Textarea/Textarea';
 import style from "src/pages/Configuration/ProviderForm/ProviderForm.module.css"
 
 
-const GenerateConfigs = ({ register, errors, configs, fileConfig = {}, restForm = () => { } }) => {
+const GenerateConfigs = ({ register = () => { }, errors = " ", configs = " ", fileConfig = {}, restForm = () => { } }) => {
     console.log(configs);
     
     return (
@@ -40,6 +40,7 @@ const GenerateConfigs = ({ register, errors, configs, fileConfig = {}, restForm 
                             {...fileConfig}
                         />
                     )
+                    case 9: return <Input key={index} type="text" label={item.name} placeholder={item.description} required={item.required} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, { required: item.required ? "This is required" : false })} onChange={restForm} />
                     default: return <Input key={index} type="text" label={item.name} required={item.required} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, { required: item.required ? "This is required" : false })} onChange={restForm} />
                 }
 

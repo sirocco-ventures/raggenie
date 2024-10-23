@@ -19,7 +19,7 @@ import { v4  as uuid4} from "uuid"
 import Capability from './Capability/Capability';
 import Modal from 'src/components/Modal/Modal';
 import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src/services/Capability';
-import { getBotConfiguration, getLLMProviders, getVectorFields, saveBotConfiguration, saveBotInferene, testInference } from 'src/services/BotConfifuration';
+import { getBotConfiguration, getLLMProviders, getVectorFields, saveBotConfiguration, saveBotInferene, testInference, testVectorDb } from 'src/services/BotConfifuration';
 import { useNavigate } from 'react-router-dom';
 import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
 import singlestore from "./assets/SingleStore.svg"
@@ -43,6 +43,8 @@ const BotConfiguration = () => {
     
     const [activeInferencepiontTab, setActiveInferencepiontTab] = useState(true)
     const [activeTab, setActiveTab] = useState("configuration")
+
+    const [disabledVectorDbSave, setDisabledVectorDbSave] = useState(true)
     
 
     const [selectedProvider, setSelectedProvider] = useState()
@@ -66,17 +68,14 @@ const BotConfiguration = () => {
     const [showVectorDbForm,setshowVectorDbForm] = useState(false)
 
     const [vectorDB, setVectorDB] = useState([]);
-    const [vectorDBConfigs,setVectorDBConfigs] = useState()
       
-
-
     const { register: configRegister, setValue: configSetValue, handleSubmit : configHandleSubmit, formState: configFormState, setError: configSetError, clearErrors: configClearErrors, watch: configWatch } = useForm({mode : "all"})
     const { errors: configFormError, } = configFormState
 
     const { register: inferenceRegister, getValues: inferenceGetValues , setValue: inferenceSetValue, handleSubmit : inferenceHandleSubmit, formState: inferenceFormState, control: inferenceController, trigger: inferenceTrigger, watch: inferenceWatch } = useForm({mode : "all"})
     const { errors: inferenceFormError } = inferenceFormState
 
-    const { register: vectorDbRegister, setValue: vectorDbSetValue, handleSubmit : vectorDbHandleSubmit, formState: vectorDbFormState, control: vectorDbController } = useForm({mode : "all"})
+    const { register: vectorDbRegister,getValues: vectorDbGetValues , setValue: vectorDbSetValue, handleSubmit : vectorDbHandleSubmit, formState: vectorDbFormState, trigger: vectorDbTrigger, control: vectorDbController } = useForm({mode : "all"})
     const { errors: vectorDbFormError } = vectorDbFormState
    
     const onBotConfigSave = (data) => {
@@ -149,32 +148,42 @@ const BotConfiguration = () => {
         })
     }
 
+
     const getVectorDbsFields = () => {
         getVectorFields().then(response => {
             let vectorDbTempList = [];
             const vectorDbs = response.data.data.vectordbs[0];
             vectorDbs.map((item) => {          
                 vectorDbTempList.push({
-                    label: (
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                            <img src={item.icon} alt={"vectorImages"} style={{ marginRight: '8px' }} />
-                            {item.name}
-                        </div>
-                    ),
-                    value: item.name ,
+                    label: item.name,
+                    value: item.name,
+                    config:item.config,
                 });
-                setVectorDBConfigs(item.config)
             });
             setVectorDB(vectorDbTempList); 
         });
+
     };
     
+    const onTestVectorDb = () =>{
+        alert("testing-vector-db");
+        
+        vectorDbTrigger().then((result)=>{
+            console.log(result);
+            if(result){
+                testVectorDb({
+                    "key": selectedVectordb.value.toLowerCase(),
+                    "path" : selectedVectordb.value === "ChromaDB" ? vectorDbGetValues("path") : selectedVectordb.value === "MongoDB" ? vectorDbGetValues("uri") : null
+                }).then(()=>{
+                    toast.success("Vectordb test successful")
+                    setShowNotificationPanel(false);
+                    setDisabledVectorDbSave(false)
+                })
+            }
+        })
+        
+    }
     
-    
-    
-      
-      
-
 
     const onTestInference = ()=>{
         inferenceTrigger().then((result)=>{
@@ -212,7 +221,7 @@ const BotConfiguration = () => {
         saveBotInferene(currentConfigID, currentInferenceID, data).then(() => {
             toast.success("Inference saved successfully")
             setShowNotificationPanel(false);
-            setActiveTab("capabalities")
+            setActiveTab('vectordbtab')
         })
         .catch(() => {
             setShowNotificationPanel(true);
@@ -349,14 +358,16 @@ const BotConfiguration = () => {
         setDisabledInferenceSave(true)
     }
 
-    const loadDbBasedForm = (config) => {
+    const loadDbBasedForm = (configVectorDb) => {
 
-        return(
+        return (
             <>
-            <Select/>
-            <GenerateConfigs
-            configs={vectorDBConfigs}
-            />
+                <Select />
+                <GenerateConfigs
+                    register={vectorDbRegister}
+                    errors={vectorDbFormError}
+                    configs={configVectorDb}
+                />
             </>
         )
 
@@ -368,33 +379,13 @@ const BotConfiguration = () => {
     }
 
     const handleDatabaseChange = (selectedDb) => {
-        setSelectedVectordb(selectedDb); // Set the selected database
+        setSelectedVectordb(selectedDb); 
     };
 
     const vectorDbSave = (data) => {
-        const filteredData = {};
-        switch (selectedVectordb?.value) {
-            case 'singlestore':
-                filteredData.user = data.user;
-                filteredData.password = data.password;
-                filteredData.host = data.host;
-                filteredData.port = data.port;
-                filteredData.database = data.database;
-                break;
-            case 'mongodb':
-                filteredData.uri = data.uri;
-                filteredData.password = data.password;
-                break;
-            case 'pinecone':
-                filteredData.api_key = data.api_key;
-                filteredData.environment = data.environment;
-                break;
-            default:
-                break;
-        }
+
     
-        console.log("Filtered Data:", filteredData);
-        // Now you can send filteredData to your API or handle it as needed
+        console.log("Filtered Data:", data);
     };
     
 
@@ -480,7 +471,7 @@ const BotConfiguration = () => {
                 </Tab>
 
                 {/*==============vectorDB tab==================*/}
-                <Tab title="VectorDB" disabled={false} tabKey="vectordb">
+                <Tab title="VectorDB" disabled={false} tabKey="vectordbtab">
 
                     {showVectorDbForm ? (
                         <form onSubmit={vectorDbHandleSubmit(vectorDbSave)}>
@@ -497,7 +488,7 @@ const BotConfiguration = () => {
                                     />
 
                                     {configFormError["vectorDbProvider"]?.message && <span style={{ color: "#FF7F6D" }}>{configFormError["vectorDbProvider"]?.message}</span>}
-                                    {selectedVectordb?.value && loadDbBasedForm(selectedVectordb.value)}
+                                    {selectedVectordb?.config && loadDbBasedForm(selectedVectordb.config)}
                                     
                                 </div>
                                 <div className={`${style.SaveVectorContainer} ${style.VectorSaveContainer}`}>
@@ -505,8 +496,9 @@ const BotConfiguration = () => {
                                         <Button type="transparent" className="icon-button" onClick={() => setActiveTab("inferenceendpoint")} > <FaArrowLeft /> Back</Button>
                                     </div>
                                     <div>
-                                        <Button buttonType="submit" className="icon-button">  Save <FiCheckCircle /></Button>
-                                    </div>
+                                 { disabledVectorDbSave && <Button onClick={onTestVectorDb} style={{marginRight: "10px"}}> Test <LiaToolsSolid/>  </Button> }
+                                <Button buttonType="submit" className="icon-button" disabled={disabledVectorDbSave}>  Save <FiCheckCircle /></Button>
+                            </div>
                                 </div>
                             </div>
                         </form>
