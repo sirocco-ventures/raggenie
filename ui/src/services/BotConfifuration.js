@@ -58,3 +58,7 @@ export const saveBotInferene = (configID, inferenceID, saveData = {})=>{
         "endpoint": saveData.inferenceEndpoint
     })
 }
+
+export const restartBot = (configID)=>{
+   return PostService(API_URL + `/connector/createyaml/${configID}`,{},{loaderText: "Restarting Chatbot"})
+}

@@ -14,9 +14,9 @@ import { LiaToolsSolid } from "react-icons/lia";
 import { FiCheckCircle, FiXCircle} from "react-icons/fi"
 import { GoPlus } from "react-icons/go"
 import { FaRegArrowAltCircleRight } from 'react-icons/fa';
-import { BACKEND_SERVER_URL } from 'src/config/const';;
+import { API_URL, BACKEND_SERVER_URL } from 'src/config/const';;
 import Select from 'src/components/Select/Select';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { v4  as uuid4} from "uuid"
 import Capability from './Capability/Capability';
 import Modal from 'src/components/Modal/Modal';
@@ -26,6 +26,10 @@ import { getBotConfiguration, getLLMProviders, saveBotConfiguration, saveBotInfe
 import confirmDialog from 'src/utils/ConfirmDialog';
 
 
+import PostService from 'src/utils/http/PostService';
+import ToastIcon from "./assets/ToastIcon.svg"
+import { RiRestartLine } from 'react-icons/ri';
+import { IoMdClose } from 'react-icons/io';
 
 
 const BotConfiguration = () => {
@@ -82,17 +86,63 @@ const BotConfiguration = () => {
     }
 
 
-    const onBotConfigSave = (data) => {
-        saveBotConfiguration(currentConfigID, data ).then(response => {
-                setActiveInferencepiontTab(false)
-                setCurrentConfigID(response.data.data.configuration.id)
-                toast.success("Configuration saved successfully:")
-                setActiveTab("inferenceendpoint")
-        })
-        .catch(() => {
-            toast.error("Configuration faild to save")
-        });
-    }
+    const ToastCloseButton = ({ closeToast }) => {
+        return (
+          <button className={style.CustomBotCloseButton} onClick={closeToast}>
+            <IoMdClose size={18} />
+          </button>
+        );
+      };
+
+
+    const ToastMessage = ({ message}) => {
+        return (
+                <div className={style.BotRestartToast}>
+                <span className={style.BotRestartMessage}><img src={ToastIcon} alt="toasticon"/>{message}</span>
+                <Button onClick={restartChatBot}>
+                    Restart Chatbot  <RiRestartLine size={24}/>
+                </Button>
+            </div>
+        );
+      };
+      
+
+      const restartChatBot = () => {
+        toast.dismiss("RAG001"); 
+        PostService(API_URL + `/connector/createyaml/${currentConfigID}`, {}, { loaderText: "Restarting Chatbot" })
+          .then(() => {
+            toast.success("Bot Restarted successfully");
+          })
+          .catch(() => {
+            toast.error("Failed to restart bot");
+          });
+      };
+   
+      const onBotConfigSave = (data) => {
+        saveBotConfiguration(currentConfigID, data)
+          .then((response) => {
+            toast.success("Configuration Saved Successfully")
+            setCurrentConfigID(response.data.data.configuration.id);
+            if(currentInferenceID != undefined){
+                toast(
+                    <ToastMessage message={`Please restart the bot to get changes to take effect.`} />,
+                    {
+                      toastId: "RAG001", 
+                      autoClose: false, 
+                      hideProgressBar: true,
+                      className: style.ToastContainerClass,
+                      closeButton: <ToastCloseButton />,
+                    }
+                  ); 
+            }
+
+            setActiveTab("inferenceendpoint")
+          })
+          .catch(() => {
+            toast.error("Configuration failed to save");
+          });
+      };
+      
 
     const getCurrentConfig = (llmsList)=>{
         
@@ -183,11 +233,21 @@ const BotConfiguration = () => {
             configSetError("inferenceProvider", { type:"required", message: "This field is required" });
             return
         }
-
+ 
 
         data["inferenceLLMProvider"] = selectedProvider.value
         saveBotInferene(currentConfigID, currentInferenceID, data).then(() => {
             toast.success("Inference saved successfully")
+            toast(
+                <ToastMessage message={`Please restart the bot to get changes to take effect.`} />,
+                {
+                  toastId: "RAG001", 
+                  autoClose: false, 
+                  hideProgressBar: true,
+                  className: style.ToastContainerClass,
+                  closeButton: <ToastCloseButton />,
+                }
+              );
             setShowNotificationPanel(false);
             setActiveTab("capabalities")
         })
