@@ -78,11 +78,13 @@ class FollowupInterpreter(AbstractHandler):
                             else:
                                 logger.warning("actions are not enabled in connector")
                         else:
-                            logger.warning(f"failed to load connector for action {action.get("name","")}")
+                            logger.warning(f"failed to load connector for action {action.get('name','')}")
                 else:
                     logger.info("missing parameters")
 
             response = Formatter.format(inference["message"],"")
+            response["intent"] = request["intent_extractor"]["intent"]
+            response['params'] = request["inference"]["params"]
             response["summary"] = request["inference"]["summary"]
             response["question"] = request["question"]
             response["context_id"] = request["context_id"]
