@@ -19,9 +19,16 @@ import { v4  as uuid4} from "uuid"
 import Capability from './Capability/Capability';
 import Modal from 'src/components/Modal/Modal';
 import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src/services/Capability';
-import { getBotConfiguration, getLLMProviders, saveBotConfiguration, saveBotInferene, testInference } from 'src/services/BotConfifuration';
+import { getBotConfiguration, getLLMProviders, getVectorFields, saveBotConfiguration, saveBotInferene, testInference } from 'src/services/BotConfifuration';
 import { useNavigate } from 'react-router-dom';
 import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
+import singlestore from "./assets/SingleStore.svg"
+import VectorEmpty from "./assets/vectorEmpty.svg"
+
+import mongodbatlas from "./assets/mongodb.svg"
+import pinecore from "./assets/pinecone.svg"
+import TitleDescription from 'src/components/TitleDescription/TitleDescription';
+import GenerateConfigs from 'src/utils/form/GenerateConfigs';
 
 
 const BotConfiguration = () => {
@@ -40,6 +47,8 @@ const BotConfiguration = () => {
 
     const [selectedProvider, setSelectedProvider] = useState()
 
+    const [selectedVectordb, setSelectedVectordb] = useState()
+
     const [capabalities, setCapabalities] = useState([])
 
     const [llmModels, setllmModels] = useState([])
@@ -54,9 +63,11 @@ const BotConfiguration = () => {
     let [currentEditParamsNameError, setCurrentEditParamsNameError] = useState({hasError: false, errorMessage: ""})
     let [currentEditParamsDescError, setCurrentEditParamsDescError] = useState({hasError: false, errorMessage: ""})
 
+    const [showVectorDbForm,setshowVectorDbForm] = useState(false)
 
-    const navigate = useNavigate()
-
+    const [vectorDB, setVectorDB] = useState([]);
+    const [vectorDBConfigs,setVectorDBConfigs] = useState()
+      
 
 
     const { register: configRegister, setValue: configSetValue, handleSubmit : configHandleSubmit, formState: configFormState, setError: configSetError, clearErrors: configClearErrors, watch: configWatch } = useForm({mode : "all"})
@@ -64,6 +75,9 @@ const BotConfiguration = () => {
 
     const { register: inferenceRegister, getValues: inferenceGetValues , setValue: inferenceSetValue, handleSubmit : inferenceHandleSubmit, formState: inferenceFormState, control: inferenceController, trigger: inferenceTrigger, watch: inferenceWatch } = useForm({mode : "all"})
     const { errors: inferenceFormError } = inferenceFormState
+
+    const { register: vectorDbRegister, setValue: vectorDbSetValue, handleSubmit : vectorDbHandleSubmit, formState: vectorDbFormState, control: vectorDbController } = useForm({mode : "all"})
+    const { errors: vectorDbFormError } = vectorDbFormState
    
     const onBotConfigSave = (data) => {
         saveBotConfiguration(currentConfigID, data ).then(response => {
@@ -134,6 +148,32 @@ const BotConfiguration = () => {
             getCurrentConfig(llmList)
         })
     }
+
+    const getVectorDbsFields = () => {
+        getVectorFields().then(response => {
+            let vectorDbTempList = [];
+            const vectorDbs = response.data.data.vectordbs[0];
+            vectorDbs.map((item) => {          
+                vectorDbTempList.push({
+                    label: (
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <img src={item.icon} alt={"vectorImages"} style={{ marginRight: '8px' }} />
+                            {item.name}
+                        </div>
+                    ),
+                    value: item.name ,
+                });
+                setVectorDBConfigs(item.config)
+            });
+            setVectorDB(vectorDbTempList); 
+        });
+    };
+    
+    
+    
+    
+      
+      
 
 
     const onTestInference = ()=>{
@@ -309,9 +349,59 @@ const BotConfiguration = () => {
         setDisabledInferenceSave(true)
     }
 
+    const loadDbBasedForm = (config) => {
+
+        return(
+            <>
+            <Select/>
+            <GenerateConfigs
+            configs={vectorDBConfigs}
+            />
+            </>
+        )
+
+    };
+
+    const onClickCancel=()=>{
+        setshowVectorDbForm(!showVectorDbForm)
+    
+    }
+
+    const handleDatabaseChange = (selectedDb) => {
+        setSelectedVectordb(selectedDb); // Set the selected database
+    };
+
+    const vectorDbSave = (data) => {
+        const filteredData = {};
+        switch (selectedVectordb?.value) {
+            case 'singlestore':
+                filteredData.user = data.user;
+                filteredData.password = data.password;
+                filteredData.host = data.host;
+                filteredData.port = data.port;
+                filteredData.database = data.database;
+                break;
+            case 'mongodb':
+                filteredData.uri = data.uri;
+                filteredData.password = data.password;
+                break;
+            case 'pinecone':
+                filteredData.api_key = data.api_key;
+                filteredData.environment = data.environment;
+                break;
+            default:
+                break;
+        }
+    
+        console.log("Filtered Data:", filteredData);
+        // Now you can send filteredData to your API or handle it as needed
+    };
+    
+
     
     useEffect(() => {
         getLLMModels();
+        getVectorDbsFields()
     }, [])
 
 
@@ -387,6 +477,58 @@ const BotConfiguration = () => {
                             </div>
                         </div>
                     </form>
+                </Tab>
+
+                {/*==============vectorDB tab==================*/}
+                <Tab title="VectorDB" disabled={false} tabKey="vectordb">
+
+                    {showVectorDbForm ? (
+                        <form onSubmit={vectorDbHandleSubmit(vectorDbSave)}>
+                            <div className={style.VectorFormContainer}>
+                                <div className={style.VectorFields}>
+                                    <TitleDescription title="Vector Database details" description="Provide your vector database connection details to enable efficient similarity searches and optimize your application's performance." />
+
+                                    <Controller
+                                        control={inferenceController}
+                                        name='vectorDbProvider'
+                                        render={() => (
+                                            <Select label={"Select Vector Database"} placeholder={vectorDB[0]?.label} options={vectorDB} value={selectedVectordb} onChange={handleDatabaseChange} />
+                                        )}
+                                    />
+
+                                    {configFormError["vectorDbProvider"]?.message && <span style={{ color: "#FF7F6D" }}>{configFormError["vectorDbProvider"]?.message}</span>}
+                                    {selectedVectordb?.value && loadDbBasedForm(selectedVectordb.value)}
+                                    
+                                </div>
+                                <div className={`${style.SaveVectorContainer} ${style.VectorSaveContainer}`}>
+                                    <div style={{ flexGrow: 1 }}>
+                                        <Button type="transparent" className="icon-button" onClick={() => setActiveTab("inferenceendpoint")} > <FaArrowLeft /> Back</Button>
+                                    </div>
+                                    <div>
+                                        <Button buttonType="submit" className="icon-button">  Save <FiCheckCircle /></Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    ) : (
+                        <>
+                            <div className={style.VectorContainer}>
+                                <div className={style.VectorContent}>
+                                    <img src={VectorEmpty} alt='vectorempty' />
+                                    <p>Chroma DB is the currently selected vector database. Do you want to proceed with this choice, or would you like to change the vector database?</p>
+                                    <div className={style.VectorControls}>
+                                        <Button variant='secondary' className="icon-button" onClick={() => { onClickCancel() }}> <FaArrowLeft /> Back</Button>
+                                        <Button buttonType="submit" className="icon-button" onClick={() => setActiveTab("capabalities")} > Continue <FaRegArrowAltCircleRight /></Button>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </>
+                    )}
+
+
+
                 </Tab>
                 <Tab title="Capabilities" disabled={activeInferencepiontTab} tabKey="capabalities" key={"capabalities"}>
                             <div style={{marginBottom: "30px"}}>
