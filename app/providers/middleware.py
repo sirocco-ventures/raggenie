@@ -17,9 +17,6 @@ async def verify_token(request: Request) -> Optional[str]:
             token = auth_header[len("Bearer "):]
 
         if not token:
-            token = request.cookies.get("auth_token")
-
-        if not token:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Authentication required"
