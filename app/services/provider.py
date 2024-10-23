@@ -695,6 +695,7 @@ def create_vectorstore_instance(db:Session):
     """
     configs, is_error = conn_repo.getbotconfiguration(db)
     vector_store_formatting=None
+    vectore_store = None
 
     if is_error:
         return configs, "DB Error"
