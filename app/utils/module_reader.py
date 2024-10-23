@@ -74,12 +74,11 @@ def get_all_embedding():
             module = importlib.import_module(module_name)
             modules.append({
                 "provider": getattr(module, '__provider_name__'),
-                "vector_dbs": getattr(module, '__unique_name__'),
-                "models": getattr(module, '__models__'),
-                "config": getattr(module, '__config'),
+                "vector_dbs": getattr(module, '__vectordb_name__'),
+                "config": getattr(module, '__connection_args__'),
+                "icon": getattr(module, '__icon__')
             })
 
         except Exception as e:
             logger.info(f"failed loading {module_info.name} cause {e}")
-
     return modules
