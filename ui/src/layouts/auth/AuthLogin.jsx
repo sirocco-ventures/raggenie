@@ -24,7 +24,7 @@ const ErrorContainer = ({ message }) => {
 };
 
 const AuthLogin = () => {
-    const [activeLoginButton,setActiveLoginButton] = useState(true)
+    const [activeLoginButton, setActiveLoginButton] = useState(true)
 
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -35,6 +35,8 @@ const AuthLogin = () => {
 
     const navigate = useNavigate()
 
+    const { setIsAuthenticated } = useAppSettings()
+
     const onSubmit = (data) => {
         const authCredentials = {
             "username": data.username,
@@ -44,6 +46,7 @@ const AuthLogin = () => {
             const authResponse = response.data
             const token = authResponse.data.token
             storeToken(token)
+            setIsAuthenticated(true)
             toast.success(authResponse.message);
             navigate(`/preview/${uuid4()}/chat`)
         }).catch(() => {

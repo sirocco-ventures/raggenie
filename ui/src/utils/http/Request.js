@@ -72,6 +72,7 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
             }
             if (error.response?.status == 401) {
                 window.location.href = '/login';
+                return null
             }
             return reject(error)
         });

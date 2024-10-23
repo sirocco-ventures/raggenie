@@ -8,7 +8,7 @@ import axios from "axios";
 
 const DashboardLayout = () => {
 
-  const { username, setUsername } = useAppSettings();
+  const { username, setUsername, isAuthenticated, setIsAuthenticated } = useAppSettings();
 
   const navigate = useNavigate()
 
@@ -16,6 +16,7 @@ const DashboardLayout = () => {
     GetUserDetails().then((response) => {
       const userData = response.data;
       setUsername(userData.data.username);
+      setIsAuthenticated(true)
     })
       .catch((error) => {
         if (error.response.status == 401) {
@@ -30,7 +31,7 @@ const DashboardLayout = () => {
   }, []);
 
   return (
-    <div className={style.DashboardLayout}>
+    isAuthenticated && <div className={style.DashboardLayout}>
       <div className={style.SideMenuContainer}>
         <SideMenu username={username} />
       </div>
