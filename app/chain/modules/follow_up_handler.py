@@ -83,18 +83,26 @@ class FollowupHandler(AbstractHandler):
 
                 Generate a JSON response in the following format for the query '$question':
                 {
-                  "explanation": "Describe which required values were found in current query and how they were extracted. If no values were found, state this clearly.",
-                  "params": {},// Only include newly found parameters from current query
-                  "completed": "true if all the required parameters are captured else false",
-                  "message": "If any required parameter is missing to capture, only ask for that parameter. If all required parameters are captured (completed=true), message must be a succes message - do not ask for any additional information.",
-                  "summary" : "Summarize all captured parameters and current status"
+                    "explanation": "Describe which required values were found in current query and how they were extracted. If no values were found, state this clearly.",
+                    "params": {},// Only include newly found parameters from current query
+                    "completed": "true if all the required parameters are captured from previously and newly found",
+                    "abort" : "true",// if user query request to cancel for $capability_description, examples quries: cancel this or cancel the booking",
+                    "message": "1. If cancellation requested(abort=true) then message must be cancellation message.
+                                2. If all required parameters are captured, message must be a succes message ",
+                    "followup": "1. If any required parameter is missing to capture, only ask for that parameter.
+                                 2. If all the required parameters are captured (completed=true), ask whether to perform the duty again, which is to: $capability_description.",
+                    "summary" : "Summarize all captured parameters and current status"
                 }
           """
 
         contexts = request.get("context", [])
-        contexts = contexts[-5:] if len(contexts) >= 5 else contexts
+        contexts = contexts[-1:] if len(contexts) >= 1 else contexts
 
-        captured_params = contexts[-1].chat_answer.get("params",{}) if len(contexts) > 0 else {}
+        abort_status = contexts[-1].chat_answer.get("inference", {}).get("abort", "false") if len(contexts) > 0 else {}
+
+        captured_params = {}
+        if abort_status == False or abort_status == "false":
+            captured_params = contexts[-1].chat_answer.get("inference", {}).get("params", {}) if len(contexts) > 0 else {}
 
 
         prompt = Template(prompt).safe_substitute(
@@ -111,7 +119,7 @@ class FollowupHandler(AbstractHandler):
         logger.info(f"follow up prompt:{prompt}")
 
         output, response_metadata = infernce_model.do_inference(
-                            prompt, contexts
+                            prompt, []
                     )
         
         if output["error"] is not None:
@@ -121,7 +129,6 @@ class FollowupHandler(AbstractHandler):
         inference['params'].update({k: v for k, v in captured_params.items() if k not in inference['params']})
 
         response["inference"] = inference
-        logger.info(f"inference:{inference}")
         response["capability"] = capability
         return super().handle(response)
 

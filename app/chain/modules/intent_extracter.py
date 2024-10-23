@@ -77,7 +77,7 @@ class IntentExtracter(AbstractHandler):
         response["available_datasources"] = datasource_names
 
         if "metadata_inquiry" in capability_names:
-            capability_description += "metadata_inquiry : queries about overview of available data, the structure of a database (including tables and columns), the meaning behind specific columns, and the purpose within a database context, eg: what kind of data you have? or list questions which can be asked?\n"
+            capability_description += "metadata_inquiry : queries about overview of available data, the structure of a database (including tables and columns), the meaning behind specific columns, eg: what kind of data you have? or list questions which can be asked?\n"
 
         contexts = request.get("context", [])
         contexts = contexts[-5:] if len(contexts) >= 5 else contexts
@@ -134,7 +134,6 @@ class IntentExtracter(AbstractHandler):
             return Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
 
         response["intent_extractor"] = parse_llm_response(output['content'])
-
         response["available_intents"] = capability_names
         response["rag_filters"] = {
              "datasources" : [response["intent_extractor"]['intent']] if 'intent_extractor' in response else [],
