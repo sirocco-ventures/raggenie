@@ -8,6 +8,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import userLogout from "../../assets/icons/menu-icons/log-out.svg";
 import { AuthLogoutService } from "src/services/Auth";
 import { toast } from "react-toastify";
+import { storeToken } from "src/store/authStore";
 
 const SideMenu = ({ username }) => {
 
@@ -36,8 +37,9 @@ const SideMenu = ({ username }) => {
         switch (action) {
             case "logout":
                 AuthLogoutService().then((response) => {
-                    toast.success(response.data.message); 
-                    navigate("/login"); 
+                    navigate("/login");
+                    toast.success(response.data.message);
+                    storeToken(null) 
                 }).catch((error) => {
                     console.error("Logout failed:", error); 
                 });

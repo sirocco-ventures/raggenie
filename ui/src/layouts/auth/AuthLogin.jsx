@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import GeneralLayout from '../general/GeneralLayout';
 import { v4  as uuid4} from "uuid"
-import { storeToken } from 'src/store/authStore';
+import useAppSettings, { storeToken } from 'src/store/authStore';
 import { PiSmileySadLight } from "react-icons/pi";
 
 
@@ -44,14 +44,14 @@ const AuthLogin = () => {
             const authResponse = response.data
             const token = authResponse.data.token
             storeToken(token)
-                toast.success(authResponse.message);
-                navigate(`/preview/${uuid4()}/chat`)
+            toast.success(authResponse.message);
+            navigate(`/preview/${uuid4()}/chat`)
         }).catch(() => {
             setErrorMessage("Incorrect username or password. Please try again.");
             setShowError(true);
         });
     };
-    
+
 
     return (
         <>

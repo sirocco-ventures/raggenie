@@ -5,10 +5,13 @@ const defaultConfig = {
     showLoader: true,
     fullLoader: false,
     loaderText: "Getting Data",
-    allowHeaders: true,
+    allowAuthHeaders: true,
 }
 
 const defaultAxiosConfig = { }
+
+
+
 
 
 const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig = {} )=>{
@@ -38,16 +41,17 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
         }
     }
 
+    
+
     let requestConfig = {
         method: method,
         url: url,
         data: data,
         params: params,
-        headers: allConfig.allowHeaders ? { 
-            Authorization: `Bearer ${token}`,
-            ...axiosConfig.headers
-        } : {}, 
-        ...allAxiosConfig
+        headers: {
+            ...(allConfig.allowAuthHeaders && { Authorization: `Bearer ${token}` }),
+            ...allAxiosConfig.headers,
+        }
     };
     
 
@@ -66,7 +70,7 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
             if (loaderContainer) {
                 loaderContainer.style.display = "none";
             }
-            if (error.response?.status === 401) {
+            if (error.response?.status == 401) {
                 window.location.href = '/login';
             }
             return reject(error)

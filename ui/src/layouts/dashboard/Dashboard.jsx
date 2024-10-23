@@ -1,15 +1,16 @@
-import { Outlet} from "react-router-dom";
+import {  Outlet, useNavigate} from "react-router-dom";
 import { useEffect } from "react";
-import GetService from "src/utils/http/GetService";
-import { API_URL } from "src/config/const";
 import useAppSettings from "src/store/authStore";
 import style from "./Dashboard.module.css";
 import SideMenu from "./SideMenu";
 import { GetUserDetails } from "src/services/Auth";
+import axios from "axios";
 
 const DashboardLayout = () => {
 
   const { username, setUsername } = useAppSettings();
+
+  const navigate = useNavigate()
 
   const fetchUserInfo = () => {
     GetUserDetails().then((response) => {
@@ -17,12 +18,15 @@ const DashboardLayout = () => {
       setUsername(userData.data.username);
     })
       .catch((error) => {
-        console.error("Error fetching user info:", error);
+        if (error.response.status == 401) {
+          navigate("/login")
+        }
       });
   };
 
+
   useEffect(() => {
-    fetchUserInfo();
+    fetchUserInfo()
   }, []);
 
   return (
