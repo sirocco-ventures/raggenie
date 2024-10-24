@@ -36,6 +36,7 @@ class ModelLoader:
         if response.get('main_format','') == 'query_chat':
             if len(response['data']) > 0:
                 answer["general_message"] = response['content']
+                answer["intent"] = response.get("intent","")
                 # answer['data'] = response['data'][-12:] if len(response['data']) > 12 else response['data']
                 answer["metadata"] = f"There were {len(response['data'])} data entries available"
             else:
