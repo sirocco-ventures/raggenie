@@ -9,7 +9,7 @@ __description__ = 'ChromaDB for Vector Storage'
 __icon__ = '/assets/vectordb/logos/chromadb.svg'
 __connection_args__ = [
     {
-        "type": 9,
+        "config_type": 1,
         "name": "ChromaDB path",
         "description": "path to connect to ChromaDB",
         "order": 1,
