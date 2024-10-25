@@ -22,7 +22,8 @@ import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src
 import { getBotConfiguration, getEmbeddings, getLLMProviders, getVectorFields, saveBotConfiguration, saveBotInferene, saveVectorDb, testInference, testVectorDb } from 'src/services/BotConfifuration';
 import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
 import VectorEmpty from "./assets/vectorEmpty.svg"
-
+import cromaDbIcon from "./assets/cromdbpng.png"
+import pencilIcon from "./assets/pencil02.svg"
 import TitleDescription from 'src/components/TitleDescription/TitleDescription';
 import GenerateConfigs from 'src/utils/form/GenerateConfigs';
 
@@ -95,6 +96,8 @@ const BotConfiguration = () => {
 
         getBotConfiguration().then(response => {
             let configs = response.data?.data?.configurations
+            console.log({configs});
+            
             if (configs?.length > 0) {
                 setActiveInferencepiontTab(false)
                 setCurrentConfigID(configs[0].id)
@@ -127,6 +130,24 @@ const BotConfiguration = () => {
                     let tempSelectedProvider = llmsList.find(item => item.value == inference.llm_provider)
 
                     setSelectedProvider(tempSelectedProvider)
+
+                }
+                if (configs[0].vectordb[0]?.id) {
+                    let vectordb = configs[0].vectordb[0];
+                    console.log(vectordb);
+
+                    // vectorDbSetValue("vectorDbProvider",vectordb.vectordb)
+                    // vectorDbSetValue("path",vectordb.vectordb_config.path)
+                    
+                    // inferenceSetValue("inferenceName", inference.name)
+                    // inferenceSetValue("inferenceModelName", inference.model)
+                    // inferenceSetValue("inferenceEndpoint", inference.endpoint)
+                    // inferenceSetValue("inferenceAPIKey", inference.apikey)
+
+
+                    // let tempSelectedProvider = llmsList.find(item => item.value == inference.llm_provider)
+
+                    // setSelectedProvider(tempSelectedProvider)
 
                 }
             }
@@ -620,7 +641,7 @@ const BotConfiguration = () => {
                                     </div>
                                     <div>
                                         {disabledVectorDbSave && <Button onClick={onTestVectorDb} style={{ marginRight: "10px" }}> Test <LiaToolsSolid />  </Button>}
-                                        <Button buttonType="submit" className="icon-button" disabled={disabledVectorDbSave}>  Save <FiCheckCircle /></Button>
+                                        <Button buttonType="submit" className="icon-button" disabled={disabledVectorDbSave}>  Save & Continue <FiCheckCircle /></Button>
                                     </div>
                                 </div>
                             </div>
@@ -630,11 +651,12 @@ const BotConfiguration = () => {
                             <div className={style.VectorContainer}>
                                 <div className={style.VectorContent}>
                                     <img src={VectorEmpty} alt='vectorempty' />
-                                    <p>Chroma DB is the currently selected vector database. Do you want to proceed with this choice, or would you like to change the vector database?</p>
+                                    <span>
+                                    <p style={{display:"flex"}}><span><img src={cromaDbIcon}/></span>Chroma DB is the currently selected vector database. Do you want to proceed with this choice, or would you like to change the vector database?</p>
+                                    </span>
                                     <div className={style.VectorControls}>
-                                        <Button variant='secondary' className="icon-button" onClick={() => { onClickCancel() }}> <FaArrowLeft /> Back</Button>
-                                        <Button buttonType="submit" className="icon-button" onClick={() => setActiveTab("capabalities")} > Continue <FaRegArrowAltCircleRight /></Button>
-
+                                        <Button variant='secondary' className="icon-button" onClick={() => { onClickCancel() }}>Change <img src={pencilIcon}/> </Button>
+                                        <Button buttonType="submit" className="icon-button" onClick={() => setActiveTab("capabalities")} > Continue with Default <FaRegArrowAltCircleRight /></Button>
                                     </div>
                                 </div>
                             </div>
