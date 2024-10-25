@@ -4,7 +4,7 @@ import style from './Select.module.css';
 
 
 
-const Select = ({label, placeholder, options, value, hasError = false, errorMessage = "", onChange, props}) => {
+const Select = ({label, disabled = false , placeholder, options, value, hasError = false, errorMessage = "", onChange, props}) => {
     const [selectedOption, setSelectedOption] = useState(null);
 
     const handleChange = (option) => {
@@ -76,6 +76,7 @@ const Select = ({label, placeholder, options, value, hasError = false, errorMess
                 placeholder={placeholder}
                 styles={customStyles}
                 {...props}
+                isDisabled={disabled}
             />
              {errorMessage !== "" && <span className={style.errorMessage}>{errorMessage}</span>}
         </div>

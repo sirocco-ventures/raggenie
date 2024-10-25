@@ -68,18 +68,16 @@ export const testVectorDb = (data) => {
     return PostService(`${API_URL}/vectordb/test_credentials`, data)
 }
 
-export const saveVectorDb = (configID,data) => {
+export const saveVectorDb = (configID, data) => {
+
+    
     let apiURL = "/vectordb/create"
 
-    if(configID){
-        apiURL = `/api/v1/vectordb/${configID}`
-    }
+    // if(configID){
+    //     apiURL = `/api/v1/vectordb/${configID}`
+    // }
 
-    return PostService(`${API_URL}${apiURL}`, {
-            "vectordb": "string",
-            "vectordb_config": {},
-            "config_id": configID,
-    })
+    return PostService(`${API_URL}${apiURL}`, data)
 }
 
 export const deleteVectorDb = () => {
