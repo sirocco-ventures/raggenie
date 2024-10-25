@@ -19,7 +19,7 @@ import { v4  as uuid4} from "uuid"
 import Capability from './Capability/Capability';
 import Modal from 'src/components/Modal/Modal';
 import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src/services/Capability';
-import { getBotConfiguration, getLLMProviders, getVectorFields, saveBotConfiguration, saveBotInferene, testInference, testVectorDb } from 'src/services/BotConfifuration';
+import { getBotConfiguration, getEmbeddings, getLLMProviders, getVectorFields, saveBotConfiguration, saveBotInferene, saveVectorDb, testInference, testVectorDb } from 'src/services/BotConfifuration';
 import { useNavigate } from 'react-router-dom';
 import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
 import singlestore from "./assets/SingleStore.svg"
@@ -49,7 +49,8 @@ const BotConfiguration = () => {
 
     const [selectedProvider, setSelectedProvider] = useState()
 
-    const [selectedVectordb, setSelectedVectordb] = useState()
+    
+
 
     const [capabalities, setCapabalities] = useState([])
 
@@ -68,7 +69,11 @@ const BotConfiguration = () => {
     const [showVectorDbForm,setshowVectorDbForm] = useState(false)
 
     const [vectorDB, setVectorDB] = useState([]);
-      
+    const [selectedVectordb, setSelectedVectordb] = useState()
+    const [embeddings,setEmbeddings] = useState([])
+    const [selectedEmbedding, setSelectedEmbedding] = useState()
+    const [embeddingData,setEmbeddingData] = useState()
+
     const { register: configRegister, setValue: configSetValue, handleSubmit : configHandleSubmit, formState: configFormState, setError: configSetError, clearErrors: configClearErrors, watch: configWatch } = useForm({mode : "all"})
     const { errors: configFormError, } = configFormState
 
@@ -156,7 +161,7 @@ const BotConfiguration = () => {
             vectorDbs.map((item) => {          
                 vectorDbTempList.push({
                     label: item.name,
-                    value: item.name,
+                    value: item.key,
                     config:item.config,
                 });
             });
@@ -164,25 +169,52 @@ const BotConfiguration = () => {
         });
 
     };
+
+    const getAllEmbeddings = () => {
+        getEmbeddings().then(response => {
+            const embeddings = response.data.data.embeddings;
+            setEmbeddingData(embeddings)
+        });
+    };
     
-    const onTestVectorDb = () =>{
-        alert("testing-vector-db");
+    
+    const onTestVectorDb = () => { 
+        console.log(selectedEmbedding);
+        console.log({selectedVectordb});
         
-        vectorDbTrigger().then((result)=>{
-            console.log(result);
-            if(result){
+        vectorDbTrigger().then((result) => {
+            if (result) {
+                // Create the embedding configuration object
+                let embeddingConfig = {
+                    "provider": selectedEmbedding?.value,
+                    "params": {},
+                    "key": selectedVectordb?.value.toLowerCase(),
+                };
+    
+                // Conditionally add "model_name" if models exist
+                if (selectedEmbedding?.config[0]?.models && selectedEmbedding.config[0].models.length > 0) {
+                    embeddingConfig.params.model_name = selectedEmbedding.config[0].models;
+                }
+
+                        if (selectedEmbedding?.config[0]?.config && selectedEmbedding.config[0].config.length > 0) {
+                    embeddingConfig.params.api_key = selectedEmbedding.config[0].config[0];
+                }
+    
                 testVectorDb({
-                    "key": selectedVectordb.value.toLowerCase(),
-                    "path" : selectedVectordb.value === "ChromaDB" ? vectorDbGetValues("path") : selectedVectordb.value === "MongoDB" ? vectorDbGetValues("uri") : null
-                }).then(()=>{
-                    toast.success("Vectordb test successful")
+                    "vectordb_config": {
+                        "key": selectedVectordb?.value.toLowerCase(),
+                        [selectedVectordb.config[0].slug] : selectedVectordb?.value === "chroma" ? vectorDbGetValues("path") : selectedVectordb?.value === "mongodb" ? vectorDbGetValues("uri") : null
+                    },
+                    // "embedding_config": embeddingConfig
+                }).then(() => {
+                    toast.success("Vectordb test successful");
                     setShowNotificationPanel(false);
-                    setDisabledVectorDbSave(false)
-                })
+                    setDisabledVectorDbSave(false);
+                });
             }
-        })
-        
-    }
+        });
+    };
+    
     
 
     const onTestInference = ()=>{
@@ -359,15 +391,22 @@ const BotConfiguration = () => {
     }
 
     const loadDbBasedForm = (configVectorDb) => {
-
         return (
             <>
-                <Select />
                 <GenerateConfigs
                     register={vectorDbRegister}
                     errors={vectorDbFormError}
                     configs={configVectorDb}
                 />
+                {/* <Controller
+                    control={vectorDbController}
+                    name='embeddingsProvider'
+                    render={() => (
+                        <Select defaultSelect={true} label={"Select Embedding"} placeholder={embeddings[0]?.label} options={embeddings} value={selectedEmbedding} onChange={handleEmbeddingChange} />
+                    )}
+                />
+
+                {configFormError["embeddingsProvider"]?.message && <span style={{ color: "#FF7F6D" }}>{configFormError["embeddingsProvider"]?.message}</span>}              */}
             </>
         )
 
@@ -377,15 +416,72 @@ const BotConfiguration = () => {
         setshowVectorDbForm(!showVectorDbForm)
     
     }
-
+//on changing vector db select the
     const handleDatabaseChange = (selectedDb) => {
-        setSelectedVectordb(selectedDb); 
+        setSelectedVectordb(selectedDb);
+    
+        if (selectedDb) {
+            let embeddingsTempList = [];
+            
+            embeddingData.map((item) => {
+                if (selectedDb.value === item.vector_dbs[0]) {
+                    // If a match is found, add the item to the list
+                    embeddingsTempList.push({
+                        label: (
+                            <div style={{ display: "flex", alignItems: "center" }}>
+                                <img src={`${BACKEND_SERVER_URL}`+item.icon} alt={item.name} style={{ marginRight: '8px' }} />
+                                {item.provider}
+                            </div>
+                        ),
+                        value: item.provider,
+                        config: item.config,
+                    });
+                }
+            });
+    
+            // Check if no matches were found and set a default provider
+            if (embeddingsTempList.length === 0) {
+                embeddingsTempList.push({
+                    label: (
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            {/* <img src="/path-to-default-icon.svg" alt="defaultImg" style={{ marginRight: '8px' }} /> */}
+                            default
+                        </div>
+                    ),
+                    value: "default",
+                    config: [],
+                });
+                console.log("No match found, setting default provider");
+            }    
+            setEmbeddings(embeddingsTempList);
+        }
     };
+    
 
-    const vectorDbSave = (data) => {
+    const handleEmbeddingChange = (selectEmbedding) => {
+        setSelectedEmbedding(selectEmbedding)        
+    }
 
     
-        console.log("Filtered Data:", data);
+
+    const vectorDbSave = () => {
+        
+        // console.log(data);
+        saveData={
+            "vectordb": selectedVectordb.value,
+            "vectordb_config": {},
+            "config_id": configID,
+        }
+        saveVectorDb(currentConfigID,data).then(() => {
+            toast.success("Vectordb saved successfully")
+            setShowNotificationPanel(false);
+            setActiveTab('capabalities')
+        })
+        .catch(() => {
+            setShowNotificationPanel(true);
+            setNotificationMessage(err.data?.error)
+            toast.error("Failed to save inference")
+        });
     };
     
 
@@ -393,6 +489,7 @@ const BotConfiguration = () => {
     useEffect(() => {
         getLLMModels();
         getVectorDbsFields()
+        getAllEmbeddings()
     }, [])
 
 
@@ -480,7 +577,7 @@ const BotConfiguration = () => {
                                     <TitleDescription title="Vector Database details" description="Provide your vector database connection details to enable efficient similarity searches and optimize your application's performance." />
 
                                     <Controller
-                                        control={inferenceController}
+                                        control={vectorDbController}
                                         name='vectorDbProvider'
                                         render={() => (
                                             <Select label={"Select Vector Database"} placeholder={vectorDB[0]?.label} options={vectorDB} value={selectedVectordb} onChange={handleDatabaseChange} />

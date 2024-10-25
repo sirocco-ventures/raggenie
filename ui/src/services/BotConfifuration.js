@@ -56,37 +56,32 @@ export const saveBotInferene = (configID, inferenceID, saveData = {})=>{
 }
 
 
-export const getVectorFields=()=>{
+export const getVectorFields = () => {
     return GetService(API_URL + "/vectordb/list/all")
 }
 
-export const testVectorDb = (data) => {
-    console.log("vectorDb",data);
-    
-    return PostService(`${API_URL}/vectordb/test_credentials`, {
-        "vectordb_config": {
-            "key": "chroma",
-            "path": "./chroma"
-        },
-        "embedding_config": {
-            "provider": "default",
-            "params": {},
-            "key": "chroma"
-        }
-    })
+export const getEmbeddings = () => {
+    return GetService(API_URL + "/vectordb/embedding/all")
 }
 
-export const saveVectorDb = (vectorDbsID)=>{
+export const testVectorDb = (data) => {
+    return PostService(`${API_URL}/vectordb/test_credentials`, data)
+}
+
+export const saveVectorDb = (configID,data) => {
     let apiURL = "/vectordb/create"
 
-    if(vectorDbsID){
-        apiURL = `/api/v1/vectordb/${vectorDbsID}`
+    if(configID){
+        apiURL = `/api/v1/vectordb/${configID}`
     }
 
     return PostService(`${API_URL}${apiURL}`, {
             "vectordb": "string",
             "vectordb_config": {},
-            "config_id": 0,
-            "embedding_config": {}
+            "config_id": configID,
     })
+}
+
+export const deleteVectorDb = () => {
+
 }
