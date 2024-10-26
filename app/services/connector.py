@@ -391,12 +391,12 @@ def list_configurations(db: Session):
             endpoint=inference_mapping.inference.endpoint,
             config_id=inference_mapping.config_id
         ) for inference_mapping in config.inference_mapping],
-        vectordb=[VectorDBResponse(
-            id= vector_db.vector_db.id,
-            vectordb=vector_db.vector_db.vectordb,
-            vectordb_config=vector_db.vector_db.vectordb_config,
-            config_id=config.id,
-        ) for vector_db in config.vectordb_config_mapping]
+        # vectordb=[VectorDBResponse(
+        #     id= vector_db.vector_db.id,
+        #     vectordb=vector_db.vector_db.vectordb,
+        #     vectordb_config=vector_db.vector_db.vectordb_config,
+        #     config_id=config.id,
+        # ) for vector_db in config.vectordb_config_mapping if config.vectordb_config_mapping]
     ) for config in configurations]
 
     return config_list, None
