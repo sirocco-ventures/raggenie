@@ -41,7 +41,9 @@ const BotConfiguration = () => {
     const [activeInferencepiontTab, setActiveInferencepiontTab] = useState(true)
     const [activeTab, setActiveTab] = useState("configuration")
 
-    const [disabledVectorDbSave, setDisabledVectorDbSave] = useState(true)
+    const [disabledVectorDbTest, setDisabledVectorDbTest] = useState(true);
+    const [disabledVectorDbSave, setDisabledVectorDbSave] = useState(true);
+
 
 
     const [selectedProvider, setSelectedProvider] = useState()
@@ -136,8 +138,8 @@ const BotConfiguration = () => {
                     let vectordb = configs[0].vectordb[0];
                     console.log(vectordb);
 
-                    // vectorDbSetValue("vectorDbProvider",vectordb.vectordb)
-                    // vectorDbSetValue("path",vectordb.vectordb_config.path)
+                    vectorDbSetValue("vectorDbProvider",vectordb.vectordb)
+                    vectorDbSetValue("path",vectordb.vectordb_config.path)
                     
                     // inferenceSetValue("inferenceName", inference.name)
                     // inferenceSetValue("inferenceModelName", inference.model)
@@ -194,7 +196,7 @@ const BotConfiguration = () => {
         });
     };
 
-
+//function for testing the vector db
     const onTestVectorDb = () => {
         vectorDbTrigger().then((result) => {
             if (result) {
@@ -224,15 +226,15 @@ const BotConfiguration = () => {
                     toast.success("Vectordb test successful");
                     setShowNotificationPanel(false);
                     setDisabledVectorDbSave(false);
-                    setDisableVectorDbDropdown(true)
+                    setDisabledVectorDbTest(true); 
                 });
             }
         });
     };
 
 
-
-    const onTestInference = () => {
+//function for testing the inference
+const onTestInference = () => {
         inferenceTrigger().then((result) => {
             if (result) {
                 testInference(currentConfigID, {
@@ -255,8 +257,7 @@ const BotConfiguration = () => {
         })
     }
 
-
-    const onInferanceSave = (data) => {
+const onInferanceSave = (data) => {
         configClearErrors("inferenceProvider")
         if (selectedProvider == undefined) {
             configSetError("inferenceProvider", { type: "required", message: "This field is required" });
@@ -412,6 +413,7 @@ const BotConfiguration = () => {
                     register={vectorDbRegister}
                     errors={vectorDbFormError}
                     configs={configVectorDb}
+                    restForm={()=>{ setDisabledVectorDbTest(false); setDisabledVectorDbSave(true);}}
                 />
                 {/* <Controller
                     control={vectorDbController}
@@ -433,6 +435,8 @@ const BotConfiguration = () => {
     }
     //on changing vector db select the
     const handleDatabaseChange = (selectedDb) => {
+        setDisabledVectorDbTest(false);
+        setDisabledVectorDbSave(true);
         setSelectedVectordb(selectedDb);
 
         if (selectedDb) {
@@ -480,6 +484,8 @@ const BotConfiguration = () => {
 
 
     const vectorDbSave = (data) => {
+        console.log("Save");
+        
         console.log({ data });
 
         let saveData = {}
@@ -616,22 +622,24 @@ const BotConfiguration = () => {
                                     <Controller
                                         control={vectorDbController}
                                         name="vectorDbProvider"
-                                        defaultValue={vectorDB[0]}
-                                        render={({ field: { selectedVectordb } }) => (
+                                        defaultValue={"g"}
+                                        render={({ field: { onChange, value }}) => (
                                             <Select
+                                                required
                                                 label="Select Vector Database"
                                                 placeholder="Choose a database..."
                                                 options={vectorDB}
-                                                value={selectedVectordb}
+                                                value={value} // Bind to the Controller's value
                                                 onChange={(selectedOption) => {
-                                                    handleDatabaseChange(selectedOption);
+                                                    handleDatabaseChange(selectedOption); 
+                                                    onChange(selectedOption); 
                                                 }}
                                                 disabled={disableVectorDbDropdown}
+                                                // hasError={error["vectorDbProvider"]?.message ? true : false}
                                             />
                                         )}
                                     />
-
-                                    {configFormError["vectorDbProvider"]?.message && <span style={{ color: "#FF7F6D" }}>{configFormError["vectorDbProvider"]?.message}</span>}
+           {/* {configFormError["vectorDbProvider"]?.message && <span style={{ color: "#FF7F6D" }}>{configFormError["vectorDbProvider"]?.message}</span>} */}
                                     {selectedVectordb?.config && loadDbBasedForm(selectedVectordb.config)}
 
                                 </div>
@@ -640,7 +648,7 @@ const BotConfiguration = () => {
                                         <Button type="transparent" className="icon-button" onClick={() => setActiveTab("inferenceendpoint")} > <FaArrowLeft /> Back</Button>
                                     </div>
                                     <div>
-                                        {disabledVectorDbSave && <Button onClick={onTestVectorDb} style={{ marginRight: "10px" }}> Test <LiaToolsSolid />  </Button>}
+                                        {disabledVectorDbSave && <Button onClick={onTestVectorDb} disabled={disabledVectorDbTest} style={{ marginRight: "10px" }}> Test <LiaToolsSolid />  </Button>}
                                         <Button buttonType="submit" className="icon-button" disabled={disabledVectorDbSave}>  Save & Continue <FiCheckCircle /></Button>
                                     </div>
                                 </div>
