@@ -227,6 +227,10 @@ const BotConfiguration = () => {
                     setShowNotificationPanel(false);
                     setDisabledVectorDbSave(false);
                     setDisabledVectorDbTest(true); 
+                }).catch(err => {
+                    toast.error("Inference endpoint verification failed")
+                    setShowNotificationPanel(true);
+                    setNotificationMessage(err.data?.error ?? "Vector database endpoint verification failed")
                 });
             }
         });
@@ -629,7 +633,7 @@ const onInferanceSave = (data) => {
                                                 label="Select Vector Database"
                                                 placeholder="Choose a database..."
                                                 options={vectorDB}
-                                                value={value} // Bind to the Controller's value
+                                                value={value}   
                                                 onChange={(selectedOption) => {
                                                     handleDatabaseChange(selectedOption); 
                                                     onChange(selectedOption); 
@@ -642,6 +646,9 @@ const onInferanceSave = (data) => {
            {/* {configFormError["vectorDbProvider"]?.message && <span style={{ color: "#FF7F6D" }}>{configFormError["vectorDbProvider"]?.message}</span>} */}
                                     {selectedVectordb?.config && loadDbBasedForm(selectedVectordb.config)}
 
+                                </div>
+                                <div>
+                                <NotificationPanel message={notificationMessage} containerStyle={{marginBottom:"30px"}}/>
                                 </div>
                                 <div className={`${style.SaveVectorContainer} ${style.VectorSaveContainer}`}>
                                     <div style={{ flexGrow: 1 }}>
