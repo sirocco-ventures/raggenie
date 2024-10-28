@@ -40,7 +40,7 @@ const PieChart = ({ title = "Pie Chart", data = [] , dataKey= "value", labelKey=
                   dataKey={dataKey}
                   stroke=""
                 >
-                  {data.map((entry, index) => (
+                  {(data || []).map((entry, index) => (
                     <Cell key={entry[labelKey]} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
