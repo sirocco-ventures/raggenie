@@ -648,7 +648,7 @@ const onInferanceSave = (data) => {
 
                                 </div>
                                 <div>
-                                <NotificationPanel message={notificationMessage} containerStyle={{marginBottom:"30px"}}/>
+                             {showNotificationPanel && <NotificationPanel message={notificationMessage} containerStyle={{marginBottom:"30px"}}/>}   
                                 </div>
                                 <div className={`${style.SaveVectorContainer} ${style.VectorSaveContainer}`}>
                                     <div style={{ flexGrow: 1 }}>
