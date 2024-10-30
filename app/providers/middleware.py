@@ -31,4 +31,4 @@ async def verify_token(request: Request) -> Optional[str]:
 
         return payload["sub"]
     else:
-        return None
+        return configs.default_username
