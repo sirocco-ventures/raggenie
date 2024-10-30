@@ -16,7 +16,7 @@ __connection_args__ = OrderedDict(
     db_name= ConnectionArgument(
         type = 1,
         generic_name= 'Database name',
-        description = 'Databasename',
+        description = 'Database name',
         order= 5,
         required = True,
         value = None,
@@ -44,7 +44,7 @@ __connection_args__ = OrderedDict(
         type= 1,
         generic_name= 'Database host',
         description= 'Database hostname',
-        order= 4,
+        order= 1,
         required = True,
         value = None,
         slug = "db_host"
@@ -115,7 +115,6 @@ __prompt__ = Prompt(**{
             1. Deliberately go through schema, context, rules deliberately
             2. Understand the question and check whether it's doable with the given context
             3. Do only the task asked, Don't hallucinate and overdo the task
-            for example user asked 'how all my applications are performing' you should return only based on open incident count not cost
             4. Strictly return all the fields in the schema during listing operations
             5. Strictly return at least 1 text fields and an id field during aggregation/group by operations
             6. Generate a query to solve the problem using the schema, context, and strictly follow the rules
@@ -128,14 +127,15 @@ __prompt__ = Prompt(**{
                 "schema": "used schema details separated by comma",
                 "confidence" : "confidence in 100",
                 "visualisation": {
-                    "chart": "chart that can be shown for the data or none",
+                    "type": "chart type (bar chart, line chart, pie chart) or 'table' for tabular format; 'none' if operation_kind is 'list'",
                     "x-axis": ["fields that can be used as x axis"],
                     "y-axis": ["fields that can be used as y axis"],
                     "title": "layout title name"
                 },
                 "general_message": "a general message describing the answers like 'here is your list of incidents' or 'look what i found'",
-                "main_entity" : "main entity  for the query must be either resource|event|incident|service|platform|none, in case of aggregation choose main entity based on group by operation wisely",
-                "next_questions" : [Produce 3 related questions closely aligned with the current question. While creating questions strictly prohibit questions which tells to specify for a specific resource or event or incident or service or platform and ensure they maintain contextual relevance.]
+                "main_entity" : "main entity  for the query",
+                "next_questions" : [Produce 3 related questions(maximum 8 words) aligned with the current question, db context and which can be answered with only two table . While creating questions strictly prohibit questions which tells to specify for a specific item]
+
             }
             """
         },
@@ -162,7 +162,6 @@ __prompt__ = Prompt(**{
             2. Understand the question and check whether it's doable with the given context
             3. Use survey answers if available and include it in query for filtering values
             4. Do only the task asked, Don't hallucinate and overdo the task
-            for example user asked 'how all my applications are performing' you should return only based on open incident count not cost
             5. Strictly return all the fields in the schema during listing operations
             6. Strictly return at least 1 text fields and an id field during aggregation/group by operations
             7. Generate a query to solve the problem using the schema, context and the rules and based on the previous query try to rectify the query error
@@ -173,7 +172,7 @@ __prompt__ = Prompt(**{
                 "query" : "postgresql query",
                 "operation_kind" : "aggregation|list",
                 "visualisation": {
-                    "chart": "chart that can be shown for the data",
+                    "type": "chart type (bar chart, line chart, pie chart) or 'table' for tabular format; 'none' if operation_kind is 'list'",
                     "value_field": "fields in which values are stored",
                     "x-axis": "field that can be used as x axis",
                     "y-axis": "field that can be used as y axis",
@@ -182,8 +181,8 @@ __prompt__ = Prompt(**{
                 "schema": "used schema details separated by comma",
                 "confidence" : "confidence in 100",
                 "general_message": "a general message describing the answers like 'here is your list of incidents' or 'look what i found'",
-                "main_entity" : "main entity  for the query must be either resource|event|incident|service|platform|none, in case of aggregation choose main entity based on group by operation wisely",
-                "next_questions" : [Produce 3 related questions closely aligned with the current question. While creating questions strictly prohibit questions which tells to specify for a specific resource or event or incident or service or platform and ensure they maintain contextual relevance.]
+                "main_entity" : "main entity  for the query",
+                "next_questions" : [Produce 3 related questions(maximum 8 words) aligned with the current question, db context and which can be answered with only two table . While creating questions strictly prohibit questions which tells to specify for a specific item]
             }
             """
         }

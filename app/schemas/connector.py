@@ -66,10 +66,6 @@ class ConfigurationUpdate(BaseModel):
     capabilities: Optional[List[int]]=None
 
 
-    class Config:
-        from_attributes = True
-
-
 class InferenceBase(BaseModel):
     name:str
     apikey:str
@@ -94,9 +90,6 @@ class ConfigurationResponse(ConfigurationBase):
     capabilities: List[CapabilitiesBase]
     inference: Optional[List[InferenceResponse]]=None
 
-    class Config:
-        from_attributes = True
-
 class Actions(BaseModel):
     name: str
     description: Optional[str] = None
@@ -119,3 +112,9 @@ class ActionsUpdate(BaseModel):
     table : Optional[str] = None
     connector_id: Optional[int] = None
     body : Optional[Dict] = None
+
+class LLMProviderBase(BaseModel):
+    key:str
+    api_key:str
+    kind:Optional[str]=None
+    unique_name: Optional[str]=None

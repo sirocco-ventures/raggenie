@@ -4,6 +4,7 @@ from typing import Any
 from loguru import logger
 from app.base.loader_metadata_mixin import LoaderMetadataMixin
 import json
+import requests
 
 class TogethorModelLoader(ModelLoader, LoaderMetadataMixin):
 
@@ -37,13 +38,13 @@ class TogethorModelLoader(ModelLoader, LoaderMetadataMixin):
     def get_response(self, message) -> dict:
         if "choices" in message and len(message["choices"]) > 0:
             choice = message["choices"][0]
-            if "message" in choice: 
-                return {"content" : choice["message"]["content"],"error" : None}
+            if "message" in choice:
+                return {"content" : choice["message"]["content"], "error" : None}
         elif "error" in message:
             error = message["error"]
             if "message" in error:
                 return {"content" : "", "error" : error["message"]}
-        return {"content" : "","error" : None}
+        return {"content" : "", "error" : "Empty Response from LLM Provider"}
 
     def get_response_metadata(self, prompt, response, out) -> dict:
         response_metadata = {}
@@ -90,3 +91,24 @@ class TogethorModelLoader(ModelLoader, LoaderMetadataMixin):
 
         logger.info(f"messages:{messages}")
         return messages
+
+    def get_models(self):
+        """
+        Retrieve models from the TogetherAI API.
+        Returns:
+            List of TogetherAI model names or an error message.
+        """
+        url = "https://api.together.xyz/v1/models"
+        headers = {
+            "Authorization": f"Bearer {self.model_config.get('api_key', '')}",
+        }
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                data = response.json()
+                models = [{"display_name": model["display_name"], "id": model["id"]} for model in data]
+                return models, False
+            else:
+                return f"Failed to retrieve TogetherAI models: {response.status_code} {response.text}", True
+        except requests.RequestException as e:
+            return f"Error occurred: {str(e)}", True

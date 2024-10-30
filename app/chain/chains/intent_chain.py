@@ -38,7 +38,7 @@ class IntentChain:
 
         self.vector_store = store
         self.context_store = context_store
-        self.data_sources = datasource if datasource is not None else []
+        self.data_sources = datasource if datasource is not None else {}
 
         self.common_context = {
             "chain_retries" : 0,
@@ -47,7 +47,7 @@ class IntentChain:
         self.configs = model_configs
         self.input_formatter = InputFormatter()
         self.context_retriver = ContextRetreiver(self.common_context, context_store)
-        self.intent_extractor = IntentExtracter(self.common_context, model_configs)
+        self.intent_extractor = IntentExtracter(self.common_context, model_configs, self.data_sources)
         self.post_processor = PostProcessor()
         self.router = Router(self.common_context, self.post_processor, intent_chain, general_chain, capability_chain, metadata_chain)
 

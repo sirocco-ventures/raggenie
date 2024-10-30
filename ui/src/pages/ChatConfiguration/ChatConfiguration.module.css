@@ -69,3 +69,37 @@
     justify-items: center;
     gap: 8px;
 }
+
+
+
+.ToastContainerClass {
+    min-width: 640px;;
+    position: absolute;
+    right: 330px;
+    border-radius: 4px;
+    border: 1px solid var(--Light-mode-Primary200, #D9D8FF);
+    background: var(--Light-mode-Primary100, #F0F0FF);
+}
+
+.BotRestartToast {
+    display: flex;
+    align-items: center;
+    justify-items: center;
+}
+
+.BotRestartMessage {
+   flex-grow: 1;
+    color: #32324D;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    gap: 10px;
+}
+.CustomBotCloseButton{
+    background: transparent;
+    outline: none;border: none;
+}

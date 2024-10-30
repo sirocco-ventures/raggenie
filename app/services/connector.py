@@ -4,10 +4,14 @@ import app.repository.provider as config_repo
 import app.schemas.connector as schemas
 from app.services import provider as provider_svc
 import requests
+import os
+import uuid
 from loguru import logger
 from app.services.connector_details import get_plugin_metadata
 from fastapi import Request
 from app.providers.data_preperation import SourceDocuments
+from app.loaders.base_loader import BaseLoader
+
 
 
 
@@ -129,6 +133,57 @@ def download_and_save_pdf(connector_name: str, url: str) -> str:
         file.write(response.content)
     return file_path
 
+async def fileValidation(file):
+
+    """
+    Validates the uploaded file for format and size constraints.
+
+    Args:
+        file (UploadFile): The uploaded document file.
+
+    Returns:
+        Tuple[str, int]: An error message if validation fails, or the size of the file if it passes.
+    """
+
+    if not file.filename.endswith((".pdf", ".txt", ".yaml", ".docx")):
+        return "Invalid file format", None
+
+    content = await file.read()
+    file_size = len(content)
+
+    await file.seek(0)
+
+    max_file_size_bytes = 10 * 1024 * 1024
+    if file_size > max_file_size_bytes:
+        return "File size exceeds the limit", None
+
+    return None, file_size
+
+
+async def upload_pdf(file):
+    """
+    Uploads a document file to the specified connector.
+
+    Args:
+        file (UploadFile): The uploaded document file.
+
+    Returns:
+        Tuple: Connector response and error message (if any).
+    """
+
+    uuid_str = str(uuid.uuid4())
+    file_path = f"./assets/datasource/documents/{uuid_str}/{file.filename}"
+
+    try:
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, 'wb') as f:
+            f.write(await file.read())
+
+        return {"file_path": file_path,"file_id":uuid_str}, None
+    except Exception as e:
+        return None, f"Failed to write file: {str(e)}"
+
+
 def create_connector(connector: schemas.ConnectorBase, db: Session):
 
     """
@@ -161,6 +216,8 @@ def create_connector(connector: schemas.ConnectorBase, db: Session):
                 return None, "Failed to create connector"
         case 1:
             logger.info("creating plugin with category remote documents")
+        case 4:
+            logger.info("creating plugin with category offline documents")
         case _:
             return None, "Invalid Connector Type."
 
@@ -565,6 +622,8 @@ def delete_capability(cap_id: int, db: Session):
 
 
 def update_datasource_documentations(db: Session, vector_store, datasources, id_name_mappings):
+        logger.info("Updating datasource documentations")
+        active_datsources = {}
         for key, datasource in datasources.items():
             connector_details = id_name_mappings.get(key, {})
             if "id" not in connector_details:
@@ -575,11 +634,13 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
             logger.info("mappings connector_details, id:{}".format(connector_details["id"]))
 
             datasource.connect()
-            success = datasource.healthcheck()
+            success, err = datasource.healthcheck()
             if not success:
-                logger.warning("Datasource health failed")
+                logger.error(f"Datasource health failed for {key}, cause: {err}")
+                logger.warning(f"skipping datasource initialization for {key}")
                 continue
 
+            active_datsources[key] = datasource
             logger.info("Pushing plugin metadata to vector store")
             sd = SourceDocuments([], [], [])
             queries = []
@@ -592,11 +653,15 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
                     schema_details, metadata = datasource.fetch_schema_details()
                     sd = SourceDocuments(schema_details, schema_config, [])
                     queries = get_all_connector_samples(connector_details.get("id"), db)
+                case 4:
+                    documentations = datasource.fetch_data()
+                    sd = SourceDocuments([], [], documentations)
 
             chunked_document, chunked_schema = sd.get_source_documents()
             vector_store.prepare_data(key, chunked_document,chunked_schema, queries)
 
 
+        return active_datsources, None
 
 def get_inference_and_plugin_configurations(db: Session):
 
@@ -774,9 +839,28 @@ def formatting_datasource(connector, provider):
             'params': connector.connector_config,
             'documentations': [{'type': 'text', 'value': connector.connector_docs}]
         }
+    elif provider.category_id == 4:
+        return {
+            'type': provider.key,
+            'params': connector.connector_config
+        }
     else:
         return None
 
+def get_llm_provider_models(llm_provider: schemas.LLMProviderBase):
+    """
+    Retrieves the models available for a given LLM provider.
+    Args:
+        llm_provider (schemas.LLMProviderBase): The LLM provider object.
+    Returns:
+        Tuple: List of models and error message (if any).
+    """
+    if llm_provider.key:
+        llm_provider.kind = llm_provider.key
+        llm_provider.unique_name = llm_provider.key
+        return BaseLoader(model_configs=[dict(llm_provider)]).load_model(unique_name=llm_provider.key).get_models()
+    else:
+        return None, "Missing LLM provider key"
 
 def get_inference(inference_id: int, db: Session):
 

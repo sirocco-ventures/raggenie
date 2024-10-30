@@ -7,6 +7,7 @@ from app.utils.database import get_db
 import app.services.connector as svc
 import app.services.provider as provider_svc
 from starlette.requests import Request
+from fastapi import APIRouter, UploadFile, File
 
 from app.chain.chains.capability_chain import CapabilityChain
 from app.chain.chains.metadata_chain import MetadataChain
@@ -17,6 +18,7 @@ from app.chain.chains.general_chain import GeneralChain
 import app.api.v1.commons as commons
 from loguru import logger
 from app.providers.config import configs
+from app.providers.middleware import verify_token
 
 
 router = APIRouter()
@@ -24,7 +26,7 @@ cap_router = APIRouter()
 inference_router = APIRouter()
 actions = APIRouter()
 
-@router.get("/list", response_model=resp_schemas.CommonResponse)
+@router.get("/list", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def list_connectors(db: Session = Depends(get_db), provider_category_id: Optional[int] = None ):
 
     """
@@ -56,7 +58,7 @@ def list_connectors(db: Session = Depends(get_db), provider_category_id: Optiona
         error=None
     )
 
-@router.get("/get/{connector_id}", response_model=resp_schemas.CommonResponse)
+@router.get("/get/{connector_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def get_connector(connector_id: int, db: Session = Depends(get_db)):
 
     """
@@ -86,7 +88,40 @@ def get_connector(connector_id: int, db: Session = Depends(get_db)):
         error=None
     )
 
-@router.post("/create", response_model=resp_schemas.CommonResponse)
+@router.post("/upload/datasource", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+async def upload_document_datsource(
+    file: UploadFile = File(...)
+):
+
+    """
+    Uploads an document data source file to the server.
+
+    Args:
+        file (UploadFile): The uploaded document file. Accepted formats are .pdf, .txt, .yaml, and .docx.
+
+    Returns:
+        CommonResponse: A response containing the file upload status, file details, or an error message.
+    """
+
+    error, size = await svc.fileValidation(file)
+
+    if error:
+        return commons.is_error_response("Invalid File", error, {"file_path": None})
+
+    result, error = await svc.upload_pdf(file)
+
+    if error:
+        return commons.is_error_response("document not uploaded", error, {"file_path": None})
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=201,
+        data={"file": {"file_path": result["file_path"],"file_name": file.filename, "file_size":f"{round(size / (1024 * 1024), 2)}MB", "file_id": result["file_id"]}},
+        message="File Uploaded Success",
+        error=None
+    )
+
+@router.post("/create", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def create_connector(connector: schemas.ConnectorBase, db: Session = Depends(get_db)):
 
     """
@@ -112,7 +147,7 @@ def create_connector(connector: schemas.ConnectorBase, db: Session = Depends(get
         error=None
     )
 
-@router.post("/update/{connector_id}", response_model=resp_schemas.CommonResponse)
+@router.post("/update/{connector_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def update_connector(connector_id: int, connector: schemas.ConnectorUpdate, db: Session = Depends(get_db)):
 
     """
@@ -143,7 +178,7 @@ def update_connector(connector_id: int, connector: schemas.ConnectorUpdate, db: 
         error=None
     )
 
-@router.delete("/delete/{connector_id}", response_model=resp_schemas.CommonResponse)
+@router.delete("/delete/{connector_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_connector(connector_id: int, db: Session = Depends(get_db)):
 
     """
@@ -173,7 +208,7 @@ def delete_connector(connector_id: int, db: Session = Depends(get_db)):
         error=None
     )
 
-@router.post("/schema/update/{connector_id}", response_model=resp_schemas.CommonResponse)
+@router.post("/schema/update/{connector_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def updateschemas(connector_id: int, connector: schemas.SchemaUpdate, db: Session = Depends(get_db)):
 
     """
@@ -206,7 +241,7 @@ def updateschemas(connector_id: int, connector: schemas.SchemaUpdate, db: Sessio
 
 
 
-@router.get("/configuration/list", response_model=resp_schemas.CommonResponse)
+@router.get("/configuration/list", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def list_configurations(db: Session = Depends(get_db)):
 
     """
@@ -221,7 +256,7 @@ def list_configurations(db: Session = Depends(get_db)):
 
     result, error = svc.list_configurations(db)
 
-    if error and not result:
+    if error:
         return commons.is_error_response("DB error", result, {"configurations": []})
 
     if not result:
@@ -235,7 +270,7 @@ def list_configurations(db: Session = Depends(get_db)):
         data={"configurations": result}
     )
 
-@router.post("/configuration/create", response_model=resp_schemas.CommonResponse)
+@router.post("/configuration/create", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def create_configuration(configuration: schemas.ConfigurationCreation, db: Session = Depends(get_db)):
 
     """
@@ -267,7 +302,7 @@ def create_configuration(configuration: schemas.ConfigurationCreation, db: Sessi
         data={"configuration": result}
     )
 
-@router.post("/configuration/update/{config_id}", response_model=resp_schemas.CommonResponse)
+@router.post("/configuration/update/{config_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def update_configuration(config_id: int, configuration: schemas.ConfigurationUpdate, db: Session = Depends(get_db)):
 
     """
@@ -303,7 +338,7 @@ def update_configuration(config_id: int, configuration: schemas.ConfigurationUpd
 
 
 
-@cap_router.post("/create", response_model=resp_schemas.CommonResponse)
+@cap_router.post("/create", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def create_capability(capability: schemas.CapabilitiesBase, db: Session = Depends(get_db)):
 
     """
@@ -331,7 +366,7 @@ def create_capability(capability: schemas.CapabilitiesBase, db: Session = Depend
         data={"capability": result}
     )
 
-@cap_router.get("/all", response_model=resp_schemas.CommonResponse)
+@cap_router.get("/all", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def get_all_capabilities(db: Session = Depends(get_db)):
 
     """
@@ -351,7 +386,7 @@ def get_all_capabilities(db: Session = Depends(get_db)):
 
 
     if not result:
-        return commons.is_none_reponse("Configuration Not Found", {"capabilities": []})
+        return commons.is_none_reponse("Capabilities Not Found", {"capabilities": []})
 
 
     return resp_schemas.CommonResponse(
@@ -363,7 +398,7 @@ def get_all_capabilities(db: Session = Depends(get_db)):
     )
 
 
-@cap_router.post("/update/{cap_id}", response_model=resp_schemas.CommonResponse)
+@cap_router.post("/update/{cap_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def update_capability(cap_id: int, capability: schemas.CapabilitiesUpdateBase, db: Session = Depends(get_db)):
 
     """
@@ -385,7 +420,7 @@ def update_capability(cap_id: int, capability: schemas.CapabilitiesUpdateBase, d
 
 
     if not result:
-        return commons.is_none_reponse("Configuration Not Found", {"capability": {}})
+        return commons.is_none_reponse("Capability Not Found", {"capability": {}})
 
 
     return resp_schemas.CommonResponse(
@@ -396,7 +431,7 @@ def update_capability(cap_id: int, capability: schemas.CapabilitiesUpdateBase, d
         data={"capability": result}
     )
 
-@cap_router.delete("/delete/{cap_id}", response_model=resp_schemas.CommonResponse)
+@cap_router.delete("/delete/{cap_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_capability(cap_id: int, db: Session = Depends(get_db)):
 
     """
@@ -417,7 +452,7 @@ def delete_capability(cap_id: int, db: Session = Depends(get_db)):
 
 
     if not result:
-        return commons.is_none_reponse("Configuration Not Found", {"capability": {}})
+        return commons.is_none_reponse("Capability Not Found", {"capability": {}})
 
 
     return resp_schemas.CommonResponse(
@@ -430,7 +465,7 @@ def delete_capability(cap_id: int, db: Session = Depends(get_db)):
 
 
 
-@router.post("/createyaml/{config_id}")
+@router.post("/createyaml/{config_id}", dependencies=[Depends(verify_token)])
 def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db)):
 
     """
@@ -486,8 +521,7 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     datasources = request.app.container.datasources()
 
     mappings = confyaml.get("mappings",{})
-    err = svc.update_datasource_documentations(db, vectore_store, datasources, mappings)
-
+    datasources, err = svc.update_datasource_documentations(db, vectore_store, datasources, mappings)
     if err:
         logger.error("Error updating")
 
@@ -506,8 +540,28 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
         "error":None
     }
 
+@inference_router.post("/get/models", response_model=resp_schemas.CommonResponse)
+def get_llm_provider_models(llm_provider: schemas.LLMProviderBase):
+    """
+    Retrieves the models associated with the specified LLM provider.
+    Args:
+        llm_provider (schemas.LLMProviderBase): The details of the LLM provider.
+        db (Session): The database session dependency.
+    Returns:
+        CommonResponse: A response containing the list of LLM provider models or an error message.
+    """
+    data, is_error = svc.get_llm_provider_models(llm_provider)
+    if is_error:
+        return commons.is_error_response("LLM Provider Models Not Found", data, {"provider_models": []})
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message="LLM Provider Models Found",
+        error=None,
+        data={"provider_models": [data]}
+    )
 
-@inference_router.get("/get/{inference_id}", response_model=resp_schemas.CommonResponse)
+@inference_router.get("/get/{inference_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def get_inference(inference_id: int, db: Session = Depends(get_db)):
 
     """
@@ -539,7 +593,7 @@ def get_inference(inference_id: int, db: Session = Depends(get_db)):
         data={"inference": result}
     )
 
-@inference_router.post("/create", response_model=resp_schemas.CommonResponse)
+@inference_router.post("/create", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def create_inference(inference: schemas.InferenceBase, db: Session = Depends(get_db)):
 
     """
@@ -570,7 +624,7 @@ def create_inference(inference: schemas.InferenceBase, db: Session = Depends(get
         data={"inference": result}
     )
 
-@inference_router.post("/update/{inference_id}", response_model=resp_schemas.CommonResponse)
+@inference_router.post("/update/{inference_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def update_inference(inference_id: int, inference: schemas.InferenceBaseUpdate, db: Session = Depends(get_db)):
 
     """
@@ -608,7 +662,7 @@ def update_inference(inference_id: int, inference: schemas.InferenceBaseUpdate, 
 
 
 
-@actions.get("/list", response_model=resp_schemas.CommonResponse)
+@actions.get("/list", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def list_actions(db: Session = Depends(get_db)):
 
     """
@@ -638,7 +692,7 @@ def list_actions(db: Session = Depends(get_db)):
         error=None
     )
 
-@actions.get("/get/{action_id}", response_model=resp_schemas.CommonResponse)
+@actions.get("/get/{action_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def get_action(action_id:int, db: Session = Depends(get_db)):
 
     """
@@ -669,7 +723,7 @@ def get_action(action_id:int, db: Session = Depends(get_db)):
         error=None
     )
 
-@actions.get("/{connector_id}/list", response_model=resp_schemas.CommonResponse)
+@actions.get("/{connector_id}/list", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def get_actions_by_connector(connector_id:int, db: Session = Depends(get_db)):
 
     """
@@ -700,7 +754,7 @@ def get_actions_by_connector(connector_id:int, db: Session = Depends(get_db)):
         error=None
     )
 
-@actions.post("/create", response_model=resp_schemas.CommonResponse)
+@actions.post("/create", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def create_action(action: schemas.Actions, db: Session = Depends(get_db)):
 
     """
@@ -727,7 +781,7 @@ def create_action(action: schemas.Actions, db: Session = Depends(get_db)):
         error=None
     )
 
-@actions.post("/update/{action_id}", response_model=resp_schemas.CommonResponse)
+@actions.post("/update/{action_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def update_action(action_id: int, action: schemas.ActionsUpdate, db: Session = Depends(get_db)):
 
     """
@@ -759,7 +813,7 @@ def update_action(action_id: int, action: schemas.ActionsUpdate, db: Session = D
         error=None
     )
 
-@actions.delete("/{action_id}", response_model=resp_schemas.CommonResponse)
+@actions.delete("/{action_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_action(action_id: int, db: Session = Depends(get_db)):
 
     """
