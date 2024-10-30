@@ -10,7 +10,7 @@ import { AuthLogoutService } from "src/services/Auth";
 import { toast } from "react-toastify";
 import { storeToken } from "src/store/authStore";
 
-const SideMenu = ({ username }) => {
+const SideMenu = ({ username, authEnabled }) => {
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navigate = useNavigate(); 
@@ -66,7 +66,7 @@ const SideMenu = ({ username }) => {
                     </div>
                 </div>
 
-                {isDropdownOpen && (
+                { authEnabled && isDropdownOpen && (
                     <div className={style.DropdownMenu}>
                         {UserNameDetails.map((item, index) => (
                             <ul key={index} className={style.MenuList} onClick={() => onHandleClick(item.action)}>

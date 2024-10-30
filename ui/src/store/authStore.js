@@ -4,10 +4,10 @@ import { persist } from 'zustand/middleware'
 const useAppSettings = create((set) => ({
   username: '',
   isAuthenticated: false,
-
+  authEnabled: false,
   setUsername: (username) => set({ username }),
-
-  setIsAuthenticated: (isAuthenticated) => set({ isAuthenticated })
+  setIsAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
+  setAuthEnabled: (authEnabled)=>set({authEnabled})
 }));
 
 

@@ -30,6 +30,7 @@ class Configs(BaseSettings):
     password: str = os.getenv("ADMIN_PASSWORD","password")
     secret_key: str = os.getenv("SECRET_KEY","secret")
     auth_enabled: bool = os.getenv("AUTH_ENABLED",False)
+    default_username: str = os.getenv("DEFAULT_USERNAME", "Admin")
 
     retry_limit:int = os.getenv("RETRY_LIMIT",0)
     application_port: int = os.getenv("APP_PORT", 8001)
