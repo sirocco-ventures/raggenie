@@ -6,6 +6,7 @@ from app.utils.jwt import JWTUtils
 from app.schemas.common import CommonResponse
 from app.providers.middleware import verify_token
 from typing import Optional
+from app.providers.config import configs
 
 login = APIRouter()
 
@@ -54,6 +55,6 @@ def get_user_info(request: Request, sub: Optional[str] = Depends(verify_token)):
         status=True,
         status_code=200,
         message="User info retrieved successfully",
-        data={"username": sub},
+        data={ "username": sub, "auth_enabled": configs.auth_enabled },
         error=None
     )
