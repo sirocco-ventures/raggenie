@@ -9,12 +9,12 @@ class ConnectorBase(BaseModel):
     schema_config: Optional[Union[List[Dict], Dict]] = None
     connector_docs: Optional[str]= None
     enable: Optional[bool] = True
-    provider_id: Optional[int] = None
 
 class ConnectorResponse(ConnectorBase):
     connector_id:int
     connector_key :Optional[str]=None
     icon:Optional[str]=None
+    provider_id: Optional[int] = None
 
 class ConnectorUpdate(BaseModel):
     connector_type: Optional[int] = None
