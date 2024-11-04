@@ -2,7 +2,7 @@ import pymongo
 from loguru import logger
 from app.base.base_vectordb import BaseVectorDB
 import urllib.parse
-
+import certifi
 
 
 class AltasMongoDB(BaseVectorDB):
@@ -14,7 +14,7 @@ class AltasMongoDB(BaseVectorDB):
 
     def connect(self):
         try:
-            self.client = pymongo.MongoClient(self.uri)
+            self.client = pymongo.MongoClient(self.uri, tlsCAFile=certifi.where())
             logger.info(f"Connected to Altas MongoDB Vector Database")
             self.db = self.client.get_database('context_store')
             self.schema_collection = self.db.get_collection('schema')
@@ -44,17 +44,27 @@ class AltasMongoDB(BaseVectorDB):
 
             self.doc_collection.insert_many([sample])
 
-            self._create_index(self.doc_collection, self.doc_index_name)
+            # self._create_index(self.doc_collection, self.doc_index_name)
 
-            search = self._find_similar([sample["datasource"]], "what are all the fields related to psql_db", self.doc_collection, 5, self.doc_index_name)
+            # search = self._find_similar([sample['datasource']], "what are all the fields related to psql_db", self.doc_collection, 5, self.doc_index_name)
 
-            self.clear_collection()
+            # # self.clear_collection()
+            # self.doc_collection.delete_many({})
+            
 
-            logger.info(f"Fetched {len(search)} fields")
-            if len(search) > 0:
+            # logger.info(f"Fetched {len(search)} fields")
+            # if len(search) > 0:
+            #     return None
+            # else:
+            #     return "No fields found"
+            collection_list = self.db.list_collection_names()
+            logger.info(f"collections available:{collection_list}")
+            self.doc_collection.delete_many({})
+            if len(collection_list) > 0:
                 return None
             else:
-                return "No fields found"
+                return "Collections cannot be created in DB"
+
         except Exception as e:
             logger.error(f"Health check failed: {e}")
             return f"Failed to connect with Altas MongoDB {e}"
@@ -148,6 +158,11 @@ class AltasMongoDB(BaseVectorDB):
 
     def _find_similar(self, datasources, query, collection, count, index_name):
         output = []
+        logger.info(f"datasources:{datasources}")
+        logger.info(f"collection:{collection}")
+        logger.info(f"index_name:{index_name}")
+
+
         for datasource in datasources:
             res = collection.aggregate([
 
