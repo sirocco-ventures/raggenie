@@ -73,7 +73,6 @@ const BotConfiguration = () => {
     const [embeddings, setEmbeddings] = useState([])
     const [selectedEmbedding, setSelectedEmbedding] = useState()
     const [embeddingData, setEmbeddingData] = useState()
-    const [activeVectorDbTab, setActiveVectorDbTab] = useState(true)
 
 
     const { register: configRegister, setValue: configSetValue, handleSubmit: configHandleSubmit, formState: configFormState, setError: configSetError, clearErrors: configClearErrors, watch: configWatch } = useForm({ mode: "all" })
@@ -144,7 +143,7 @@ const BotConfiguration = () => {
                         vectorDbSetValue(configKey, vectordb.vectordb_config[configKey]);
                     }
                     let tempVectorDb = vectorDbTempList.find(item => item.value == vectordb.vectordb)
-                    setVectorDbId(vectordb.vectordb?.id)
+                    setVectorDbId(vectordb?.id)
                     setVectorDBDefault(tempVectorDb) 
                     setSelectedVectordb(tempVectorDb)                   
                 }
@@ -217,7 +216,7 @@ const BotConfiguration = () => {
                         [selectedVectordb.config[0].slug]: selectedVectordb?.value === "chroma" ? vectorDbGetValues("path") : selectedVectordb?.value === "mongodb" ? vectorDbGetValues("uri") : null
                     },
                     // "embedding_config": embeddingConfig
-                }).then(() => {
+                }).then(() => {   
                     toast.success("Vectordb test successful");
                     setShowNotificationPanel(false);
                     setDisabledVectorDbSave(false);
@@ -482,35 +481,29 @@ const onInferanceSave = (data) => {
 
 
 
-    const vectorDbSave = (data) => {
+    const vectorDbSave = (data) => {        
         let saveData = {}
         if (data) {
-            switch (data.vectorDbProvider.value) {
-                case "chroma":
-                    saveData = {
-                        "vectordb": data.vectorDbProvider.value,
-                        "vectordb_config": {
-                            "path": data.path
-                        },
-                        "config_id": currentConfigID,
-                        "embedding_config": null
-                    }
-                    break;
-                case "mongodb":
-                    saveData = {
-                        "vectordb": data.vectorDbProvider.value,
-                        "vectordb_config": {
-                            "path": data.uri
-                        },
-                        "config_id": currentConfigID,
-                        "embedding_config": null
-                    }
-                    break;
-                default:
-                    break;
+            if (data.vectorDbProvider) {
+                const configField = data.vectorDbProvider.config[0].slug;
+                const configMapping = {
+                    "uri": data.uri,
+                    "path": data.path,
+                };
+            
+                const configValue = configMapping[configField] || null;
+            
+                saveData = {
+                    "vectordb": data.vectorDbProvider.value,
+                    "vectordb_config": {
+                        [configField]: configValue
+                    },
+                    "config_id": currentConfigID,
+                    "embedding_config": null
+                };
             }
+            
         }
-
         saveVectorDb(vectordbId, saveData).then(() => {
             toast.success("Vectordb saved successfully")
             setShowNotificationPanel(false);
@@ -618,7 +611,6 @@ const onInferanceSave = (data) => {
                                         name="vectorDbProvider"
                                         render={({ field: { onChange, value}}) => (                                            
                                             <Select
-                                                defaultValue={"fix"}
                                                 placeholder={"Please select"}
                                                 required
                                                 options={vectorDB}
