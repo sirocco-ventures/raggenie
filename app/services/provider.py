@@ -707,20 +707,8 @@ def create_vectorstore_instance(db:Session):
     if vectore_store:
         vector_store_formatting = {
             "name": vectore_store.get("vectordb"),
+            "params": {**vectore_store.get("vectordb_config", {})}
         }
-
-        vectordb_config = vectore_store.get("vectordb_config", {})
-
-        if vectordb_config:
-            embeddings = vectore_store.get("embedding_config", {})
-
-            vector_store_formatting["embeddings"] = {
-                **embeddings,
-                "provider": vectore_store.get("em_provider"),
-                "vectordb": vectore_store.get("vectordb")
-            }
-
-            vector_store_formatting={**vector_store_formatting,**vectordb_config}
 
     vectorloader = VectorDBLoader(vector_store_formatting) if vector_store_formatting else VectorDBLoader(config={"name":"chroma", "params":{"path":"./chromadb"}})
 

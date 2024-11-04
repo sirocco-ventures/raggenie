@@ -4,7 +4,7 @@ from app.models.request import ConnectionArgument
 # Plugin Metadata
 __version__ = '1.0.0'
 __vectordb_name__ = 'mongodb'
-__display_name__ = 'MongoDB'
+__display_name__ = 'MongoDB Atlas'
 __description__ = 'MongoDB for Vector Storage'
 __icon__ = '/assets/vectordb/logos/mongodb.svg'
 __connection_args__ = [
