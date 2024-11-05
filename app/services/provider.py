@@ -234,18 +234,18 @@ def test_vectordb_credentials(config:schemas.TestVectorDBCredentials, db:Session
     if is_error:
         return None, db_config
 
-    if config.embedding_config:
-        config.embedding_config["vectordb"] = config.vectordb_config["key"]
+    # if config.embedding_config:
+    #     config.embedding_config["vectordb"] = config.vectordb_config["key"]
 
 
     return vector_embedding_connector(config, db_config)
 
 def vector_embedding_connector(config, db_config):
 
-    if config.embedding_config:
-        err = EmLoader(config.embedding_config).load_embclass().health_check()
-        if err:
-            return err, False
+    # if config.embedding_config:
+    #     err = EmLoader(config.embedding_config).load_embclass().health_check()
+    #     if err:
+    #         return err, False
 
     match config.vectordb_config["key"]:
         case ("chroma" | "mongodb"):
@@ -707,7 +707,9 @@ def create_vectorstore_instance(db:Session):
     if vectore_store:
         vector_store_formatting = {
             "name": vectore_store.get("vectordb"),
+            "params": {**vectore_store.get("vectordb_config", {})}
         }
+
 
         vectordb_config = vectore_store.get("vectordb_config", {})
 
