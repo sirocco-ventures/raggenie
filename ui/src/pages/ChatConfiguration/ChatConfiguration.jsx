@@ -85,6 +85,9 @@ const BotConfiguration = () => {
     const { register: inferenceRegister, getValues: inferenceGetValues, setValue: inferenceSetValue, handleSubmit: inferenceHandleSubmit, formState: inferenceFormState, control: inferenceController, trigger: inferenceTrigger, watch: inferenceWatch } = useForm({ mode: "all" })
     const { errors: inferenceFormError } = inferenceFormState
 
+    const { register: vectorDbRegister, getValues: vectorDbGetValues, setValue: vectorDbSetValue, reset: vectorDbRestValue, handleSubmit: vectorDbHandleSubmit, formState: vectorDbFormState, trigger: vectorDbTrigger, control: vectorDbController } = useForm({ mode: "all" })
+    const { errors: vectorDbFormError } = vectorDbFormState
+
     const ToastCloseButton = ({ closeToast }) => {
         return (
           <button className={style.CustomBotCloseButton} onClick={closeToast}>
@@ -143,20 +146,19 @@ const BotConfiguration = () => {
       };
       
 
-    const { register: vectorDbRegister, getValues: vectorDbGetValues, setValue: vectorDbSetValue, handleSubmit: vectorDbHandleSubmit, formState: vectorDbFormState, trigger: vectorDbTrigger, control: vectorDbController } = useForm({ mode: "all" })
-    const { errors: vectorDbFormError } = vectorDbFormState
 
-    const onBotConfigSave = (data) => {
-        saveBotConfiguration(currentConfigID, data).then(response => {
-            setActiveInferencepiontTab(false)
-            setCurrentConfigID(response.data.data.configuration.id)
-            toast.success("Configuration saved successfully:")
-            setActiveTab("inferenceendpoint")
-        })
-            .catch(() => {
-                toast.error("Configuration faild to save")
-            });
-    }
+
+    // const onBotConfigSave = (data) => {
+    //     saveBotConfiguration(currentConfigID, data).then(response => {
+    //         setActiveInferencepiontTab(false)
+    //         setCurrentConfigID(response.data.data.configuration.id)
+    //         toast.success("Configuration saved successfully:")
+    //         setActiveTab("inferenceendpoint")
+    //     })
+    //         .catch(() => {
+    //             toast.error("Configuration faild to save")
+    //         });
+    // }
 
     const getCurrentConfig = (llmsList, vectorDbTempList) => {
         getBotConfiguration().then(response => {
@@ -202,6 +204,7 @@ const BotConfiguration = () => {
                     setshowVectorDbForm(true)
                     if (vectordb.vectordb_config) {
                         const configKey = Object.keys(vectordb.vectordb_config)[0]; 
+                        
                         vectorDbSetValue(configKey, vectordb.vectordb_config[configKey]);
                     }
                     let tempVectorDb = vectorDbTempList.find(item => item.value == vectordb.vectordb)
@@ -508,9 +511,7 @@ const onInferanceSave = (data) => {
 
     }
     //on changing vector db select the
-    const handleDatabaseChange = (selectedDb) => {
-        console.log(selectedDb);
-        
+    const handleDatabaseChange = (selectedDb) => {        
         setDisabledVectorDbTest(false);
         setDisabledVectorDbSave(true);
         setSelectedVectordb(selectedDb);
@@ -577,6 +578,8 @@ const onInferanceSave = (data) => {
 
 
         }
+
+        
 
         saveVectorDb(vectordbId, saveData).then(() => {
             toast.success("Vectordb saved successfully")
