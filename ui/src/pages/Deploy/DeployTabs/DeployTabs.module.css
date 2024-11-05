@@ -42,6 +42,9 @@
     align-content: center;
     align-items: center;
     outline: n;
+    overflow-x: auto;
+    white-space: nowrap;
+    max-width: 600px; 
 }
 
 .CopyLinkContainer {

@@ -9,9 +9,11 @@ from app.api.v1.connector import cap_router as capabilityrouter
 from app.api.v1.connector import inference_router as inference_router
 from app.api.v1.connector import actions as actions
 from app.api.v1.provider import sample as sample_sql
+from app.api.v1.auth import login as login
 import app.services.connector_details as commonservices
 
 
+# from app.providers.middleware import AuthMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.chain.chains.intent_chain import IntentChain
 from app.chain.chains.capability_chain import CapabilityChain
@@ -119,9 +121,9 @@ def create_app(config):
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=['*',"localhost"],
+        allow_origins=["*"],
         allow_credentials=True,
-        allow_methods=["*"],
+        allow_methods=["OPTIONS", "GET", "POST"],
         allow_headers=["*"],
     )
 
@@ -142,6 +144,7 @@ def create_app(config):
     app.include_router(inference_router, prefix="/api/v1/inference")
     app.include_router(actions, prefix="/api/v1/actions")
     app.include_router(sample_sql, prefix="/api/v1/sql")
+    app.include_router(login, prefix="/api/v1/auth")
     app.include_router(vectordb, prefix="/api/v1/vectordb")
 
     curr_schema = app.openapi()

@@ -11,6 +11,8 @@ from loguru import logger
 from app.services.connector_details import get_plugin_metadata
 from fastapi import Request
 from app.providers.data_preperation import SourceDocuments
+from app.loaders.base_loader import BaseLoader
+
 
 
 
@@ -44,10 +46,33 @@ def list_connectors(db: Session):
         connector_docs=connector.connector_docs,
         connector_key=connector.provider.key,
         enable=connector.enable,
-        icon=connector.provider.icon
+        icon=connector.provider.icon,
+        provider_id=connector.provider.category_id
     ) for connector in connectors]
 
     return connectors_response, None
+
+def list_connectors_by_provider_category(category_id: int, db: Session):
+    """
+    Retrieves all connector records from the database filtered by provider category.
+
+    Args:
+        category_id (int): The ID of the provider category.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: List of connector responses and error message (if any).
+    """
+    connectors, error = list_connectors(db)
+
+    if error:
+        return [], error
+
+    filtered_connectors = [connector for connector in connectors if connector.provider_id == category_id]
+
+    return filtered_connectors, None
+
+
 
 def get_connector(connector_id: int, db: Session):
 
@@ -859,6 +884,20 @@ def formatting_datasource(connector, provider):
     else:
         return None
 
+def get_llm_provider_models(llm_provider: schemas.LLMProviderBase):
+    """
+    Retrieves the models available for a given LLM provider.
+    Args:
+        llm_provider (schemas.LLMProviderBase): The LLM provider object.
+    Returns:
+        Tuple: List of models and error message (if any).
+    """
+    if llm_provider.key:
+        llm_provider.kind = llm_provider.key
+        llm_provider.unique_name = llm_provider.key
+        return BaseLoader(model_configs=[dict(llm_provider)]).load_model(unique_name=llm_provider.key).get_models()
+    else:
+        return None, "Missing LLM provider key"
 
 def get_inference(inference_id: int, db: Session):
 

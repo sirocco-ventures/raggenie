@@ -7,13 +7,15 @@ import app.services.provider as svc
 import app.api.v1.commons as commons
 import app.schemas.connector as conn_schemas
 from fastapi import Request
+from app.providers.middleware import verify_token
+
 
 router = APIRouter()
 sample = APIRouter()
 vectordb = APIRouter()
 
 
-@router.get("/list", response_model=resp_schemas.CommonResponse)
+@router.get("/list", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def list_providers(db: Session = Depends(get_db)):
 
     """
@@ -43,7 +45,7 @@ def list_providers(db: Session = Depends(get_db)):
         error=None
     )
 
-@router.get("/get/{provider_id}", response_model=resp_schemas.CommonResponse)
+@router.get("/get/{provider_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def get_provider(provider_id: int, db: Session = Depends(get_db)):
 
     """
@@ -70,11 +72,11 @@ def get_provider(provider_id: int, db: Session = Depends(get_db)):
         status=True,
         status_code=200,
         data={"provider": result},
-        message="Provider not Found",
+        message="Provider Found",
         error=None
     )
 
-@router.post("/{provider_id}/test-credentials", response_model=resp_schemas.CommonResponse)
+@router.post("/{provider_id}/test-credentials", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def test_connections(provider_id: int, config: schemas.TestCredentials, db: Session = Depends(get_db)):
 
     """
@@ -196,7 +198,7 @@ def getllmproviders(request: Request):
         error=None,
     )
 
-@router.post("/test-inference-credentials", response_model=resp_schemas.CommonResponse)
+@router.post("/test-inference-credentials", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def test_inference_connections(inference: conn_schemas.InferenceBase):
     """
     Tests the inference connections by validating the credentials for a specific LLM provider.
@@ -229,7 +231,7 @@ def test_inference_connections(inference: conn_schemas.InferenceBase):
         error=None,
     )
 
-@sample.get("/list", response_model=resp_schemas.CommonResponse)
+@sample.get("/list", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def list_sql(db: Session = Depends(get_db)):
 
     """
@@ -259,7 +261,7 @@ def list_sql(db: Session = Depends(get_db)):
         error=None
     )
 
-@sample.get("/{id}", response_model=resp_schemas.CommonResponse)
+@sample.get("/{id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def get_sql(id: int, db: Session = Depends(get_db)):
 
     """
@@ -292,7 +294,7 @@ def get_sql(id: int, db: Session = Depends(get_db)):
 
 
 
-@sample.post("/create", response_model=resp_schemas.CommonResponse)
+@sample.post("/create", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def create_sql(request:Request,sql: schemas.SampleSQLBase, db: Session = Depends(get_db)):
 
     """
@@ -321,7 +323,7 @@ def create_sql(request:Request,sql: schemas.SampleSQLBase, db: Session = Depends
         data={"SQL": result}
     )
 
-@sample.post("/update/{id}", response_model=resp_schemas.CommonResponse)
+@sample.post("/update/{id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def update_sql(id: int, request: Request, sql: schemas.SampleSQLUpdate, db: Session = Depends(get_db)):
 
     """
@@ -354,7 +356,7 @@ def update_sql(id: int, request: Request, sql: schemas.SampleSQLUpdate, db: Sess
         data={"sql": result}
     )
 
-@sample.delete("delete/{id}", response_model=resp_schemas.CommonResponse)
+@sample.delete("delete/{id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_sql(id: int, db: Session = Depends(get_db)):
 
     """

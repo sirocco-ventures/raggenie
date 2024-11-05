@@ -55,6 +55,10 @@ export const saveBotInferene = (configID, inferenceID, saveData = {})=>{
     })
 }
 
+export const restartBot = (configID)=>{
+   return PostService(API_URL + `/connector/createyaml/${configID}`,{},{loaderText: "Restarting Chatbot"})
+}
+
 
 export const getVectorFields = () => {
     return GetService(API_URL + "/vectordb/list/all")

@@ -2,10 +2,7 @@ import DashboardBody from "src/layouts/dashboard/DashboadBody"
 import style from "./Sources.module.css"
 import SearchInput from "src/components/SearchInput/SearchInput"
 import Connector from "./Connetor"
-import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
-import GetService from "src/utils/http/GetService"
-import { API_URL } from "src/config/const"
 import { getProviders } from "src/services/Plugins"
 
 const Sources = ()=>{
