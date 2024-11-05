@@ -6,7 +6,6 @@ import style from "src/pages/Configuration/ProviderForm/ProviderForm.module.css"
 
 
 const GenerateConfigs = ({ register = () => { }, errors = " ", configs = " ", fileConfig = {}, restForm = () => { } }) => {
-    console.log(fileConfig);
     
     return (
         <>

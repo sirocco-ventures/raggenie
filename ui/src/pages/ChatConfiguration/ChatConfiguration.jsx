@@ -168,7 +168,12 @@ const BotConfiguration = () => {
                 const vectorDbs = response.data.data.vectordbs[0];
                 vectorDbs.map((item) => {
                     vectorDbTempList.push({
-                        label: item.name,
+                        label: (
+                            <div style={{ display: "flex", alignItems: "center" }}>
+                            <img src={`${BACKEND_SERVER_URL}` + item.icon} alt={item.name} style={{ marginRight: '8px' }} />
+                            {item.name}
+                        </div>
+                        ),
                         value: item.key,
                         config: item.config,
                     });
@@ -481,39 +486,36 @@ const onInferanceSave = (data) => {
 
 
 
-    const vectorDbSave = (data) => {        
+    const vectorDbSave = (data) => {
         let saveData = {}
         if (data) {
             if (data.vectorDbProvider) {
-                const configField = data.vectorDbProvider.config[0].slug;
-                const configMapping = {
-                    "uri": data.uri,
-                    "path": data.path,
-                };
-            
-                const configValue = configMapping[configField] || null;
-            
+                const vectordbConfig = {};
+                for (const configItem of data.vectorDbProvider.config) {
+                    const slug = configItem.slug;
+                    vectordbConfig[slug] = data[slug];
+                }
                 saveData = {
                     "vectordb": data.vectorDbProvider.value,
-                    "vectordb_config": {
-                        [configField]: configValue
-                    },
+                    "vectordb_config": vectordbConfig,
                     "config_id": currentConfigID,
                     "embedding_config": null
                 };
             }
-            
+
+
         }
+
         saveVectorDb(vectordbId, saveData).then(() => {
             toast.success("Vectordb saved successfully")
             setShowNotificationPanel(false);
             setActiveTab('capabalities')
         })
-        .catch((err) => {
-            setShowNotificationPanel(true);
-            setNotificationMessage(err.data?.error)
-            toast.error("Failed to save vectordb")
-        });
+            .catch((err) => {
+                setShowNotificationPanel(true);
+                setNotificationMessage(err.data?.error)
+                toast.error("Failed to save vectordb")
+            });
     };
 
 
@@ -599,7 +601,7 @@ const onInferanceSave = (data) => {
                 </Tab>
 
                 {/*==============VectorDB tab==================*/}
-                <Tab title="VectorDB" disabled={false} tabKey="vectordbtab">
+                <Tab title="VectorDB" disabled={activeInferencepiontTab} tabKey="vectordbtab">
                     {showVectorDbForm ? (
                         <form onSubmit={vectorDbHandleSubmit(vectorDbSave)}>
                             <div className={style.VectorFormContainer}>
