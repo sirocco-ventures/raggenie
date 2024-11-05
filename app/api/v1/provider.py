@@ -163,7 +163,7 @@ def getvectordbs(db: Session = Depends(get_db)):
         status=True,
         status_code=200,
         message="VectorDB providers found",
-        data={"vectordbs":[result]},
+        data={"vectordbs":result},
         error=None,
     )
 
