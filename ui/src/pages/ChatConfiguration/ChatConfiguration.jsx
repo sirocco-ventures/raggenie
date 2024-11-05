@@ -12,15 +12,19 @@ import { LiaToolsSolid } from "react-icons/lia";
 import { FiCheckCircle, FiXCircle } from "react-icons/fi"
 import { GoPlus } from "react-icons/go"
 import { FaRegArrowAltCircleRight } from 'react-icons/fa';
-import { BACKEND_SERVER_URL } from 'src/config/const';;
+import { API_URL, BACKEND_SERVER_URL } from 'src/config/const';;
 import Select from 'src/components/Select/Select';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { v4 as uuid4 } from "uuid"
 import Capability from './Capability/Capability';
 import Modal from 'src/components/Modal/Modal';
 import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src/services/Capability';
 import { getBotConfiguration, getEmbeddings, getLLMProviders, getVectorFields, saveBotConfiguration, saveBotInferene, saveVectorDb, testInference, testVectorDb } from 'src/services/BotConfifuration';
 import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
+import PostService from 'src/utils/http/PostService';
+import ToastIcon from "./assets/ToastIcon.svg"
+import { RiRestartLine } from 'react-icons/ri';
+import { IoMdClose } from 'react-icons/io';
 import VectorEmpty from "./assets/vectorEmpty.svg"
 import cromaDbIcon from "./assets/cromdbpng.png"
 import pencilIcon from "./assets/pencil02.svg"
@@ -41,7 +45,7 @@ const BotConfiguration = () => {
     const [activeInferencepiontTab, setActiveInferencepiontTab] = useState(true)
     const [activeTab, setActiveTab] = useState("configuration")
 
-    const [disabledVectorDbSave, setDisabledVectorDbSave] = useState(true)
+
 
 
     const [selectedProvider, setSelectedProvider] = useState()
@@ -51,6 +55,7 @@ const BotConfiguration = () => {
     const [capabalities, setCapabalities] = useState([])
 
     const [llmModels, setllmModels] = useState([])
+    const [vectordbId,setVectorDbId] = useState()
 
     const [editCapabilityIndexRef, setEditCapabilityIndexRef] = useState("")
     const [editParamsIdRef, setEditParamsIdRef] = useState("")
@@ -63,13 +68,16 @@ const BotConfiguration = () => {
     let [currentEditParamsDescError, setCurrentEditParamsDescError] = useState({ hasError: false, errorMessage: "" })
 
     //-----------------VECTORDB---------------------------------
+    const [disabledVectorDbTest, setDisabledVectorDbTest] = useState(true);
+    const [disabledVectorDbSave, setDisabledVectorDbSave] = useState(true);
     const [showVectorDbForm, setshowVectorDbForm] = useState(false)
     const [vectorDB, setVectorDB] = useState([]);
+    const [vectorDBDefault, setVectorDBDefault] = useState();
     const [selectedVectordb, setSelectedVectordb] = useState()
     const [embeddings, setEmbeddings] = useState([])
     const [selectedEmbedding, setSelectedEmbedding] = useState()
     const [embeddingData, setEmbeddingData] = useState()
-    const [disableVectorDbDropdown, setDisableVectorDbDropdown] = useState(false)
+
 
     const { register: configRegister, setValue: configSetValue, handleSubmit: configHandleSubmit, formState: configFormState, setError: configSetError, clearErrors: configClearErrors, watch: configWatch } = useForm({ mode: "all" })
     const { errors: configFormError, } = configFormState
@@ -77,26 +85,84 @@ const BotConfiguration = () => {
     const { register: inferenceRegister, getValues: inferenceGetValues, setValue: inferenceSetValue, handleSubmit: inferenceHandleSubmit, formState: inferenceFormState, control: inferenceController, trigger: inferenceTrigger, watch: inferenceWatch } = useForm({ mode: "all" })
     const { errors: inferenceFormError } = inferenceFormState
 
-    const { register: vectorDbRegister, getValues: vectorDbGetValues, setValue: vectorDbSetValue, handleSubmit: vectorDbHandleSubmit, formState: vectorDbFormState, trigger: vectorDbTrigger, control: vectorDbController } = useForm({ mode: "all" })
+    const { register: vectorDbRegister, getValues: vectorDbGetValues, setValue: vectorDbSetValue, reset: vectorDbRestValue, handleSubmit: vectorDbHandleSubmit, formState: vectorDbFormState, trigger: vectorDbTrigger, control: vectorDbController } = useForm({ mode: "all" })
     const { errors: vectorDbFormError } = vectorDbFormState
 
-    const onBotConfigSave = (data) => {
-        saveBotConfiguration(currentConfigID, data).then(response => {
-            setActiveInferencepiontTab(false)
-            setCurrentConfigID(response.data.data.configuration.id)
-            toast.success("Configuration saved successfully:")
+    const ToastCloseButton = ({ closeToast }) => {
+        return (
+          <button className={style.CustomBotCloseButton} onClick={closeToast}>
+            <IoMdClose size={18} />
+          </button>
+        );
+      };
+
+
+    const ToastMessage = ({ message}) => {
+        return (
+                <div className={style.BotRestartToast}>
+                <span className={style.BotRestartMessage}><img src={ToastIcon} alt="toasticon"/>{message}</span>
+                <Button onClick={restartChatBot}>
+                    Restart Chatbot  <RiRestartLine size={24}/>
+                </Button>
+            </div>
+        );
+      };
+      
+
+      const restartChatBot = () => {
+        toast.dismiss("RAG001"); 
+        PostService(API_URL + `/connector/createyaml/${currentConfigID}`, {}, { loaderText: "Restarting Chatbot" })
+          .then(() => {
+            toast.success("Bot Restarted successfully");
+          })
+          .catch(() => {
+            toast.error("Failed to restart bot");
+          });
+      };
+      
+      const onBotConfigSave = (data) => {
+        saveBotConfiguration(currentConfigID, data)
+          .then((response) => {
+            toast.success("Configuration Saved Successfully")
+            setCurrentConfigID(response.data.data.configuration.id);
+            if(currentInferenceID != undefined){
+                toast(
+                    <ToastMessage message={`Please restart the bot to get changes to take effect.`} />,
+                    {
+                      toastId: "RAG001", 
+                      autoClose: false, 
+                      hideProgressBar: true,
+                      className: style.ToastContainerClass,
+                      closeButton: <ToastCloseButton />,
+                    }
+                  ); 
+            }
+
             setActiveTab("inferenceendpoint")
-        })
-            .catch(() => {
-                toast.error("Configuration faild to save")
-            });
-    }
+          })
+          .catch(() => {
+            toast.error("Configuration failed to save");
+          });
+      };
+      
 
-    const getCurrentConfig = (llmsList) => {
 
+
+    // const onBotConfigSave = (data) => {
+    //     saveBotConfiguration(currentConfigID, data).then(response => {
+    //         setActiveInferencepiontTab(false)
+    //         setCurrentConfigID(response.data.data.configuration.id)
+    //         toast.success("Configuration saved successfully:")
+    //         setActiveTab("inferenceendpoint")
+    //     })
+    //         .catch(() => {
+    //             toast.error("Configuration faild to save")
+    //         });
+    // }
+
+    const getCurrentConfig = (llmsList, vectorDbTempList) => {
         getBotConfiguration().then(response => {
             let configs = response.data?.data?.configurations
-            console.log({configs});
             
             if (configs?.length > 0) {
                 setActiveInferencepiontTab(false)
@@ -134,21 +200,17 @@ const BotConfiguration = () => {
                 }
                 if (configs[0].vectordb[0]?.id) {
                     let vectordb = configs[0].vectordb[0];
-                    console.log(vectordb);
-
-                    // vectorDbSetValue("vectorDbProvider",vectordb.vectordb)
-                    // vectorDbSetValue("path",vectordb.vectordb_config.path)
                     
-                    // inferenceSetValue("inferenceName", inference.name)
-                    // inferenceSetValue("inferenceModelName", inference.model)
-                    // inferenceSetValue("inferenceEndpoint", inference.endpoint)
-                    // inferenceSetValue("inferenceAPIKey", inference.apikey)
-
-
-                    // let tempSelectedProvider = llmsList.find(item => item.value == inference.llm_provider)
-
-                    // setSelectedProvider(tempSelectedProvider)
-
+                    setshowVectorDbForm(true)
+                    if (vectordb.vectordb_config) {
+                        const configKey = Object.keys(vectordb.vectordb_config)[0]; 
+                        
+                        vectorDbSetValue(configKey, vectordb.vectordb_config[configKey]);
+                    }
+                    let tempVectorDb = vectorDbTempList.find(item => item.value == vectordb.vectordb)
+                    setVectorDbId(vectordb?.id)
+                    setVectorDBDefault(tempVectorDb) 
+                    setSelectedVectordb(tempVectorDb)                   
                 }
             }
         })
@@ -158,34 +220,38 @@ const BotConfiguration = () => {
     const getLLMModels = async () => {
         getLLMProviders().then(response => {
             var llmProviders = response.data.data?.providers
-
             let llmList = []
+            let vectorDbTempList = [];
             llmProviders.map(item => {
                 llmList.push({ value: item.unique_name, label: <div className={style.AlignDropdownOptions}><img src={`${BACKEND_SERVER_URL}${item.icon}`} alt={item.display_name} />{item.display_name}</div> },)
             })
-
             setllmModels(llmList)
             setSelectedProvider(llmList[0])
-            getCurrentConfig(llmList)
+
+//call vectordb list api
+            getVectorFields().then(response => {
+                const vectorDbs = response.data.data.vectordbs[0];
+                vectorDbs.map((item) => {
+                    vectorDbTempList.push({
+                        label: (
+                            <div style={{ display: "flex", alignItems: "center" }}>
+                            <img src={`${BACKEND_SERVER_URL}` + item.icon} alt={item.name} style={{ marginRight: '8px' }} />
+                            {item.name}
+                        </div>
+                        ),
+                        value: item.key,
+                        config: item.config,
+                    });
+                });
+                setVectorDB(vectorDbTempList);  
+                getCurrentConfig(llmList, vectorDbTempList)
+          
+            });
+
         })
     }
 
 
-    const getVectorDbsFields = () => {
-        getVectorFields().then(response => {
-            let vectorDbTempList = [];
-            const vectorDbs = response.data.data.vectordbs[0];
-            vectorDbs.map((item) => {
-                vectorDbTempList.push({
-                    label: item.name,
-                    value: item.key,
-                    config: item.config,
-                });
-            });
-            setVectorDB(vectorDbTempList);
-        });
-
-    };
 
     const getAllEmbeddings = () => {
         getEmbeddings().then(response => {
@@ -194,7 +260,7 @@ const BotConfiguration = () => {
         });
     };
 
-
+//function for testing the vector db
     const onTestVectorDb = () => {
         vectorDbTrigger().then((result) => {
             if (result) {
@@ -220,19 +286,22 @@ const BotConfiguration = () => {
                         [selectedVectordb.config[0].slug]: selectedVectordb?.value === "chroma" ? vectorDbGetValues("path") : selectedVectordb?.value === "mongodb" ? vectorDbGetValues("uri") : null
                     },
                     // "embedding_config": embeddingConfig
-                }).then(() => {
+                }).then(() => {   
                     toast.success("Vectordb test successful");
                     setShowNotificationPanel(false);
                     setDisabledVectorDbSave(false);
-                    setDisableVectorDbDropdown(true)
+                }).catch(err => {
+                    toast.error("Inference endpoint verification failed")
+                    setShowNotificationPanel(true);
+                    setNotificationMessage(err.data?.error ?? "Vector database endpoint verification failed")
                 });
             }
         });
     };
 
 
-
-    const onTestInference = () => {
+//function for testing the inference
+const onTestInference = () => {
         inferenceTrigger().then((result) => {
             if (result) {
                 testInference(currentConfigID, {
@@ -255,22 +324,31 @@ const BotConfiguration = () => {
         })
     }
 
-
-    const onInferanceSave = (data) => {
+const onInferanceSave = (data) => {
         configClearErrors("inferenceProvider")
         if (selectedProvider == undefined) {
             configSetError("inferenceProvider", { type: "required", message: "This field is required" });
             return
         }
-
+ 
 
         data["inferenceLLMProvider"] = selectedProvider.value
         saveBotInferene(currentConfigID, currentInferenceID, data).then(() => {
             toast.success("Inference saved successfully")
+            toast(
+                <ToastMessage message={`Please restart the bot to get changes to take effect.`} />,
+                {
+                  toastId: "RAG001", 
+                  autoClose: false, 
+                  hideProgressBar: true,
+                  className: style.ToastContainerClass,
+                  closeButton: <ToastCloseButton />,
+                }
+              );
             setShowNotificationPanel(false);
             setActiveTab('vectordbtab')
         })
-            .catch(() => {
+            .catch((err) => {
                 setShowNotificationPanel(true);
                 setNotificationMessage(err.data?.error)
                 toast.error("Failed to save inference")
@@ -412,6 +490,7 @@ const BotConfiguration = () => {
                     register={vectorDbRegister}
                     errors={vectorDbFormError}
                     configs={configVectorDb}
+                    restForm={()=>{ setDisabledVectorDbTest(false); setDisabledVectorDbSave(true);}}
                 />
                 {/* <Controller
                     control={vectorDbController}
@@ -432,7 +511,9 @@ const BotConfiguration = () => {
 
     }
     //on changing vector db select the
-    const handleDatabaseChange = (selectedDb) => {
+    const handleDatabaseChange = (selectedDb) => {        
+        setDisabledVectorDbTest(false);
+        setDisabledVectorDbSave(true);
         setSelectedVectordb(selectedDb);
 
         if (selectedDb) {
@@ -466,7 +547,6 @@ const BotConfiguration = () => {
                     value: "default",
                     config: [],
                 });
-                console.log("No match found, setting default provider");
             }
             setEmbeddings(embeddingsTempList);
         }
@@ -480,52 +560,43 @@ const BotConfiguration = () => {
 
 
     const vectorDbSave = (data) => {
-        console.log({ data });
-
         let saveData = {}
-
         if (data) {
-            switch (data.vectorDbProvider.value) {
-                case "chroma":
-                    saveData = {
-                        "vectordb": data.vectorDbProvider.value,
-                        "vectordb_config": {
-                            "path": data.path
-                        },
-                        "config_id": currentConfigID
-                    }
-                    break;
-                case "mongodb":
-                    saveData = {
-                        "vectordb": data.vectorDbProvider.value,
-                        "vectordb_config": {
-                            "path": data.uri
-                        },
-                        "config_id": currentConfigID
-                    }
-                    break;
-                default:
-                    break;
+            if (data.vectorDbProvider) {
+                const vectordbConfig = {};
+                for (const configItem of data.vectorDbProvider.config) {
+                    const slug = configItem.slug;
+                    vectordbConfig[slug] = data[slug];
+                }
+                saveData = {
+                    "vectordb": data.vectorDbProvider.value,
+                    "vectordb_config": vectordbConfig,
+                    "config_id": currentConfigID,
+                    "embedding_config": null
+                };
             }
+
+
         }
 
-        saveVectorDb(currentConfigID,saveData).then(() => {
+        
+
+        saveVectorDb(vectordbId, saveData).then(() => {
             toast.success("Vectordb saved successfully")
             setShowNotificationPanel(false);
             setActiveTab('capabalities')
         })
-        .catch((err) => {
-            setShowNotificationPanel(true);
-            setNotificationMessage(err.data?.error)
-            toast.error("Failed to save vectordb")
-        });
+            .catch((err) => {
+                setShowNotificationPanel(true);
+                setNotificationMessage(err.data?.error)
+                toast.error("Failed to save vectordb")
+            });
     };
 
 
 
     useEffect(() => {
         getLLMModels();
-        getVectorDbsFields()
         getAllEmbeddings()
     }, [])
 
@@ -605,8 +676,7 @@ const BotConfiguration = () => {
                 </Tab>
 
                 {/*==============VectorDB tab==================*/}
-                <Tab title="VectorDB" disabled={false} tabKey="vectordbtab">
-
+                <Tab title="VectorDB" disabled={activeInferencepiontTab} tabKey="vectordbtab">
                     {showVectorDbForm ? (
                         <form onSubmit={vectorDbHandleSubmit(vectorDbSave)}>
                             <div className={style.VectorFormContainer}>
@@ -616,24 +686,25 @@ const BotConfiguration = () => {
                                     <Controller
                                         control={vectorDbController}
                                         name="vectorDbProvider"
-                                        defaultValue={vectorDB[0]}
-                                        render={({ field: { selectedVectordb } }) => (
+                                        render={({ field: { onChange, value}}) => (                                            
                                             <Select
-                                                label="Select Vector Database"
-                                                placeholder="Choose a database..."
+                                                placeholder={"Please select"}
+                                                required
                                                 options={vectorDB}
-                                                value={selectedVectordb}
+                                                value={vectorDBDefault}   
                                                 onChange={(selectedOption) => {
-                                                    handleDatabaseChange(selectedOption);
+                                                    handleDatabaseChange(selectedOption); 
+                                                    onChange(selectedOption); 
                                                 }}
-                                                disabled={disableVectorDbDropdown}
                                             />
                                         )}
                                     />
-
-                                    {configFormError["vectorDbProvider"]?.message && <span style={{ color: "#FF7F6D" }}>{configFormError["vectorDbProvider"]?.message}</span>}
+                                    
                                     {selectedVectordb?.config && loadDbBasedForm(selectedVectordb.config)}
 
+                                </div>
+                                <div>
+                             {showNotificationPanel && <NotificationPanel message={notificationMessage} containerStyle={{marginBottom:"30px"}}/>}   
                                 </div>
                                 <div className={`${style.SaveVectorContainer} ${style.VectorSaveContainer}`}>
                                     <div style={{ flexGrow: 1 }}>
@@ -660,11 +731,8 @@ const BotConfiguration = () => {
                                     </div>
                                 </div>
                             </div>
-
                         </>
                     )}
-
-
 
                 </Tab>
                 <Tab title="Capabilities" disabled={activeInferencepiontTab} tabKey="capabalities" key={"capabalities"}>

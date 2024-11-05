@@ -20,6 +20,8 @@ class VectorDBLoader:
 
         vectordb_class = vectordb_classes.get(vectordb_provider)
         logger.info(f"vectordb provider: {vectordb_provider}")
+        logger.info(f"connection_params:{connection_params}")
+
 
         if vectordb_class:
             return vectordb_class(**connection_params)
