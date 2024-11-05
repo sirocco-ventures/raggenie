@@ -541,7 +541,7 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
         "error":None
     }
 
-@inference_router.post("/get/models", response_model=resp_schemas.CommonResponse)
+@inference_router.post("/get/models", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def get_llm_provider_models(llm_provider: schemas.LLMProviderBase):
     """
     Retrieves the models associated with the specified LLM provider.

@@ -384,7 +384,7 @@ def delete_sql(id: int, db: Session = Depends(get_db)):
     )
 
 
-@vectordb.post("/create", response_model=resp_schemas.CommonResponse)
+@vectordb.post("/create", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def create_vectordb_instance(vectordb: schemas.VectorDBBase, db: Session = Depends(get_db)):
 
     """
@@ -413,7 +413,7 @@ def create_vectordb_instance(vectordb: schemas.VectorDBBase, db: Session = Depen
         data={"VectorDB": result}
     )
 
-@vectordb.post("/update/{id}", response_model=resp_schemas.CommonResponse)
+@vectordb.post("/update/{id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def update_vectordb_instance(id:int,vectordb: schemas.VectorDBUpdateBase, db: Session = Depends(get_db)):
 
     """
@@ -442,7 +442,7 @@ def update_vectordb_instance(id:int,vectordb: schemas.VectorDBUpdateBase, db: Se
         data={"VectorDB": result}
     )
 
-@vectordb.get("/get/{config_id}", response_model=resp_schemas.CommonResponse)
+@vectordb.get("/get/{config_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def get_vectordb_instance(id: int, db: Session = Depends(get_db)):
     """
     Retrieves a VectorDB instance by its ID.
@@ -468,7 +468,7 @@ def get_vectordb_instance(id: int, db: Session = Depends(get_db)):
         data={"VectorDB": result}
     )
 
-@vectordb.delete("/delete/{id}", response_model=resp_schemas.CommonResponse)
+@vectordb.delete("/delete/{id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_vectordb_instance(id: int, db: Session = Depends(get_db)):
     """
     Deletes a VectorDB instance by its ID, along with its associated config mapping.
@@ -494,7 +494,7 @@ def delete_vectordb_instance(id: int, db: Session = Depends(get_db)):
         data={"VectorDB": result}
     )
 
-@vectordb.get("/embedding/all", response_model=resp_schemas.CommonResponse)
+@vectordb.get("/embedding/all", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def get_all_embeddings():
 
     """
