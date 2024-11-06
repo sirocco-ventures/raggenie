@@ -14,12 +14,12 @@ import { GoPlus } from "react-icons/go"
 import { FaRegArrowAltCircleRight } from 'react-icons/fa';
 import { API_URL, BACKEND_SERVER_URL } from 'src/config/const';;
 import Select from 'src/components/Select/Select';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { v4 as uuid4 } from "uuid"
 import Capability from './Capability/Capability';
 import Modal from 'src/components/Modal/Modal';
 import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src/services/Capability';
-import { getBotConfiguration, getEmbeddings, getLLMProviders, getVectorDBList, saveBotConfiguration, saveBotInferene, saveVectorDB, testInference, testVectorDB} from 'src/services/BotConfifuration';
+import { getBotConfiguration, getLLMProviders, getVectorDBList, saveBotConfiguration, saveBotInferene, saveVectorDB, testInference, testVectorDB} from 'src/services/BotConfifuration';
 import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
 import PostService from 'src/utils/http/PostService';
 import ToastIcon from "./assets/ToastIcon.svg"
@@ -68,9 +68,7 @@ const BotConfiguration = () => {
     const [vectorDB, setVectorDB] = useState([]);
     const [vectorDBDefault, setVectorDBDefault] = useState();
     const [selectedVectordb, setSelectedVectordb] = useState()
-    const [embeddings, setEmbeddings] = useState([])
     const [selectedEmbedding, setSelectedEmbedding] = useState()
-    const [embeddingData, setEmbeddingData] = useState()
 
 
     const { register: configRegister, setValue: configSetValue, handleSubmit: configHandleSubmit, formState: configFormState, setError: configSetError, clearErrors: configClearErrors, watch: configWatch } = useForm({ mode: "all" })
@@ -230,32 +228,12 @@ const BotConfiguration = () => {
 
 
 
-    const getAllEmbeddings = () => {
-        getEmbeddings().then(response => {
-            const embeddings = response.data.data.embeddings;
-            setEmbeddingData(embeddings)
-        });
-    };
+
 
 //function for testing the vector db
     const onTestVectorDb = () => {
         vectorDbTrigger().then((result) => {
             if (result) {
-                // Create the embedding configuration object
-                let embeddingConfig = {
-                    "provider": selectedEmbedding?.value,
-                    "params": {},
-                    "key": selectedVectordb?.value.toLowerCase(),
-                };
-
-                // Conditionally add "model_name" if models exist
-                if (selectedEmbedding?.config[0]?.models && selectedEmbedding.config[0].models.length > 0) {
-                    embeddingConfig.params.model_name = selectedEmbedding.config[0].models;
-                }
-
-                if (selectedEmbedding?.config[0]?.config && selectedEmbedding.config[0].config.length > 0) {
-                    embeddingConfig.params.api_key = selectedEmbedding.config[0].config[0];
-                }
                 const vectordbConfig = {
                     key: selectedVectordb?.value.toLowerCase()
                 };
@@ -472,15 +450,6 @@ const onInferanceSave = (data) => {
                     configs={configVectorDb}
                     restForm={()=>{ setDisabledVectorDbTest(false); setDisabledVectorDbSave(true);}}
                 />
-                {/* <Controller
-                    control={vectorDbController}
-                    name='embeddingsProvider'
-                    render={() => (
-                        <Select defaultSelect={true} label={"Select Embedding"} placeholder={embeddings[0]?.label} options={embeddings} value={selectedEmbedding} onChange={handleEmbeddingChange} />
-                    )}
-                />
-
-                {configFormError["embeddingsProvider"]?.message && <span style={{ color: "#FF7F6D" }}>{configFormError["embeddingsProvider"]?.message}</span>}              */}
             </>
         )
 
@@ -495,48 +464,7 @@ const onInferanceSave = (data) => {
         setDisabledVectorDbTest(false);
         setDisabledVectorDbSave(true);
         setSelectedVectordb(selectedDb);
-
-        if (selectedDb) {
-            let embeddingsTempList = [];
-
-            embeddingData.map((item) => {
-                if (selectedDb.value === item.vector_dbs[0]) {
-                    // If a match is found, add the item to the list
-                    embeddingsTempList.push({
-                        label: (
-                            <div style={{ display: "flex", alignItems: "center" }}>
-                                <img src={`${BACKEND_SERVER_URL}` + item.icon} alt={item.name} style={{ marginRight: '8px' }} />
-                                {item.provider}
-                            </div>
-                        ),
-                        value: item.provider,
-                        config: item.config,
-                    });
-                }
-            });
-
-            // Check if no matches were found and set a default provider
-            if (embeddingsTempList.length === 0) {
-                embeddingsTempList.push({
-                    label: (
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                            {/* <img src="/path-to-default-icon.svg" alt="defaultImg" style={{ marginRight: '8px' }} /> */}
-                            default
-                        </div>
-                    ),
-                    value: "default",
-                    config: [],
-                });
-            }
-            setEmbeddings(embeddingsTempList);
-        }
     };
-
-
-    const handleEmbeddingChange = (selectEmbedding) => {
-    }
-
-
 
 
     const vectorDbSave = (data) => {
@@ -577,7 +505,6 @@ const onInferanceSave = (data) => {
 
     useEffect(() => {
         getLLMModels();
-        getAllEmbeddings()
     }, [])
 
 
@@ -656,7 +583,7 @@ const onInferanceSave = (data) => {
                 </Tab>
 
                 {/*==============VectorDB tab==================*/}
-                <Tab title="VectorDB" disabled={activeInferencepiontTab} tabKey="vectordbtab">
+                <Tab title="VectorDB" disabled={activeInferencepiontTab} tabKey="vectordbtab" key={"vectordbtab"}>
                     {showVectorDbForm ? (
                         <form onSubmit={vectorDbHandleSubmit(vectorDbSave)}>
                             <div className={style.VectorFormContainer}>
