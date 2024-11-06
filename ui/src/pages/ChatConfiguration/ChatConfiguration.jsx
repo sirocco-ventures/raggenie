@@ -19,7 +19,7 @@ import { v4 as uuid4 } from "uuid"
 import Capability from './Capability/Capability';
 import Modal from 'src/components/Modal/Modal';
 import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src/services/Capability';
-import { getBotConfiguration, getEmbeddings, getLLMProviders, getVectorFields, saveBotConfiguration, saveBotInferene, saveVectorDb, testInference, testVectorDb } from 'src/services/BotConfifuration';
+import { getBotConfiguration, getEmbeddings, getLLMProviders, getVectorDBList, saveBotConfiguration, saveBotInferene, saveVectorDB, testInference, testVectorDB} from 'src/services/BotConfifuration';
 import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
 import PostService from 'src/utils/http/PostService';
 import ToastIcon from "./assets/ToastIcon.svg"
@@ -45,13 +45,7 @@ const BotConfiguration = () => {
     const [activeInferencepiontTab, setActiveInferencepiontTab] = useState(true)
     const [activeTab, setActiveTab] = useState("configuration")
 
-
-
-
     const [selectedProvider, setSelectedProvider] = useState()
-
-
-
     const [capabalities, setCapabalities] = useState([])
 
     const [llmModels, setllmModels] = useState([])
@@ -137,7 +131,6 @@ const BotConfiguration = () => {
                     }
                   ); 
             }
-
             setActiveTab("inferenceendpoint")
           })
           .catch(() => {
@@ -145,20 +138,6 @@ const BotConfiguration = () => {
           });
       };
       
-
-
-
-    // const onBotConfigSave = (data) => {
-    //     saveBotConfiguration(currentConfigID, data).then(response => {
-    //         setActiveInferencepiontTab(false)
-    //         setCurrentConfigID(response.data.data.configuration.id)
-    //         toast.success("Configuration saved successfully:")
-    //         setActiveTab("inferenceendpoint")
-    //     })
-    //         .catch(() => {
-    //             toast.error("Configuration faild to save")
-    //         });
-    // }
 
     const getCurrentConfig = (llmsList, vectorDbTempList) => {
         getBotConfiguration().then(response => {
@@ -198,13 +177,11 @@ const BotConfiguration = () => {
                     setSelectedProvider(tempSelectedProvider)
 
                 }
+                
                 if (configs[0].vectordb[0]?.id) {
                     let vectordb = configs[0].vectordb[0];
-                    
                     setshowVectorDbForm(true)
-                    if (vectordb.vectordb_config) {
-                        const configKey = Object.keys(vectordb.vectordb_config)[0]; 
-                        
+                    for (const configKey in vectordb.vectordb_config) {
                         vectorDbSetValue(configKey, vectordb.vectordb_config[configKey]);
                     }
                     let tempVectorDb = vectorDbTempList.find(item => item.value == vectordb.vectordb)
@@ -229,8 +206,8 @@ const BotConfiguration = () => {
             setSelectedProvider(llmList[0])
 
 //call vectordb list api
-            getVectorFields().then(response => {
-                const vectorDbs = response.data.data.vectordbs[0];
+            getVectorDBList().then(response => {
+                const vectorDbs = response.data.data.vectordbs;
                 vectorDbs.map((item) => {
                     vectorDbTempList.push({
                         label: (
@@ -279,12 +256,15 @@ const BotConfiguration = () => {
                 if (selectedEmbedding?.config[0]?.config && selectedEmbedding.config[0].config.length > 0) {
                     embeddingConfig.params.api_key = selectedEmbedding.config[0].config[0];
                 }
+                const vectordbConfig = {
+                    key: selectedVectordb?.value.toLowerCase()
+                };
 
-                testVectorDb({
-                    "vectordb_config": {
-                        "key": selectedVectordb?.value.toLowerCase(),
-                        [selectedVectordb.config[0].slug]: selectedVectordb?.value === "chroma" ? vectorDbGetValues("path") : selectedVectordb?.value === "mongodb" ? vectorDbGetValues("uri") : null
-                    },
+                for (const configItem of selectedVectordb.config) {                   
+                    vectordbConfig[configItem.slug] = vectorDbGetValues(configItem.slug); 
+                }
+                testVectorDB({
+                    "vectordb_config": vectordbConfig,
                     // "embedding_config": embeddingConfig
                 }).then(() => {   
                     toast.success("Vectordb test successful");
@@ -581,7 +561,7 @@ const onInferanceSave = (data) => {
 
         
 
-        saveVectorDb(vectordbId, saveData).then(() => {
+        saveVectorDB(vectordbId, saveData).then(() => {
             toast.success("Vectordb saved successfully")
             setShowNotificationPanel(false);
             setActiveTab('capabalities')
