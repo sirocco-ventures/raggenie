@@ -314,12 +314,10 @@ const onInferanceSave = (data) => {
 
 
     const addNewCapability = () => {
-        //console.log({capabalities})
         let tempCapabalities = JSON.parse(JSON.stringify(capabalities))
         tempCapabalities.push({
             id: undefined, title: `Capability ${tempCapabalities.length + 1}`, name: "", description: "", requirements: []
         })
-        // console.log({capabalities})
         setCapabalities(tempCapabalities)
     }
 
@@ -394,7 +392,6 @@ const onInferanceSave = (data) => {
 
             if (index == editCapabilityIndexRef) {
                 let hasParam = item.requirements?.some(params => params.parameter_id == editParamsIdRef)
-                //console.log({k: currentEditParamsId, hasParam})
                 if (hasParam) {
                     item.requirements?.map(params => {
                         if (params.parameter_id == editParamsIdRef) {
@@ -440,7 +437,7 @@ const onInferanceSave = (data) => {
         setDisabledInferenceSave(true)
     }
 
-    const loadDbBasedForm = (configVectorDb) => {
+    const loadDbBasedForm = (configVectorDb) => {        
         return (
             <>
                 <GenerateConfigs
@@ -462,6 +459,7 @@ const onInferanceSave = (data) => {
     const handleDatabaseChange = (selectedDb) => {        
         setDisabledVectorDbSave(true);
         setSelectedVectordb(selectedDb);
+        
     };
 
 
