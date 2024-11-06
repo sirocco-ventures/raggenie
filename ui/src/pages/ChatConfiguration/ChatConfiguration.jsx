@@ -49,7 +49,7 @@ const BotConfiguration = () => {
     const [capabalities, setCapabalities] = useState([])
 
     const [llmModels, setllmModels] = useState([])
-    const [vectordbId,setVectorDbId] = useState()
+    const [vectordbId,setVectorDbID] = useState()
 
     const [editCapabilityIndexRef, setEditCapabilityIndexRef] = useState("")
     const [editParamsIdRef, setEditParamsIdRef] = useState("")
@@ -65,9 +65,7 @@ const BotConfiguration = () => {
     const [disabledVectorDbSave, setDisabledVectorDbSave] = useState(true);
     const [showVectorDbForm, setshowVectorDbForm] = useState(false)
     const [vectorDB, setVectorDB] = useState([]);
-    const [vectorDBDefault, setVectorDBDefault] = useState();
     const [selectedVectordb, setSelectedVectordb] = useState()
-    const [selectedEmbedding, setSelectedEmbedding] = useState()
 
 
     const { register: configRegister, setValue: configSetValue, handleSubmit: configHandleSubmit, formState: configFormState, setError: configSetError, clearErrors: configClearErrors, watch: configWatch } = useForm({ mode: "all" })
@@ -76,8 +74,21 @@ const BotConfiguration = () => {
     const { register: inferenceRegister, getValues: inferenceGetValues, setValue: inferenceSetValue, handleSubmit: inferenceHandleSubmit, formState: inferenceFormState, control: inferenceController, trigger: inferenceTrigger, watch: inferenceWatch } = useForm({ mode: "all" })
     const { errors: inferenceFormError } = inferenceFormState
 
-    const { register: vectorDbRegister, getValues: vectorDbGetValues, setValue: vectorDbSetValue, reset: vectorDbRestValue, handleSubmit: vectorDbHandleSubmit, formState: vectorDbFormState, trigger: vectorDbTrigger, control: vectorDbController } = useForm({ mode: "all" })
+    const { register: vectorDbRegister, getValues: vectorDbGetValues, setValue: vectorDbSetValue, reset: vectorDbReset, handleSubmit: vectorDbHandleSubmit, formState: vectorDbFormState, trigger: vectorDbTrigger, control: vectorDbController } = useForm({ mode: "all" })
     const { errors: vectorDbFormError } = vectorDbFormState
+
+    const toastRestartBot=()=>{
+        toast(
+            <ToastMessage message={<>Please restart the bot to get changes to take effect.</>} />,
+            {
+              toastId: "RAG001", 
+              autoClose: 60000, // 5 minutes in milliseconds
+              hideProgressBar: true,
+              className: style.ToastContainerClass,
+              closeButton: <ToastCloseButton />,
+            }
+          );
+    } 
 
     const ToastCloseButton = ({ closeToast }) => {
         return (
@@ -104,7 +115,7 @@ const BotConfiguration = () => {
         toast.dismiss("RAG001"); 
         PostService(API_URL + `/connector/createyaml/${currentConfigID}`, {}, { loaderText: "Restarting Chatbot" })
           .then(() => {
-            toast.success("Bot Restarted successfully");
+            toast.success("Bot Restarted Successfully");
           })
           .catch(() => {
             toast.error("Failed to restart bot");
@@ -117,16 +128,7 @@ const BotConfiguration = () => {
             toast.success("Configuration Saved Successfully")
             setCurrentConfigID(response.data.data.configuration.id);
             if(currentInferenceID != undefined){
-                toast(
-                    <ToastMessage message={`Please restart the bot to get changes to take effect.`} />,
-                    {
-                      toastId: "RAG001", 
-                      autoClose: false, 
-                      hideProgressBar: true,
-                      className: style.ToastContainerClass,
-                      closeButton: <ToastCloseButton />,
-                    }
-                  ); 
+                toastRestartBot()
             }
             setActiveTab("inferenceendpoint")
           })
@@ -144,6 +146,7 @@ const BotConfiguration = () => {
                 setActiveInferencepiontTab(false)
                 setCurrentConfigID(configs[0].id)
                 setCurrentInferenceID(configs[0].inference[0]?.id ?? undefined)
+                setVectorDbID(configs[0].vectordb[0]?.id ?? undefined)
 
                 configSetValue("botName", configs[0].name, { shouldValidate: true, shouldTouch: true })
                 configSetValue("botShortDescription", configs[0].short_description)
@@ -182,9 +185,7 @@ const BotConfiguration = () => {
                         vectorDbSetValue(configKey, vectordb.vectordb_config[configKey]);
                     }
                     let tempVectorDb = vectorDbTempList.find(item => item.value == vectordb.vectordb)
-                    setVectorDbId(vectordb?.id)
-                    setVectorDBDefault(tempVectorDb) 
-                    setSelectedVectordb(tempVectorDb)                   
+                    setSelectedVectordb(tempVectorDb)                                      
                 }
             }
         })
@@ -244,7 +245,7 @@ const BotConfiguration = () => {
                     "vectordb_config": vectordbConfig,
                     // "embedding_config": embeddingConfig
                 }).then(() => {   
-                    toast.success("Vectordb test successful");
+                    toast.success("Vectordb Tested Successfully");
                     setShowNotificationPanel(false);
                     setDisabledVectorDbSave(false);
                 }).catch(err => {
@@ -268,7 +269,7 @@ const onTestInference = () => {
                     "inferenceModelName": inferenceGetValues("inferenceModelName"),
                     "inferenceEndpoint": inferenceGetValues("inferenceEndpoint"),
                 }).then(() => {
-                    toast.success("Inference test successful")
+                    toast.success("Inference Tested Successfully")
                     setShowNotificationPanel(false);
                     setDisabledInferenceSave(false)
                 }).catch(err => {
@@ -281,27 +282,18 @@ const onTestInference = () => {
         })
     }
 
+   
+
 const onInferanceSave = (data) => {
         configClearErrors("inferenceProvider")
         if (selectedProvider == undefined) {
             configSetError("inferenceProvider", { type: "required", message: "This field is required" });
             return
         }
- 
-
         data["inferenceLLMProvider"] = selectedProvider.value
         saveBotInferene(currentConfigID, currentInferenceID, data).then(() => {
-            toast.success("Inference saved successfully")
-            toast(
-                <ToastMessage message={`Please restart the bot to get changes to take effect.`} />,
-                {
-                  toastId: "RAG001", 
-                  autoClose: false, 
-                  hideProgressBar: true,
-                  className: style.ToastContainerClass,
-                  closeButton: <ToastCloseButton />,
-                }
-              );
+            toast.success("Inference Saved Successfully")
+            toastRestartBot()
             setShowNotificationPanel(false);
             setActiveTab('vectordbtab')
         })
@@ -314,12 +306,10 @@ const onInferanceSave = (data) => {
 
 
     const addNewCapability = () => {
-        //console.log({capabalities})
         let tempCapabalities = JSON.parse(JSON.stringify(capabalities))
         tempCapabalities.push({
             id: undefined, title: `Capability ${tempCapabalities.length + 1}`, name: "", description: "", requirements: []
         })
-        // console.log({capabalities})
         setCapabalities(tempCapabalities)
     }
 
@@ -349,14 +339,14 @@ const onInferanceSave = (data) => {
 
         if (capabilityId == "") {
             saveBotCapability(currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements).then(response => {
-                toast.success("Capability saved")
+                toast.success("Capability Saved Successfully")
             }).catch(() => {
                 toast.error("Capability save failed")
             })
 
         } else {
             updateBotCapability(capabilityId, currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements).then(response => {
-                toast.success("Capability updated")
+                toast.success("Capability Updated Successfully")
             }).catch(() => {
                 toast.error("Capability update failed")
             })
@@ -365,7 +355,7 @@ const onInferanceSave = (data) => {
     }
 
     const deleteCapability = (capabilityIndex, capabilityId) => {
-        deleteBotCapability(capabilityId).then(() => toast.success("Capability deleted")).catch(() => toast.error("Capability deletion failed"))
+        deleteBotCapability(capabilityId).then(() => toast.success("Capability Deleted Successfully")).catch(() => toast.error("Capability Deletion Failed"))
     }
 
     const onClickNewParams = (capabilityId, capabilityIndex) => {
@@ -394,7 +384,6 @@ const onInferanceSave = (data) => {
 
             if (index == editCapabilityIndexRef) {
                 let hasParam = item.requirements?.some(params => params.parameter_id == editParamsIdRef)
-                //console.log({k: currentEditParamsId, hasParam})
                 if (hasParam) {
                     item.requirements?.map(params => {
                         if (params.parameter_id == editParamsIdRef) {
@@ -440,7 +429,7 @@ const onInferanceSave = (data) => {
         setDisabledInferenceSave(true)
     }
 
-    const loadDbBasedForm = (configVectorDb) => {
+    const loadDbBasedForm = (configVectorDb) => {        
         return (
             <>
                 <GenerateConfigs
@@ -459,38 +448,36 @@ const onInferanceSave = (data) => {
 
     }
     //on changing vector db select the
-    const handleDatabaseChange = (selectedDb) => {        
+    const handleDatabaseChange = (selectedDb) => {  
+        vectorDbReset()      
         setDisabledVectorDbSave(true);
         setSelectedVectordb(selectedDb);
+        
     };
 
 
-    const vectorDbSave = (data) => {
-        let saveData = {}
-        if (data) {
-            if (data.vectorDbProvider) {
-                const vectordbConfig = {};
-                for (const configItem of data.vectorDbProvider.config) {
-                    const slug = configItem.slug;
-                    vectordbConfig[slug] = data[slug];
-                }
-                saveData = {
-                    "vectordb": data.vectorDbProvider.value,
-                    "vectordb_config": vectordbConfig,
-                    "config_id": currentConfigID,
-                    "embedding_config": null
-                };
+    const vectorDbSave = () => {
+        let saveData = {};
+
+        if (selectedVectordb) {
+            const vectordbConfig = {};
+            for (const configItem of selectedVectordb.config) {
+                const slug = configItem.slug;
+                vectordbConfig[slug] = vectorDbGetValues ? vectorDbGetValues(slug) : selectedVectordb[slug];
             }
-
-
+            saveData = {
+                vectordb: selectedVectordb.value,
+                vectordb_config: vectordbConfig,
+                config_id: currentConfigID,
+                embedding_config: null
+            };
         }
-
-        
-
         saveVectorDB(vectordbId, saveData).then(() => {
-            toast.success("Vectordb saved successfully")
-            setShowNotificationPanel(false);
+            toast.success("VectorDB Saved Successfully")
+            toastRestartBot()
+            setShowNotificationPanel(false);            
             setActiveTab('capabalities')
+            
         })
             .catch((err) => {
                 setShowNotificationPanel(true);
@@ -596,7 +583,7 @@ const onInferanceSave = (data) => {
                                                 placeholder={"Please select"}
                                                 required
                                                 options={vectorDB}
-                                                value={vectorDBDefault}   
+                                                value={selectedVectordb}   
                                                 onChange={(selectedOption) => {
                                                     handleDatabaseChange(selectedOption); 
                                                     onChange(selectedOption); 
