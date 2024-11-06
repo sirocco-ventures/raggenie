@@ -62,7 +62,6 @@ const BotConfiguration = () => {
     let [currentEditParamsDescError, setCurrentEditParamsDescError] = useState({ hasError: false, errorMessage: "" })
 
     //-----------------VECTORDB---------------------------------
-    const [disabledVectorDbTest, setDisabledVectorDbTest] = useState(true);
     const [disabledVectorDbSave, setDisabledVectorDbSave] = useState(true);
     const [showVectorDbForm, setshowVectorDbForm] = useState(false)
     const [vectorDB, setVectorDB] = useState([]);
@@ -448,20 +447,19 @@ const onInferanceSave = (data) => {
                     register={vectorDbRegister}
                     errors={vectorDbFormError}
                     configs={configVectorDb}
-                    restForm={()=>{ setDisabledVectorDbTest(false); setDisabledVectorDbSave(true);}}
+                    restForm={()=>{ setDisabledVectorDbSave(true);}}
                 />
             </>
         )
 
     };
 
-    const onClickCancel = () => {
+    const onClickChangeVectorDB = () => {
         setshowVectorDbForm(!showVectorDbForm)
 
     }
     //on changing vector db select the
     const handleDatabaseChange = (selectedDb) => {        
-        setDisabledVectorDbTest(false);
         setDisabledVectorDbSave(true);
         setSelectedVectordb(selectedDb);
     };
@@ -633,7 +631,7 @@ const onInferanceSave = (data) => {
                                     <p style={{display:"flex"}}><span><img src={cromaDbIcon}/></span>Chroma DB is the currently selected vector database. Do you want to proceed with this choice, or would you like to change the vector database?</p>
                                     </span>
                                     <div className={style.VectorControls}>
-                                        <Button variant='secondary' className="icon-button" onClick={() => { onClickCancel() }}>Change <img src={pencilIcon}/> </Button>
+                                        <Button variant='secondary' className="icon-button" onClick={() => { onClickChangeVectorDB() }}>Change <img src={pencilIcon}/> </Button>
                                         <Button buttonType="submit" className="icon-button" onClick={() => setActiveTab("capabalities")} > Continue with Default <FaRegArrowAltCircleRight /></Button>
                                     </div>
                                 </div>
