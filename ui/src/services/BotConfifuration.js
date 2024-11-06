@@ -60,7 +60,7 @@ export const restartBot = (configID)=>{
 }
 
 
-export const getVectorFields = () => {
+export const getVectorDBList = () => {
     return GetService(API_URL + "/vectordb/list/all")
 }
 
@@ -68,11 +68,11 @@ export const getEmbeddings = () => {
     return GetService(API_URL + "/vectordb/embedding/all")
 }
 
-export const testVectorDb = (data) => {
+export const testVectorDB = (data) => {
     return PostService(`${API_URL}/vectordb/test_credentials`, data)
 }
 
-export const saveVectorDb = (vectordbID, data) => { 
+export const saveVectorDB = (vectordbID, data) => { 
     let apiURL = "/vectordb/create"
     if(vectordbID){
         apiURL = `/vectordb/update/${vectordbID}`
@@ -80,6 +80,4 @@ export const saveVectorDb = (vectordbID, data) => {
     return PostService(`${API_URL}${apiURL}`, data)
 }
 
-export const deleteVectorDb = () => {
 
-}
