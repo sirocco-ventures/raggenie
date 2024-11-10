@@ -1,4 +1,3 @@
-import DashboardBody from "src/layouts/dashboard/DashboadBody"
 import ChatBox from "src/components/ChatBox/ChatBox"
 import {  useEffect, useRef, useState } from "react"
 import GetService from "src/utils/http/GetService"
@@ -45,7 +44,7 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
             }
             setIsChatLoading(true)
             PostService(API_URL + "/query/query",
-                    { "content": message, "role":"user" }, {showLoader: false}, axiosConfig).then(response=>{
+                    { "content": message, "role":"user" }, {showLoader: false,allowAuthHeaders:true}, axiosConfig).then(response=>{
                        
                 let res = response.data
                 let chatMessage =  res.response.content
@@ -95,7 +94,7 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
     }
 
     const getChatByContexts =(contextId)=>{
-        GetService(API_URL + `/chat/get/${contextId}`).then(response=>{
+        GetService(API_URL + `/chat/get/${contextId}`,{},{allowAuthHeaders:false}).then(response=>{
             const chats = response.data.data.chats
             let tempChat = [];
             let tempChatDetails = [];
@@ -122,7 +121,7 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
 
 // ===================CHAT HISTROY START==============================
     const getChatHistory = () => {
-        GetService(API_URL + "/chat/list/context/all").then(response => {  
+        GetService(API_URL + "/chat/list/context/all",{},{allowAuthHeaders:false}).then(response => {  
             let chatHistory = []; 
             let chats = response.data.data.chats;
     

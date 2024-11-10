@@ -14,3 +14,7 @@ class CommonResponse(BaseModel):
     data: Optional[Any] = None
     message: Optional[str] = None
     error: Optional[str] = None
+
+class LoginData(BaseModel):
+    username: str
+    password: str

@@ -14,8 +14,7 @@ class ModelLoader:
         raise NotImplementedError("load_model method must be implemented in subclass")
 
     def get_usage(self, prompt, response, out) -> dict:
-        raise NotImplementedError("load_model method must be implemented in subclass")
-    
+        raise NotImplementedError("load_model method must be implemented in subclass" 
    
     def messages_format(self, prompt, previous_messages) -> list:
         chat_history = []
@@ -45,3 +44,7 @@ class ModelLoader:
             answer["general_message"] = response['content']
 
         return answer
+
+    def get_models(self):
+        raise NotImplementedError("load_model method must be implemented in subclass")
+

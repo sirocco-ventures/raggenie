@@ -14,6 +14,7 @@ class ConnectorResponse(ConnectorBase):
     connector_id:int
     connector_key :Optional[str]=None
     icon:Optional[str]=None
+    provider_id: Optional[int] = None
 
 class ConnectorUpdate(BaseModel):
     connector_type: Optional[int] = None
@@ -111,3 +112,9 @@ class ActionsUpdate(BaseModel):
     table : Optional[str] = None
     connector_id: Optional[int] = None
     body : Optional[Dict] = None
+
+class LLMProviderBase(BaseModel):
+    key:str
+    api_key:str
+    kind:Optional[str]=None
+    unique_name: Optional[str]=None

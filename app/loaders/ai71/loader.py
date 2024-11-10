@@ -3,6 +3,7 @@ from app.base.loader_metadata_mixin import LoaderMetadataMixin
 from app.base.base_llm import BaseLLM
 from typing import Any
 import json
+import requests
 
 class Ai71ModelLoader(ModelLoader, LoaderMetadataMixin):
 
@@ -52,3 +53,24 @@ class Ai71ModelLoader(ModelLoader, LoaderMetadataMixin):
                 "logprobs" : [],
 
         }
+
+    def get_models(self):
+
+        """
+        Retrieve models from the AI71 API and reformat the response.
+        Args:
+            llm_provider: The LLM provider object with API key.
+        Returns:
+            List of reformatted model information or an error message.
+        """
+        url = "https://api.ai71.ai/v1/models"
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = response.json()
+                models = [{"display_name": model["name"], "id": model["id"]} for model in data.get("data", [])]
+                return models, False
+            else:
+                return f"Failed to retrieve AI71 models: {response.status_code} {response.text}", True
+        except requests.RequestException as e:
+            return f"Error occurred: {str(e)}", True
