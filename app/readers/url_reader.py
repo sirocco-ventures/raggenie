@@ -32,11 +32,9 @@ class UrlReader(DocsReader):
 
             while url_queue :
                 url = url_queue.pop(0)
-                print(type(depth_map))
 
                 current_depth = depth_map.get(url, 1)
                 logger.info(f"scanning url {url}")
-                print(type(current_depth), type(max_depth))
                 if url in self.visited_url or current_depth > max_depth:
                     continue
                 logger.info(f"urls in queue {len(url_queue)} visited {len(self.visited_url)}")
@@ -49,7 +47,7 @@ class UrlReader(DocsReader):
                         for a in soup.find_all('a', href = True) :
                                 absolute_url = urljoin(url, a['href'])
                                 if absolute_url not in self.visited_url and  urlparse(absolute_url).netloc == base_domain and absolute_url not in url_queue:
-                                    if current_depth + 1 <= max_depth:
+                                    if current_depth + 1 <= max_depth or max_depth == 0:
                                         url_queue.append(absolute_url)
                                         depth_map[absolute_url] = current_depth + 1
                         tag = soup.body
