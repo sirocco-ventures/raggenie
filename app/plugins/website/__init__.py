@@ -21,6 +21,24 @@ __connection_args__ = OrderedDict(
         required = True,
         value = None,
         slug = "website_url"
+    ),
+    headers=ConnectionArgument(
+        type= 7,
+        generic_name= 'Headers to be used',
+        description= 'Provide required headers',
+        order= 2,
+        required = True,
+        value = None,
+        slug = "headers"
+    ),
+    is_scan_child=ConnectionArgument(
+        type= 6,
+        generic_name= 'Scan child pages',
+        description= 'Choose whether to scan child pages or not',
+        order= 3,
+        required = True,
+        value=[{"label":"yes", "value": "yes"}, {"label":"no", "value": "no"}],
+        slug = "is_scan_child"
     )
 )
 
