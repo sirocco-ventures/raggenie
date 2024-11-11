@@ -65,7 +65,7 @@ __prompt__ = Prompt(**{
             {
                 "explanation": "Explain how you finalized the sql query using the schemas and rules provided",
                 "operation_kind" : "none",
-                "general_message": "answer to user question based on the context",
+                "general_message": "Answer to user question in human readable Markdown format based on the context",
                 "confidence" : "confidence in 100",
                 "main_entity": "document"
             }
@@ -78,7 +78,7 @@ __prompt__ = Prompt(**{
             {
                 "explanation": "Explain how you finalized the sql query using the schemas and rules provided",
                 "operation_kind" : "none",
-                "general_message": "answer to user question based on the context",
+                "general_message": "Answer to user question in human readable Markdown format based on the context",
                 "confidence" : "confidence in 100",
                 "main_entity": "document"
             }
