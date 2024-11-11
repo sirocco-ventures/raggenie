@@ -1,6 +1,7 @@
 from .formatter import Formatter
 from loguru import logger
 import requests
+import json
 from app.base.base_plugin import BasePlugin
 from app.base.remote_data_plugin import RemoteDataPlugin
 from app.base.plugin_metadata_mixin import PluginMetadataMixin
@@ -13,7 +14,7 @@ class Website(BasePlugin, PluginMetadataMixin,RemoteDataPlugin,  Formatter):
     Website class for interacting with website data.
     """
 
-    def __init__(self, website_url:str):
+    def __init__(self, website_url:str, depth : int = 1, headers: str = "{}"):
         super().__init__(__name__)
 
         self.connection = {}
@@ -21,6 +22,8 @@ class Website(BasePlugin, PluginMetadataMixin,RemoteDataPlugin,  Formatter):
         # common
         self.params = {
             'url': website_url,
+            "depth":  depth,
+            "headers": headers,
         }
 
 
@@ -43,9 +46,14 @@ class Website(BasePlugin, PluginMetadataMixin,RemoteDataPlugin,  Formatter):
 
         url = self.params["url"]
 
+        headers = {}
+        try:
+            headers = json.loads(self.params.get("headers", "{}"))
+        except Exception as e:
+            return False, str("Provide valid json for headers")
 
         try:
-            response = requests.get(url)
+            response = requests.get(url,headers=headers)
             if response.status_code == 200:
                 logger.info("Website health check passed.")
                 return True, None
@@ -58,9 +66,18 @@ class Website(BasePlugin, PluginMetadataMixin,RemoteDataPlugin,  Formatter):
 
 
     def fetch_data(self, params=None):
+
+        headers = {}
+        try:
+            headers = json.loads(self.params.get("headers", "{}"))
+        except Exception as e:
+            logger.exception(e)
+
         base_reader = BaseReader({
                                 "type": "url",
-                                "path": [self.params.get('url')]
+                                "path": [self.params.get('url')],
+                                "depth": int(self.params.get("depth", 1)),
+                                "headers": headers,
                             })
         data = base_reader.load_data()
         return data
