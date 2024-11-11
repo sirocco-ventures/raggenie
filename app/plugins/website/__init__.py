@@ -31,14 +31,14 @@ __connection_args__ = OrderedDict(
         value = None,
         slug = "headers"
     ),
-    is_scan_child=ConnectionArgument(
-        type= 6,
-        generic_name= 'Scan child pages',
-        description= 'Choose whether to scan child pages or not',
+    depth=ConnectionArgument(
+        type= 3,
+        generic_name= 'Depth of scanning',
+        description= 'Choose the depth of child urls',
         order= 3,
         required = True,
-        value=[{"label":"yes", "value": "yes"}, {"label":"no", "value": "no"}],
-        slug = "is_scan_child"
+        value=None,
+        slug = "depth"
     )
 )
 

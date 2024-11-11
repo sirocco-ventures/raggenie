@@ -3,6 +3,7 @@ from loguru import logger
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+from typing import Dict
 from urllib.parse import urlparse
 
 
@@ -13,22 +14,30 @@ class UrlReader(DocsReader):
         self.visited_url = set()
 
 
+
     def load(self):
         out = []
-        is_scan_child = self.source.get("is_scan_child", False)
-        url_queue = [] #defining a queue to capture sub_urls
+        max_depth = self.source.get("depth", 1)
+        depth_map: Dict[str, int] = {}
+        url_queue = []
+
         if "path" in self.source:
             urls = self.source["path"]
+
             for url in urls:
                 url_queue.append(url)
+                depth_map[url] = 1
 
             base_domain = urlparse(urls[0]).netloc
 
-            print(url_queue)
             while url_queue :
                 url = url_queue.pop(0)
+                print(type(depth_map))
+
+                current_depth = depth_map.get(url, 1)
                 logger.info(f"scanning url {url}")
-                if url in self.visited_url:
+                print(type(current_depth), type(max_depth))
+                if url in self.visited_url or current_depth > max_depth:
                     continue
                 logger.info(f"urls in queue {len(url_queue)} visited {len(self.visited_url)}")
                 self.visited_url.add(url)
@@ -37,11 +46,12 @@ class UrlReader(DocsReader):
 
                     if response.status_code == 200:
                         soup = BeautifulSoup(response.content, 'html.parser')
-                        if is_scan_child :
-                            for a in soup.find_all('a', href = True) :
+                        for a in soup.find_all('a', href = True) :
                                 absolute_url = urljoin(url, a['href'])
                                 if absolute_url not in self.visited_url and  urlparse(absolute_url).netloc == base_domain and absolute_url not in url_queue:
-                                    url_queue.append(absolute_url)
+                                    if current_depth + 1 <= max_depth:
+                                        url_queue.append(absolute_url)
+                                        depth_map[absolute_url] = current_depth + 1
                         tag = soup.body
                         text = ''.join(list(tag.strings)[:-1])
                         metadata = {

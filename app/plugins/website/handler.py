@@ -14,7 +14,7 @@ class Website(BasePlugin, PluginMetadataMixin,RemoteDataPlugin,  Formatter):
     Website class for interacting with website data.
     """
 
-    def __init__(self, website_url:str, is_scan_child : str = "no", headers: str = "{}"):
+    def __init__(self, website_url:str, depth : int = 1, headers: str = "{}"):
         super().__init__(__name__)
 
         self.connection = {}
@@ -22,7 +22,7 @@ class Website(BasePlugin, PluginMetadataMixin,RemoteDataPlugin,  Formatter):
         # common
         self.params = {
             'url': website_url,
-            "is_scan_child":  True if is_scan_child == "yes" else False,
+            "depth":  depth,
             "headers": headers,
         }
 
@@ -53,7 +53,6 @@ class Website(BasePlugin, PluginMetadataMixin,RemoteDataPlugin,  Formatter):
             return False, str("Provide valid json for headers")
 
         try:
-            requests.Session()
             response = requests.get(url,headers=headers)
             if response.status_code == 200:
                 logger.info("Website health check passed.")
@@ -77,7 +76,7 @@ class Website(BasePlugin, PluginMetadataMixin,RemoteDataPlugin,  Formatter):
         base_reader = BaseReader({
                                 "type": "url",
                                 "path": [self.params.get('url')],
-                                "is_scan_child": self.params.get("is_scan_child"),
+                                "depth": int(self.params.get("depth", 1)),
                                 "headers": headers,
                             })
         data = base_reader.load_data()
