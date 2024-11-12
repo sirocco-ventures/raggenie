@@ -15,7 +15,8 @@ __connection_args__ = [
         "order": 1,
         "required": True,
         "slug": "uri",
-        "field": "uri"
+        "field": "uri",
+        "placeholder": "mongodb+srv://admin:<password>@cluster0.lwqw4z.mongodb.net/",
     }
 ]
 

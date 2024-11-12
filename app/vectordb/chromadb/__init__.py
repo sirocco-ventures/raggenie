@@ -15,7 +15,8 @@ __connection_args__ = [
         "order": 1,
         "required": True,
         "slug": "path",
-        "field": "path"
+        "field": "path",
+        "placeholder": "./chromadb",
     }
 ]
 
