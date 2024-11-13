@@ -21,6 +21,24 @@ __connection_args__ = OrderedDict(
         required = True,
         value = None,
         slug = "website_url"
+    ),
+    headers=ConnectionArgument(
+        type= 7,
+        generic_name= 'Headers to be used',
+        description= 'Provide required headers',
+        order= 2,
+        required = True,
+        value = None,
+        slug = "headers"
+    ),
+    depth=ConnectionArgument(
+        type= 3,
+        generic_name= 'Depth of scanning',
+        description= 'Choose the depth of scanning for child URLs. Set to 0 to scan all',
+        order= 3,
+        required = True,
+        value=None,
+        slug = "depth"
     )
 )
 
@@ -47,7 +65,7 @@ __prompt__ = Prompt(**{
             {
                 "explanation": "Explain how you finalized the sql query using the schemas and rules provided",
                 "operation_kind" : "none",
-                "general_message": "answer to user question based on the context",
+                "general_message": "Answer to user question in human readable Markdown format based on the context",
                 "confidence" : "confidence in 100",
                 "main_entity": "document"
             }
@@ -60,7 +78,7 @@ __prompt__ = Prompt(**{
             {
                 "explanation": "Explain how you finalized the sql query using the schemas and rules provided",
                 "operation_kind" : "none",
-                "general_message": "answer to user question based on the context",
+                "general_message": "Answer to user question in human readable Markdown format based on the context",
                 "confidence" : "confidence in 100",
                 "main_entity": "document"
             }
