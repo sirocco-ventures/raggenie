@@ -4,12 +4,15 @@ import DashboardLayout from "src/layouts/dashboard/Dashboard"
 import routes from "src/config/routes"
 import Chat from "src/pages/Chat/Chat"
 import { v4 } from "uuid"
+import AuthLogin from "src/layouts/auth/AuthLogin"
 
-const MainRoute = ()=>{
+const MainRoute = () => {
 
-    return(
+    return (
         <Routes>
-            <Route key={"index"} path="/:contextId/chat" element={<Chat/>} />
+
+            <Route path="/login" element={<AuthLogin />} />
+            <Route path="/:contextId/chat" element={<Chat/>} />
             <Route path="/"  element={ <Navigate to={`/preview/${v4()}/chat`} repalce={true} /> } />
             <Route path='/' element={<DashboardLayout/>}>
                 {
@@ -20,6 +23,7 @@ const MainRoute = ()=>{
                 })
                 }
             </Route>
+           
         </Routes>
     )
 }
