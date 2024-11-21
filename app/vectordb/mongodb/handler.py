@@ -43,23 +43,12 @@ class AltasMongoDB(BaseVectorDB):
             sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
 
             self.doc_collection.insert_many([sample])
+            self.schema_collection.insert_many([sample])
+            self.cache_collection.insert_many([sample])
 
-            # self._create_index(self.doc_collection, self.doc_index_name)
-
-            # search = self._find_similar([sample['datasource']], "what are all the fields related to psql_db", self.doc_collection, 5, self.doc_index_name)
-
-            # # self.clear_collection()
-            # self.doc_collection.delete_many({})
-            
-
-            # logger.info(f"Fetched {len(search)} fields")
-            # if len(search) > 0:
-            #     return None
-            # else:
-            #     return "No fields found"
             collection_list = self.db.list_collection_names()
             logger.info(f"collections available:{collection_list}")
-            self.doc_collection.delete_many({})
+            self.clear_collection()
             if len(collection_list) > 0:
                 return None
             else:
