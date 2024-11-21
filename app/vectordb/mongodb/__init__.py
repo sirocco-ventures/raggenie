@@ -10,7 +10,7 @@ __icon__ = '/assets/vectordb/logos/mongodb.svg'
 __connection_args__ = [
     {
         "config_type": 4,
-        "name": "MongoDB uri",
+        "name": "MongoDB URI",
         "description": "URI to connect to MongoDB",
         "order": 1,
         "required": True,
