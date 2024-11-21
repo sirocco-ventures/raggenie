@@ -178,7 +178,7 @@ def update_connector(connector_id: int, connector: schemas.ConnectorUpdate, db: 
         error=None
     )
 
-@router.delete("/delete/{connector_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+@router.post("/delete/{connector_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_connector(connector_id: int, db: Session = Depends(get_db)):
 
     """
@@ -431,7 +431,7 @@ def update_capability(cap_id: int, capability: schemas.CapabilitiesUpdateBase, d
         data={"capability": result}
     )
 
-@cap_router.delete("/delete/{cap_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+@cap_router.post("/delete/{cap_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_capability(cap_id: int, db: Session = Depends(get_db)):
 
     """
@@ -813,7 +813,7 @@ def update_action(action_id: int, action: schemas.ActionsUpdate, db: Session = D
         error=None
     )
 
-@actions.delete("/{action_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+@actions.post("/{action_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_action(action_id: int, db: Session = Depends(get_db)):
 
     """
