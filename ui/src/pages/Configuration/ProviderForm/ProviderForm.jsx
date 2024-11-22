@@ -101,10 +101,10 @@ const ProviderForm = ()=>{
                         <div className="textarea-container" style={{position: "relative", zIndex: "10000"}}>
                             <div style={{display: "flex", alignItems: "center"}}> 
                                 <div style={{flexGrow : "1"}}>
-                                    <textarea key={`textarea-${row.table_id}`} className="textarea" data-type="table" data={`${JSON.stringify(row)}`} data-table-name={`${row.table_name}`} data-table-id={`${row.table_id}`}  style={{display:"none", width: "100%", height: "48px",}} defaultValue={row.description}>{}</textarea>
+                                    <textarea key={`textarea-${row.table_id}`} className={`textarea ${style.TableTextArea}`} data-type="table" data={`${JSON.stringify(row)}`} data-table-name={`${row.table_name}`} data-table-id={`${row.table_id}`}  style={{display:"none", width: "100%", height: "48px",}} defaultValue={row.description}>{}</textarea>
                                     <span key={`span-${row.table_id}`} className={`${"span"}`} style={{pointerEvents:"none", height: "32px", overflow: "hidden"}}>{row.description}</span>
                                 </div>
-                                <div className="col-edit" onClick={handleEditDescription}>
+                                <div className="col-edit" onClick={handleEditDescription} style={{cursor: "pointer",}}>
                                     <FaPen color="#7298ff" style={{pointerEvents: "none"}} />
                                 </div>
                             </div>
@@ -137,6 +137,41 @@ const updateTableDetails = (elem) => {
     
   };
     
+  const handleColEditDescription =(e)=>{
+    let editButton = e.target
+    let parentElement = editButton.previousSibling
+    let textArea = parentElement.querySelector("textarea")
+    let span = parentElement.querySelector("span")
+
+    textArea.style.display = "block"; 
+    textArea.focus();
+    span.style.display = "none"; 
+
+    textArea.addEventListener("blur", () => {
+        span.textContent = textArea.value; 
+        textArea.style.display = "none"; 
+        span.style.display = "inline"; 
+
+        let tempTableDetails = JSON.parse(window.localStorage.getItem("dbschema"));
+
+        if (tempTableDetails) {
+            const tableId = textArea.dataset.tableId;
+            const columnId = textArea.dataset.columnId;
+            tempTableDetails.map((table) => {
+                if (table.table_id === tableId) {
+                    table.columns.map((column) => {
+                        if (column.column_id === columnId) {
+                            column.description = textArea.value;
+                        }
+                    });
+                }
+            });
+        }
+        window.localStorage.setItem("dbschema", JSON.stringify(tempTableDetails));
+        setProviderSchema(tempTableDetails)
+      
+    });
+  }
      
     const rowExpandComponent = (row)=>{
         let tempTableDetails =  JSON.parse(window.localStorage.getItem("dbschema")) 
@@ -146,17 +181,17 @@ const updateTableDetails = (elem) => {
                         return(
                             <div key={index} className={style.ExpandRowDiv}>
                                 <div className={`inline-flex-align-center ${ style.ExpandRowCol}`}> <FiTable color="#BEBEBE"/> <span style={{fontSize: "13px"}}>{column.column_name}</span> </div> 
-                                <div style={{cursor: "pointer", zIndex: "10000", flexGrow: 1}}>
+                                <div style={{zIndex: "10000", flexGrow: 1}}>
                                     <div className="child-textarea-container" style={{width: "100%", height: "22px"}}>
                                         <div style={{display: "flex", alignItems: "center"}}>
                                             <div style={{flexGrow: 1}}>
-                                                <textarea className="textarea" data-type="column" data={`${JSON.stringify(row.data)}`} data-table-id={`${row.data.table_id}`} data-table-name={`${row.data.table_name}`} data-column-id={`${column.column_id}`} data-column-name={`${column.column_name}`} style={{display:"none", width: "100%", height: "33px", marginTop: "-8px"}} defaultValue={column.description }>{}</textarea>
+                                            <textarea className={`textarea ${style.ColumnTextArea}`} data-type="column" data={`${JSON.stringify(row.data)}`} data-table-id={`${row.data.table_id}`} data-table-name={`${row.data.table_name}`} data-column-id={`${column.column_id}`} data-column-name={`${column.column_name}`} style={{display:"none", width: "100%", height: "33px", marginTop: "-8px"}} defaultValue={column.description }>{}</textarea>
                                                 <span className="span" style={{ pointerEvents: "none", height: "24px", overflow: "hidden", fontSize: "13px" }}>
                                                     {tempTableDetails?.[row.data.table_id]?.columns?.[column.column_id]?.description || column.description}
                                                 </span>
 
                                             </div>
-                                            <div className="field-edit" style={{paddingRight: "48px"}}>
+                                            <div  style={{paddingRight: "48px",cursor: "pointer",}} onClick={(e)=>handleColEditDescription(e)}>
                                                 <FaPen color="#7298ff" size={12} style={{pointerEvents: "none"}}/>
                                             </div>
                                         </div>
@@ -171,58 +206,7 @@ const updateTableDetails = (elem) => {
         </>)
     }
 
-    const onRowExpand = (expandState)=>{
-       
-        if(expandState == true){
-            setTimeout(()=>{
-                let elem = document.querySelectorAll(".field-edit");
-                
-                for (let index = 0; index < elem.length; index++) {
-                    
-                    let targetElem = elem[index].parentElement.parentElement
 
-                    targetElem.addEventListener("click",()=>{
-                        targetElem.querySelector(".textarea").addEventListener("focusout", () => {
-                            targetElem.querySelector(".textarea").style.display = "none"
-                            targetElem.querySelector(".span").style.display = "block"
-                            targetElem.querySelector(".span").innerText = targetElem.querySelector(".textarea").value
-                            
-                            let txtElem = targetElem.querySelector(".textarea")
-                            let tempTableDetails = JSON.parse(window.localStorage.getItem("dbschema"))
-                            const tableId = txtElem.dataset.tableId;
-                            const columnId = txtElem.dataset.columnId;
-                            const newDescription = txtElem.value;
-
-                            const table = tempTableDetails.find(t => t.table_id === tableId);
-                            if (!table) {
-                                return;
-                            }
-
-                            const column = table.columns.find(c => c.column_id === columnId);
-                            if (!column) {
-                                return;
-                            }
-                            column.description = newDescription;
-                            window.localStorage.setItem("dbschema", JSON.stringify(tempTableDetails));
-                            setProviderSchema(tempTableDetails)                    
-                    });
-
-                    if(targetElem.querySelector(".textarea").style.display == "none"){
-                            targetElem.querySelector(".textarea").style.display = "block"
-                            targetElem.querySelector(".textarea").focus()
-                            targetElem.querySelector(".span").style.display = "none"
-                        }else{
-                            targetElem.querySelector(".textarea").style.display = "none"
-                            targetElem.querySelector(".span").style.display = "block"
-                        }
-
-                    })
-
-                }
-            },1000)
-            
-        }
-    }
 
 
     const getProviderDetails = ()=>{
@@ -662,7 +646,7 @@ const onRemoveFile = (fileId) => {
                      <Tab title="Database Schema" tabKey="database-table" key={"database-table"} disabled={connectorId ? false : true} hide={![2].includes(providerDetails.category_id)}>
                         <TitleDescription title="Schema Details" description="Here are the tables and their columns for the plugin. Please describe the tables and it's column details to improve understanding of the plugin schema structure." />
                         <div style={{marginBottom: "30px"}}>
-                            <Table columns={tableColumns} data={providerSchema} expandableRows={true} expandableRowsComponent={rowExpandComponent} onRowExpandToggled={onRowExpand} />
+                            <Table columns={tableColumns} data={providerSchema} expandableRows={true} expandableRowsComponent={rowExpandComponent}  />
 
                         </div>
                         <div className={style.ActionDiv}>

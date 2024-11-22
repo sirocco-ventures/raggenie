@@ -116,3 +116,37 @@
     margin-bottom: 30px;
     display: block;
 }
+
+
+.TableTextArea{
+    border-radius: 6px;
+    padding: 8px;
+    background: #FFF;
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.14);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.TableTextArea:focus{
+    border: 3px solid #BADAFF;
+    outline: none;
+    resize: none;
+}
+.ColumnTextArea {
+    border-radius: 6px;
+    border: 1px solid #CCC;
+    background: #F9F9F9;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    outline: none;
+    resize: none; /* Disable manual resizing */
+    padding: 8px;
+    overflow: hidden; /* Hide the scrollbar */
+    min-height: 50px; /* Set an initial height */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.ColumnTextArea:focus {
+    border: 3px solid #BADAFF;
+    background: #FFF;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.14);
+    outline: none;
+}
