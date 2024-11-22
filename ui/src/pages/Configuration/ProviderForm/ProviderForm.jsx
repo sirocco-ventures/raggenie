@@ -41,8 +41,6 @@ const ProviderForm = ()=>{
     const [progressTime, setProgressTime] = useState('');
     const pdfUploadRef = useRef(null);
     
-    
-
     const [disableConnectorSave, setDisableConnectorSave] = useState(true);
     
     let [documentationError, setDocumentationError] = useState({hasError: false, errorMessage: ""})
@@ -63,6 +61,29 @@ const ProviderForm = ()=>{
     const maxFileSizeMB = 10;
     const maxFiles = 5; 
 
+    const handleEditDescription = (event) => {
+        const container = event.currentTarget.closest('.textarea-container');
+        const textarea = container.querySelector('.textarea');
+        const span = container.querySelector('.span');
+        
+        if (textarea && span) {
+            textarea.style.display = "block";
+            textarea.focus();
+            
+            span.style.display = "none";
+    
+            textarea.onblur = () => {
+                const updatedText = textarea.value;
+    
+                span.textContent = updatedText;
+                textarea.style.display = "none";
+                span.style.display = "block";
+    
+                updateTableDetails(textarea);
+            };
+        }
+    };
+
     let tableColumns = [
         
         {
@@ -80,10 +101,10 @@ const ProviderForm = ()=>{
                         <div className="textarea-container" style={{position: "relative", zIndex: "10000"}}>
                             <div style={{display: "flex", alignItems: "center"}}> 
                                 <div style={{flexGrow : "1"}}>
-                                    <textarea key={`textarea-${row.table_id}`} className="textarea" data-type="table" data={`${JSON.stringify(row)}`} data-table-name={`${row.table_name}`} data-table-id={`${row.table_id}`}  style={{display:"none", width: "100%", height: "48px",}} defaultValue={row.description}>{}</textarea>
-                                    <span key={`span-${row.table_id}`} className="span" style={{pointerEvents:"none", height: "32px", overflow: "hidden"}}>{row.description}</span>
+                                    <textarea key={`textarea-${row.table_id}`} className={`textarea ${style.TableTextArea}`} data-type="table" data={`${JSON.stringify(row)}`} data-table-name={`${row.table_name}`} data-table-id={`${row.table_id}`}  style={{display:"none", width: "100%", height: "48px",}} defaultValue={row.description}>{}</textarea>
+                                    <span key={`span-${row.table_id}`} className={`${"span"}`} style={{pointerEvents:"none", height: "32px", overflow: "hidden"}}>{row.description}</span>
                                 </div>
-                                <div className="col-edit">
+                                <div className="col-edit" onClick={handleEditDescription} style={{cursor: "pointer",}}>
                                     <FaPen color="#7298ff" style={{pointerEvents: "none"}} />
                                 </div>
                             </div>
@@ -96,25 +117,62 @@ const ProviderForm = ()=>{
 ]
 
 
-    const updateTableDetails = (elem)=>{
-        let tempTableDetails =  JSON.parse(window.localStorage.getItem("dbschema")) 
-
-        if(elem){
-            if(elem.dataset.type == "table"){
-               tempTableDetails[elem.dataset.tableId].description = elem.value
-
-            }else{
-                tempTableDetails[elem.dataset.tableId].columns[elem.dataset.columnId].description = elem.value
-                
-            }
-        }
-       
-        window.localStorage.setItem("dbschema", JSON.stringify(tempTableDetails))
-    
+const updateTableDetails = (elem) => {
+    let tempTableDetails = JSON.parse(window.localStorage.getItem("dbschema"));
+  
+    if (elem) {
+      const tableId = elem.dataset.tableId;
+      const tableIndex = tempTableDetails.findIndex(table => table.table_id === tableId);
+  
+      if (elem.dataset.type === "table") {
+        tempTableDetails[tableIndex].description = elem.value;
+      } else {
+        const columnIndex = tempTableDetails[tableIndex].columns.findIndex(column => column.column_id === elem.dataset.columnId);
+        tempTableDetails[tableIndex].columns[columnIndex].description = elem.value;
+      }
     }
+  
+    window.localStorage.setItem("dbschema", JSON.stringify(tempTableDetails));
+    setProviderSchema(tempTableDetails)
     
-     
+  };
+    
+  const handleColEditDescription =(e)=>{
+    let editButton = e.target
+    let parentElement = editButton.previousSibling
+    let textArea = parentElement.querySelector("textarea")
+    let span = parentElement.querySelector("span")
 
+    textArea.style.display = "block"; 
+    textArea.focus();
+    span.style.display = "none"; 
+
+    textArea.addEventListener("blur", () => {
+        span.textContent = textArea.value; 
+        textArea.style.display = "none"; 
+        span.style.display = "inline"; 
+
+        let tempTableDetails = JSON.parse(window.localStorage.getItem("dbschema"));
+
+        if (tempTableDetails) {
+            const tableId = textArea.dataset.tableId;
+            const columnId = textArea.dataset.columnId;
+            tempTableDetails.map((table) => {
+                if (table.table_id === tableId) {
+                    table.columns.map((column) => {
+                        if (column.column_id === columnId) {
+                            column.description = textArea.value;
+                        }
+                    });
+                }
+            });
+        }
+        window.localStorage.setItem("dbschema", JSON.stringify(tempTableDetails));
+        setProviderSchema(tempTableDetails)
+      
+    });
+  }
+     
     const rowExpandComponent = (row)=>{
         let tempTableDetails =  JSON.parse(window.localStorage.getItem("dbschema")) 
         return(<>
@@ -123,14 +181,17 @@ const ProviderForm = ()=>{
                         return(
                             <div key={index} className={style.ExpandRowDiv}>
                                 <div className={`inline-flex-align-center ${ style.ExpandRowCol}`}> <FiTable color="#BEBEBE"/> <span style={{fontSize: "13px"}}>{column.column_name}</span> </div> 
-                                <div style={{cursor: "pointer", zIndex: "10000", flexGrow: 1}}>
+                                <div style={{zIndex: "10000", flexGrow: 1}}>
                                     <div className="child-textarea-container" style={{width: "100%", height: "22px"}}>
                                         <div style={{display: "flex", alignItems: "center"}}>
                                             <div style={{flexGrow: 1}}>
-                                                <textarea className="textarea" data-type="column" data={`${JSON.stringify(row.data)}`} data-table-id={`${row.data.table_id}`} data-table-name={`${row.data.table_name}`} data-column-id={`${column.column_id}`} data-column-name={`${column.column_name}`} style={{display:"none", width: "100%", height: "33px", marginTop: "-8px"}} defaultValue={column.description }>{}</textarea>
-                                                <span className="span" style={{pointerEvents:"none", height: "24px", overflow: "hidden", fontSize: "13px"}}>{ tempTableDetails[row.data.table_id].columns[column.column_id].description != "" ? tempTableDetails[row.data.table_id].columns[column.column_id].description : column.description}</span>
+                                            <textarea className={`textarea ${style.ColumnTextArea}`} data-type="column" data={`${JSON.stringify(row.data)}`} data-table-id={`${row.data.table_id}`} data-table-name={`${row.data.table_name}`} data-column-id={`${column.column_id}`} data-column-name={`${column.column_name}`} style={{display:"none", width: "100%", height: "33px", marginTop: "-8px"}} defaultValue={column.description }>{}</textarea>
+                                                <span className="span" style={{ pointerEvents: "none", height: "24px", overflow: "hidden", fontSize: "13px" }}>
+                                                    {tempTableDetails?.[row.data.table_id]?.columns?.[column.column_id]?.description || column.description}
+                                                </span>
+
                                             </div>
-                                            <div className="field-edit" style={{paddingRight: "48px"}}>
+                                            <div  style={{paddingRight: "48px",cursor: "pointer",}} onClick={(e)=>handleColEditDescription(e)}>
                                                 <FaPen color="#7298ff" size={12} style={{pointerEvents: "none"}}/>
                                             </div>
                                         </div>
@@ -145,46 +206,7 @@ const ProviderForm = ()=>{
         </>)
     }
 
-    const onRowExpand = (expandState)=>{
-       
-        if(expandState == true){
-            setTimeout(()=>{
-                let elem = document.querySelectorAll(".field-edit");
-                
-                for (let index = 0; index < elem.length; index++) {
-                    
-                    let targetElem = elem[index].parentElement.parentElement
 
-                    targetElem.addEventListener("click",()=>{
-                        targetElem.querySelector(".textarea").addEventListener("focusout", (event) => {
-                            targetElem.querySelector(".textarea").style.display = "none"
-                            targetElem.querySelector(".span").style.display = "block"
-                            targetElem.querySelector(".span").innerText = targetElem.querySelector(".textarea").value
-                            
-                            let txtElem = targetElem.querySelector(".textarea")
-                            let tempTableDetails =  JSON.parse(window.localStorage.getItem("dbschema")) 
-                            tempTableDetails[txtElem.dataset.tableId].columns[txtElem.dataset.columnId].description = txtElem.value
-                            
-                            window.localStorage.setItem("dbschema", JSON.stringify(tempTableDetails))
-                        
-                    });
-
-                    if(targetElem.querySelector(".textarea").style.display == "none"){
-                            targetElem.querySelector(".textarea").style.display = "block"
-                            targetElem.querySelector(".textarea").focus()
-                            targetElem.querySelector(".span").style.display = "none"
-                        }else{
-                            targetElem.querySelector(".textarea").style.display = "none"
-                            targetElem.querySelector(".span").style.display = "block"
-                        }
-
-                    })
-
-                }
-            },1000)
-            
-        }
-    }
 
 
     const getProviderDetails = ()=>{
@@ -234,27 +256,26 @@ const ProviderForm = ()=>{
             setDisableConnectorSave(false); 
 
 
-            let tempSaveTableDetails = {}
-            connectorData.schema_config?.map(item=>{
-                if(!tempSaveTableDetails[item.table_id]){
-                    tempSaveTableDetails[item.table_id] = { table_id: item.table_id, table_name: item.table_name, description: item.description, columns: {}}
-                }
-                
-                item?.columns?.map(col=>{
-                    if(!tempSaveTableDetails[item.table_id].columns[col.column_id]){
-                        tempSaveTableDetails[item.table_id].columns[col.column_id] = { column_id: col.column_id, column_name: col.column_name, description :col.description }
-                    }
-                    
-                })
-                
-            })
-            window.localStorage.setItem("dbschema", JSON.stringify(tempSaveTableDetails))
+            let tempSaveTableDetails = [];
+            
+
+            connectorData.schema_config?.forEach(item => {                
+              tempSaveTableDetails.push({
+                table_id: item.table_id,
+                table_name: item.table_name,
+                description: item.description,
+                columns: item.columns.map(column => ({
+                  column_id: column.column_id,
+                  column_name: column.column_name,
+                  description: column.description
+                }))
+              });
+            });
+            
+            window.localStorage.setItem("dbschema", JSON.stringify(tempSaveTableDetails));
             
         })
     }
-
-
-    
     const onSaveFiles = (file) => {
         const uploadUrl = API_URL + `/connector/upload/datasource`;
         const formData = new FormData();
@@ -299,9 +320,6 @@ const ProviderForm = ()=>{
         });
     };
     
-
-
-
 
     const onFileChange = (event) => {
         const selectedFile = event.target.files[0];
@@ -372,9 +390,6 @@ const onRemoveFile = (fileId) => {
         providerConfig.sort((firstItem, secondItem)=>{
             return firstItem.order > secondItem.order ? -1 : 1
         })
-
-
-
         return(
             <>
                 {providerConfig.map((item, index)=>{
@@ -475,7 +490,7 @@ const onRemoveFile = (fileId) => {
                     setCurrentActiveTab("documentation")
                 }
             }
-        }).catch(e => {
+        }).catch(() => {
             toast.error("Plugin saving failed")
         }
         )
@@ -501,46 +516,37 @@ const onRemoveFile = (fileId) => {
      }
 
 
-     const onSaveDBSchema = (e)=>{
-       
-        let tempTableDetails = []
-        let localTableDetails =  JSON.parse(window.localStorage.getItem("dbschema")) 
-        let fullFill = true
-        Object.keys(localTableDetails).map(table_id=>{
-            let tempCols = [];
-            Object.keys(localTableDetails[table_id].columns).map(col_id=>{
-                tempCols.push({
-                    column_id: col_id,
-                    column_name: localTableDetails[table_id].columns[col_id].column_name,
-                    description: localTableDetails[table_id].columns[col_id].description
-                })
-            })
-
-
-            if(localTableDetails[table_id].description == ""){
-                fullFill = false
-            }
-
-            tempTableDetails.push({
-                table_id: table_id,
-                table_name: localTableDetails[table_id].table_name,
-                description: localTableDetails[table_id].description,
-                columns: tempCols
-            })
-        })
-
-       
-
-        if(fullFill == false){
-            toast.error("Table description is a required field. Please provide a valid description.")
-            return
+     const onSaveDBSchema = () => {
+        let tempTableDetails = [];
+        let localTableDetails = JSON.parse(window.localStorage.getItem("dbschema"));
+      
+        let atLeastOneDescriptionFilled = false;
+      
+        localTableDetails.forEach(table => {
+          if (table.description !== "") {
+            atLeastOneDescriptionFilled = true;
+          }
+      
+          tempTableDetails.push({
+            table_id: table.table_id,
+            table_name: table.table_name,
+            description: table.description,
+            columns: table.columns
+          });
+        });
+      
+        if (!atLeastOneDescriptionFilled) {
+          toast.error("Please fill at least one table description.");
+          return;
         }
-
-        updateSchema(connectorId, tempTableDetails).then(response=>{
-            toast.success("Data saved successfully.")
-            setCurrentActiveTab("documentation") 
-        })
-    }
+      
+        updateSchema(connectorId, tempTableDetails)
+          // eslint-disable-next-line no-unused-vars
+          .then(_response => {
+            toast.success("Data saved successfully.");
+            setCurrentActiveTab("documentation");
+          });
+      };
 
 
     const onDocumentUpdate = (e)=>{
@@ -579,6 +585,7 @@ const onRemoveFile = (fileId) => {
                     target.querySelector(".span").style.display = "block"
                     target.querySelector(".span").innerText = target.querySelector(".textarea").value
                     updateTableDetails(target.querySelector(".textarea"))
+                    
                 });
                 
                 if(target.querySelector(".textarea").style.display == "none"){
@@ -639,7 +646,7 @@ const onRemoveFile = (fileId) => {
                      <Tab title="Database Schema" tabKey="database-table" key={"database-table"} disabled={connectorId ? false : true} hide={![2].includes(providerDetails.category_id)}>
                         <TitleDescription title="Schema Details" description="Here are the tables and their columns for the plugin. Please describe the tables and it's column details to improve understanding of the plugin schema structure." />
                         <div style={{marginBottom: "30px"}}>
-                            <Table columns={tableColumns} data={providerSchema} expandableRows={true} expandableRowsComponent={rowExpandComponent} onRowExpandToggled={onRowExpand} />
+                            <Table columns={tableColumns} data={providerSchema} expandableRows={true} expandableRowsComponent={rowExpandComponent}  />
 
                         </div>
                         <div className={style.ActionDiv}>
