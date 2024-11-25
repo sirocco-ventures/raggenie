@@ -77,10 +77,12 @@ class IntentExtracter(AbstractHandler):
         response["available_datasources"] = datasource_names
 
         if "metadata_inquiry" in capability_names:
-            capability_description += "metadata_inquiry : queries about overview of available data, the structure of a database (including tables and columns), the meaning behind specific columns, and the purpose within a database context, eg: what kind of data you have? or list questions which can be asked?\n"
+            capability_description += "metadata_inquiry : queries about overview of available data, the structure of a database (including tables and columns), the meaning behind specific columns, eg: what kind of data you have? or list questions which can be asked?\n"
 
         contexts = request.get("context", [])
         contexts = contexts[-5:] if len(contexts) >= 5 else contexts
+
+        previous_intent = contexts[-1].chat_answer["intent"] if len(contexts) > 0 else "None"
 
         prompt = """
         You are part of a chatbot system where you have to extract intent from users chats and match it with given intents.
@@ -95,6 +97,8 @@ class IntentExtracter(AbstractHandler):
         $capabilities
         out_of_context: If chat is irrelevant to chatbot context and its capabilities
         --- Intent section ---
+
+        Previous last message Intent : $previous_intent
 
         Instructions:
         1.Only one intent must be identified.Multiple intents are prohibited.
@@ -120,7 +124,8 @@ class IntentExtracter(AbstractHandler):
             long_description = long_description,
             short_description =short_description,
             capability_list = capability_list,
-            capabilities= capability_description
+            capabilities= capability_description,
+            previous_intent = previous_intent
         )
         logger.debug(f"intent prompt:{prompt}")
 
@@ -134,7 +139,6 @@ class IntentExtracter(AbstractHandler):
             return Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
 
         response["intent_extractor"] = parse_llm_response(output['content'])
-
         response["available_intents"] = capability_names
         response["rag_filters"] = {
              "datasources" : [response["intent_extractor"]['intent']] if 'intent_extractor' in response else [],

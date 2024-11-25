@@ -74,24 +74,6 @@ class TogethorModelLoader(ModelLoader, LoaderMetadataMixin):
             })
         return response_metadata
 
-    def messages_format(self, prompt, previous_messages) -> list:
-        chat_history = []
-        for prev_message in previous_messages:
-            chat_history.append({"role": "user", "content": prev_message.chat_query})
-            if prev_message.chat_answer is not None:
-                temp = prev_message.chat_answer
-                temp.pop("data", None)
-                chat_history.append({"role": "assistant", "content": json.dumps(temp)})
-
-
-        messages = []
-        if len(chat_history) > 0:
-            messages.extend(chat_history)
-        messages.append({"role": "user", "content": prompt})
-
-        logger.info(f"messages:{messages}")
-        return messages
-
     def get_models(self):
         """
         Retrieve models from the TogetherAI API.
