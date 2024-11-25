@@ -46,12 +46,9 @@ const Capability = ({capabilityId = "", capabilityIndex = 0, title = "", name = 
 
         const tempAcitions = actionsForSelect.filter(item1 => {
             let v =   actions.some(item2 => {
-                console.log({item1, item2})
                 let k = item1.value == item2.id
-                console.log({k})
                 return k
             })
-            console.log({v})
             return v
         });
         setSelectedActions(tempAcitions)
@@ -75,8 +72,8 @@ const Capability = ({capabilityId = "", capabilityIndex = 0, title = "", name = 
                     <div>
                         <div className={style.CapabilityDetailsContainer}>
                             <Input type="hidden" name="capability-id" value={capabilityId}  />
-                            <Input label="Capability Name" name="capability-name" value={name}  onChange={(e)=>setCapabilityLitle(e.target.value)} />
-                            <Textarea label="Description" name="capability-description" value={description} rows={8}/>
+                            <Input label="Capability Name" maxlength={20} name="capability-name" value={name}  onChange={(e)=>setCapabilityLitle(e.target.value)} />
+                            <Textarea label="Description" maxlength={200} name="capability-description" value={description} rows={8}/>
                             <Select label="Select Action" name="capability-actions" isMulti={true} options={actionsForSelect} value={selectedActions} onChange={setSelectedActions} />
                         </div>
                     </div>
