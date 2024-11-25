@@ -90,7 +90,6 @@ packaging==23.2
 pillow==10.4.0
 posthog==3.6.5
 proto-plus==1.24.0
-protobuf==4.25.4
 psycopg2-binary==2.9.9
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
