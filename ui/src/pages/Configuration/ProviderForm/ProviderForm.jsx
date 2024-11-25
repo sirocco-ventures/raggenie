@@ -424,8 +424,8 @@ console.log(providerConfig);
                     <p>{providerDetails.description}</p>
                 </div>
                 <div>
-                    <Input label="Plugin Name" placeholder="Plugin Name" maxlength={20} required hasError={errors["pluginName"]?.message ? true : false} errorMessage={errors["pluginName"]?.message}  {...register("pluginName", {required: "This is required" ,minLength: {value: 10, message: "minimum length is 10"}})} onChange={onChangesOption}/>
-                    <Textarea label="Plugin Description" placeholder="Describe the plugin's purpose and content in a detailed and informative manner, emphasizing its key features and functionality." required rows={8} maxlength={200} hasError={errors["pluginDescription"]?.message ? true : false} errorMessage={errors["pluginDescription"]?.message}  {...register("pluginDescription", {required: "This is required", minLength: {value: 20, message: "minimum length is 20"}})} onChange={onChangesOption}/>
+                    <Input label="Plugin Name" placeholder="Plugin Name" maxLength={20} required hasError={errors["pluginName"]?.message ? true : false} errorMessage={errors["pluginName"]?.message}  {...register("pluginName", {required: "This is required" ,minLength: {value: 10, message: "minimum length is 10"}})} onChange={onChangesOption}/>
+                    <Textarea label="Plugin Description" placeholder="Describe the plugin's purpose and content in a detailed and informative manner, emphasizing its key features and functionality." required rows={8} maxLength={200} hasError={errors["pluginDescription"]?.message ? true : false} errorMessage={errors["pluginDescription"]?.message}  {...register("pluginDescription", {required: "This is required", minLength: {value: 20, message: "minimum length is 20"}})} onChange={onChangesOption}/>
                     {generateConfig()}
         
                 </div>
