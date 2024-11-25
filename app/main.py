@@ -4,6 +4,7 @@ from app.api.v1.main_router import MainRouter
 from app.api.v1.connector import router as ConnectorRouter
 from app.api.v1.llmchat import chat_router
 from app.api.v1.provider import router as ProviderRouter
+from app.api.v1.provider import vectordb as vectordb
 from app.api.v1.connector import cap_router as capabilityrouter
 from app.api.v1.connector import inference_router as inference_router
 from app.api.v1.connector import actions as actions
@@ -53,11 +54,23 @@ def create_app(config):
 
 
     logger.info("initializing vector store")
-    vectore_store = container.vectorstore().load_class()
-    vectore_store.connect()
+    vectore_store, is_error = provider_svc.create_vectorstore_instance(session)
+    if is_error is not None:
+        logger.critical(is_error)
+    err = vectore_store.connect()
 
     logger.info("initializing plugin providers")
     err = provider_svc.initialize_plugin_providers(session)
+    if err is not None:
+        logger.critical(err)
+
+    logger.info("initializing vector store")
+    err = provider_svc.initialize_vectordb_provider(session)
+    if err is not None:
+        logger.critical(err)
+
+    logger.info("initializing Vector Embeddings")
+    err = provider_svc.initialize_embeddings(session)
     if err is not None:
         logger.critical(err)
 
@@ -132,6 +145,7 @@ def create_app(config):
     app.include_router(actions, prefix="/api/v1/actions")
     app.include_router(sample_sql, prefix="/api/v1/sql")
     app.include_router(login, prefix="/api/v1/auth")
+    app.include_router(vectordb, prefix="/api/v1/vectordb")
 
     curr_schema = app.openapi()
     curr_schema["info"]["title"] = "Rag genie Chat API"

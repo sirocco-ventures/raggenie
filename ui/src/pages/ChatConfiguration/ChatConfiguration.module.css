@@ -103,3 +103,48 @@
     background: transparent;
     outline: none;border: none;
 }
+
+.VectorContainer{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    padding-top: 85px;
+    flex-direction: column;
+}
+.VectorContent{
+    max-width: 572px;
+    text-align: center;
+}
+.VectorControls{
+    max-width: 572px; 
+    gap: 10px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.SaveVectorContainer {
+    bottom: 20px;
+    border-radius: var(--8, 8px);
+    background: #F9F9F9;
+    height: auto;
+    bottom: 20px;
+    padding: 17px 19px 18px 16px;
+    align-content: space-around;
+    justify-content: space-between;
+}
+
+.VectorSaveContainer {
+    display: flex;
+}
+.VectorFields{
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+}
+.VectorFormContainer{
+    display: flex;
+    flex-direction: column;
+}

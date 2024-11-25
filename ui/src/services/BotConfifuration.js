@@ -13,14 +13,10 @@ export const getLLMProviders = ()=>{
 
 
 export const saveBotConfiguration = (configID, saveData = {})=>{
-
-
     let apiURL = "/connector/configuration/create"
-
     if(configID){
        apiURL = `/connector/configuration/update/${configID}`
     }
-
    return PostService(`${API_URL}${apiURL}`, {
        short_description: saveData.botShortDescription,
        long_description: saveData.botLongDescription,
@@ -62,3 +58,26 @@ export const saveBotInferene = (configID, inferenceID, saveData = {})=>{
 export const restartBot = (configID)=>{
    return PostService(API_URL + `/connector/createyaml/${configID}`,{},{loaderText: "Restarting Chatbot"})
 }
+
+
+export const getVectorDBList = () => {
+    return GetService(API_URL + "/vectordb/list/all")
+}
+
+export const getEmbeddings = () => {
+    return GetService(API_URL + "/vectordb/embedding/all")
+}
+
+export const testVectorDB = (data) => {
+    return PostService(`${API_URL}/vectordb/test_credentials`, data)
+}
+
+export const saveVectorDB = (vectordbID, data) => { 
+    let apiURL = "/vectordb/create"
+    if(vectordbID){
+        apiURL = `/vectordb/update/${vectordbID}`
+    }
+    return PostService(`${API_URL}${apiURL}`, data)
+}
+
+

@@ -505,8 +505,9 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     configs.inference_llm_model=inference_config[0]["unique_name"]
 
     config = request.app.config
-    vectore_store = request.app.vector_store
-    vectore_store.connect()
+    vector_store, is_error = provider_svc.create_vectorstore_instance(db)
+    if vector_store:
+        vector_store.connect()
     context_storage = request.app.context_storage
 
     data_sources = combined_yaml_content["datasources"]
@@ -521,17 +522,17 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     datasources = request.app.container.datasources()
 
     mappings = confyaml.get("mappings",{})
-    datasources, err = svc.update_datasource_documentations(db, vectore_store, datasources, mappings)
+    datasources, err = svc.update_datasource_documentations(db, vector_store, datasources, mappings)
     if err:
         logger.error("Error updating")
 
 
-    query_chain = QueryChain(config, vectore_store, datasources, context_storage)
-    general_chain = GeneralChain(config, vectore_store, datasources, context_storage)
+    query_chain = QueryChain(config, vector_store, datasources, context_storage)
+    general_chain = GeneralChain(config, vector_store, datasources, context_storage)
     capability_chain = CapabilityChain(config, context_storage, query_chain)
-    metedata_chain = MetadataChain(config, vectore_store, datasources, context_storage)
+    metedata_chain = MetadataChain(config, vector_store, datasources, context_storage)
 
-    chain = IntentChain(config, vectore_store, datasources, context_storage, query_chain, general_chain, capability_chain, metedata_chain)
+    chain = IntentChain(config, vector_store, datasources, context_storage, query_chain, general_chain, capability_chain, metedata_chain)
 
     request.app.chain = chain
 
@@ -540,7 +541,7 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
         "error":None
     }
 
-@inference_router.post("/get/models", response_model=resp_schemas.CommonResponse)
+@inference_router.post("/get/models", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def get_llm_provider_models(llm_provider: schemas.LLMProviderBase):
     """
     Retrieves the models associated with the specified LLM provider.

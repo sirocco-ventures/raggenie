@@ -14,26 +14,25 @@ import sys
 def llm(ctx) -> None:
     """
     Starts the LLM chain server using Uvicorn.
-    
+
     :param ctx: Configuration context passed from the CLI command.
     """
-    
+
     logger.info("Intializing fastapi application server")
-    try:
-        
-        app = create_app(config=ctx)
-        logger.info("Intialized fastapi application")
-        logger.info("Starting Uvicorn server...")
-        uvicorn.run(app,
-                    host="0.0.0.0", 
-                    port=configs.application_port, 
-                    reload=False)
-        
-    except Exception as e:
-        logger.critical(f"Failed to start the LLM server: {e}")
-        sys.exit(1)
+    # try:
+
+    app = create_app(config=ctx)
+    logger.info("Intialized fastapi application")
+    logger.info("Starting Uvicorn server...")
+    uvicorn.run(app,
+                host="0.0.0.0",
+                port=configs.application_port,
+                reload=False)
+
+    # except Exception as e:
+    #     logger.critical(f"Failed to start the LLM server: {e}")
+    #     sys.exit(1)
 
 
 # Registering llm command
 cli.add_command(llm)
-   
