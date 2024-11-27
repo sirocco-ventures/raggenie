@@ -20,7 +20,7 @@ __connection_args__ = OrderedDict(
         order = 2,
         required = True,
         value = None,
-        slug = "api_key"
+        slug = "token"
     ),
     workspace_id=ConnectionArgument(
         type= 1,
@@ -29,7 +29,7 @@ __connection_args__ = OrderedDict(
         order = 1,
         required = True,
         value = None,
-        slug = "space_name"
+        slug = "workspace_id"
     )
 )
 
