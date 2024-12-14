@@ -1,4 +1,6 @@
 import sqlite3
+import pathlib
+import urllib
 from loguru import logger
 import sqlvalidator
 import sqlparse
@@ -28,9 +30,9 @@ class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
         for idx, col in enumerate(cursor.description):
             d[col[0]] = row[idx]
         return d
-
+    
     def connect(self):
-        try:
+        try:            
             self.connection = sqlite3.connect(**self.params)
             self.connection.row_factory = self.dict_factory
             self.cursor = self.connection.cursor()
@@ -41,16 +43,15 @@ class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
             logger.error(f"Error connecting to SQLite DB: {error}")
             return False, error
 
-
+    # TO DO: Check how to check self.connection.closed in sqlite
     def healthcheck(self):
         try:
-            if self.connection is None or self.connection.closed:
+            if self.connection is None:
                 logger.warning("Connection to SQLite DB is not established.")
                 return False, "Connection to SQLite DB is not established."
 
-            with self.connection.cursor() as cursor:
-                cursor.execute("SELECT 1;")
-                return True, None
+            self.cursor.execute("SELECT 1;")
+            return True, None        
         except sqlite3.Error as error:
             return False, error
 

@@ -13,9 +13,9 @@ __category__ = 2
 
 # Connection arguments
 __connection_args__ = OrderedDict(
-    db_name= ConnectionArgument(
+    database = ConnectionArgument(
         type = 1,
-        generic_name= 'Database name',
+        generic_name= 'Sqlite Database name',
         description = 'Database name',
         order= 5,
         required = True,
@@ -124,7 +124,7 @@ __prompt__ = Prompt(**{
 
             {
                 "explanation": "Explain how you finalized the sql query using the schemas and rules provided",
-                "query" : "postgresql query",
+                "query" : "sqlite query",
                 "operation_kind" : "aggregation|list",
                 "visualisation": {
                     "type": "chart type (bar chart, line chart, pie chart) or 'table' for tabular format; 'none' if operation_kind is 'list'",
