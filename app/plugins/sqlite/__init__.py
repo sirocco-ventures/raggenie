@@ -13,14 +13,14 @@ __category__ = 2
 
 # Connection arguments
 __connection_args__ = OrderedDict(
-    database = ConnectionArgument(
+    db_name = ConnectionArgument(
         type = 1,
-        generic_name= 'Sqlite Database name',
+        generic_name= 'Sqlite Database Name',
         description = 'Database name',
-        order= 5,
+        order= 1,
         required = True,
         value = None,
-        slug = "database"
+        slug = "db_name"
     ),
 )
 

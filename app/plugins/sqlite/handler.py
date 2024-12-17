@@ -12,12 +12,13 @@ from app.base.query_plugin import QueryPlugin
 from app.base.plugin_metadata_mixin import PluginMetadataMixin
 
 class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
-    def __init__(self, database:str):
+    def __init__(self, db_name:str, db_parent_path:str=''):
         logger.info("Initializing datasource")
         super().__init__(__name__)
 
         self.params = {
-            'database': database
+            'db_name': db_name,
+            'db_parent_path': db_parent_path,
         }
         self.connection = None
 
@@ -25,16 +26,24 @@ class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
         self.cursor = None
         self.max_limit = 5
 
-    def dict_factory(self, cursor, row):
+    def _dict_factory(self, cursor, row):
         d = {}
         for idx, col in enumerate(cursor.description):
             d[col[0]] = row[idx]
         return d
     
+    def _path_to_uri(self, path):
+        path = pathlib.Path(path)
+        if path.is_absolute():
+            return path.as_uri()
+        return 'file:' + urllib.parse.quote(path.as_posix(), safe=':/')
+
     def connect(self):
-        try:            
-            self.connection = sqlite3.connect(**self.params)
-            self.connection.row_factory = self.dict_factory
+        try:
+            db_path = pathlib.Path(self.params['db_parent_path']).joinpath(self.params['db_name']).as_posix()
+            uri_filename = f"{self._path_to_uri(db_path)}?mode=rw"            
+            self.connection = sqlite3.connect(uri_filename, uri=True)
+            self.connection.row_factory = self._dict_factory
             self.cursor = self.connection.cursor()
             
             logger.info("Connection to SQLite DB successful.")
@@ -43,7 +52,6 @@ class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
             logger.error(f"Error connecting to SQLite DB: {error}")
             return False, error
 
-    # TO DO: Check how to check self.connection.closed in sqlite
     def healthcheck(self):
         try:
             if self.connection is None:
@@ -68,6 +76,7 @@ class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
 
     def fetch_data(self, query, params=None):
         try:
+            params = {} if params is None else params
             self.cursor.execute(query, params)
             if "limit"  not in query.lower():
                 return self.cursor.fetchmany(self.max_limit), None
@@ -100,7 +109,7 @@ class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
                 fields= []
 
 
-                table_ddl = f"\n\nCREATE TABLE {table}"
+                table_ddl = f"\n\nCREATE TABLE {table} ("
                 # logger.info(f"columns:{columns}")
                 for column in columns:
                     fields.append({
