@@ -7,14 +7,15 @@ import chatBotAPI from './ChatBotAPI'
 import { useParams } from "react-router-dom"
 import { isEmptyJSON } from "src/utils/utils"
 import Message from 'src/components/ChatBox/Message'
-import loader from '../components/ChatBox/Loader'
+import Loader from '../components/ChatBox/Loader'
 import './ChatBot.css'
 
 
-function ChatBot({apiURL}) {
+function ChatBot({ apiURL }) {
   if (!apiURL) return console.error("apiURL is undefined")
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
   let { contextId } = useParams()
 
   const toggleChatbox = () => {
@@ -27,32 +28,36 @@ function ChatBot({apiURL}) {
       { sender: 'user', message: message },
     ]);
 
+    setLoading(true);
+
     chatBotAPI(message, contextId, apiURL)
       .then(response => {
         const res = response.data;
         const chatMessage = res.response.content;
         let chatError = isEmptyJSON(res.response.error) ? "" : res.response.error
-        let chatEntity =  res.response.main_entity
+        let chatEntity = res.response.main_entity
         let chatFormat = res.response.main_format
         let chatKind = res.response.kind
-        let chatData =  { 
-                chart: {
-                    data: res.response.data,
-                    title: res.response.title,
-                    xAxis: res.response.x,
-                    yAxis: res.response.y
-                },
-                query: res.response.query
-            }
-        
-      
+        let chatData = {
+          chart: {
+            data: res.response.data,
+            title: res.response.title,
+            xAxis: res.response.x,
+            yAxis: res.response.y
+          },
+          query: res.response.query
+        }
+
+
         // console.log({isBot: true, message: chatMessage, entity: chatEntity, error: chatError, format: chatFormat, kind: chatKind, data: chatData })
         // console.log(message)
         setMessages((prevMessages) => [
           ...prevMessages,
           { sender: 'bot', message: chatMessage, entity: chatEntity, error: chatError, format: chatFormat, kind: chatKind, data: chatData },
         ]);
-        
+
+        setLoading(false);
+
       })
 
 
@@ -82,17 +87,21 @@ function ChatBot({apiURL}) {
             <div className='message-wrapper'>
               {messages.map((message, index) => {
                 if (message.sender === 'user') {
-                  return <div className='user-message'>{message.message}</div>;
+                  return (
+                    <>
+                      <div className='user-message'>{message.message}</div>
+                      <div className='bot-message'>{loading && index === messages.length - 1 && <Loader />}</div>
+                    </>
+                  )
                 } else if (message.sender === 'bot') {
                   return (
-                            <>
-                    <div className='bot-message'>
-                      <img src={botdpImage} alt='bot avatar'></img>
-                      {/* {message.message} */}
-                      <Message message={message} />
-                    </div>
-                      </>)
-                            
+                    <>
+                      <div className='bot-message'>
+                        <img src={botdpImage} alt='bot avatar'></img>
+                        {/* {message.message} */}
+                        <Message message={message} />
+                      </div>
+                    </>)
                 }
               })}
             </div>

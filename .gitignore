@@ -47,6 +47,7 @@ cover/
 
 
 # Environments
+myenv/
 .env
 .venv
 env/
@@ -69,3 +70,4 @@ test_db.db
 
 # node_modules folder
 ui/node_modules
+ui/dist-library
