@@ -7,7 +7,7 @@ import ChatConfiguration from "src/pages/ChatConfiguration/ChatConfiguration";
 import ProviderForm from "src/pages/Configuration/ProviderForm/ProviderForm";
 import BotConfiguration from "src/pages/ChatConfiguration/ChatConfiguration";
 import Chat from "src/pages/Chat/Chat";
-
+import ChatBot from "src/embedbot/ChatBot";
 
 const  routes = [
 
@@ -77,6 +77,13 @@ const  routes = [
         path: "/bot-configuration",
         icon: "",
         page: <BotConfiguration/>,
+        isPrivate: true
+    },
+    {
+        title: "Embed Bot",
+        path: "/embedbot",
+        icon: "",
+        page: <ChatBot/>,
         isPrivate: true
     },
   ]
