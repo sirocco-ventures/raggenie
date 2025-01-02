@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
+import { v4 as uuidv4 } from 'uuid';
 import arrowImage from './assets/arrow.svg'
 import logoImage from './assets/logo.svg'
 import largeLogo from './assets/largelogo.svg'
 import sendImage from './assets/send.png'
 import botdpImage from './assets/bot-dp.svg'
-import chatBotAPI from './ChatBotAPI'
-import { useParams } from "react-router-dom"
+import {chatBotAPI, getChatByContext} from './ChatBotAPI'
 import { isEmptyJSON } from "src/utils/utils"
 import Message from 'src/components/ChatBox/Message'
 import Loader from '../components/ChatBox/Loader'
@@ -17,11 +17,43 @@ function ChatBot({ apiURL, uiSize }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  let { contextId } = useParams()
 
   const toggleChatbox = () => {
     setIsOpen(!isOpen);
   }
+
+  let contextId = localStorage.getItem('contextId');
+  useEffect(() => {
+    if (!contextId) {
+      contextId = generateContextUUID();
+      localStorage.setItem('contextId', contextId);
+    } else {
+      getChatByContext(contextId)
+        .then(response => {
+          const chats = response.data.data.chats;
+          const last5chats = chats.slice(-15);
+  
+          const newMessages = last5chats.flatMap(chat => {
+            const chatData = {
+              chart: {
+                data: chat.chat_answer.data,
+                title: chat.chat_answer.title,
+                xAxis: chat.chat_answer.x,
+                yAxis: chat.chat_answer.y,
+              },
+              query: chat.chat_answer.query,
+            };
+  
+            return [
+              { sender: 'user', message: chat.chat_query },
+              { sender: 'bot', message: chat.chat_answer.content,entity: chat.chat_answer.main_entity,format: chat.chat_answer.main_format, kind: chat.chat_answer.kind, data: chatData },
+            ];
+          });
+  
+          setMessages(newMessages);
+        });
+    }
+  }, []);  /* runs only on mount  */
 
   const simulate = (message) => {
     setMessages((prevMessages) => [
@@ -142,6 +174,10 @@ function ChatBot({ apiURL, uiSize }) {
       )}
     </div>
   )
+}
+
+function generateContextUUID() {
+  return uuidv4();
 }
 
 export default ChatBot

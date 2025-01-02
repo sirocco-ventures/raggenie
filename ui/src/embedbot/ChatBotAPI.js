@@ -1,22 +1,26 @@
 // src/ChatBotAPI.js
-// import { API_URL } from "src/config/const"
+import { API_URL } from "src/config/const"
 import PostService from "src/utils/http/PostService";
+import GetService from "src/utils/http/GetService"
 
-const chatBotAPI = (message, contextId, apiURL) => {
+export const chatBotAPI = (message, contextId, apiURL) => {
   // console.log(contextId)
   let axiosConfig = {
     headers: {
-      "x-llm-context-id": '1516d185-5bba-4190-8491-caa4999fe322',
+      "x-llm-context-id": contextId,
     },
   };
 
   return PostService(
-    apiURL + "/query/query",
+    API_URL + "/query/query",
     { content: message, role: "user" },
     { showLoader: false, allowAuthHeaders: true },
     axiosConfig
   );
 };
 
+export const getChatByContext = (contextId) => {
+  return GetService(API_URL + `/chat/get/${contextId}`,{},{allowAuthHeaders:false})
+}
 
-export default chatBotAPI;
+
