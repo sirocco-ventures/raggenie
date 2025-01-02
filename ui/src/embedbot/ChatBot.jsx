@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import arrowImage from './assets/arrow.svg'
 import logoImage from './assets/logo.svg'
+import largeLogo from './assets/largelogo.svg'
 import sendImage from './assets/send.png'
 import botdpImage from './assets/bot-dp.svg'
 import chatBotAPI from './ChatBotAPI'
@@ -11,7 +12,7 @@ import Loader from '../components/ChatBox/Loader'
 import './ChatBot.css'
 
 
-function ChatBot({ apiURL }) {
+function ChatBot({ apiURL, uiSize }) {
   if (!apiURL) return console.error("apiURL is undefined")
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -70,20 +71,20 @@ function ChatBot({ apiURL }) {
   return (
     <div>
       {/* Chatbox Icon */}
-      <button className={`float-button ${isOpen ? 'open' : ''}`} onClick={toggleChatbox}>
+      <button className={`float-button large ${isOpen ? 'open' : ''}`} onClick={toggleChatbox}>
         <img src={arrowImage} className='button-icon'></img>
       </button>
 
       {/* Chatbox Window */}
       {isOpen && (
-        <div className="chat-box">
+        <div className={`chat-box ${uiSize === 'large' ? 'large' : ''}`}>
           <div className="chat-header">
             <img src={arrowImage} onClick={toggleChatbox} className='min-btn'></img>
-            <img src={logoImage}></img>
+            <img src={uiSize === 'large' ? largeLogo: logoImage}></img>
             <span className='header-text'>Assistant</span>
           </div>
 
-          <div className='chat-body'>
+          <div className={`chat-body ${uiSize === 'large' ? 'large' : ''}`}>
             <div className='message-wrapper'>
               {messages.map((message, index) => {
                 if (message.sender === 'user') {
@@ -109,7 +110,7 @@ function ChatBot({ apiURL }) {
 
           </div>
 
-          <div className="input-div">
+          <div className={`input-div ${uiSize === 'large' ? 'large' : ''}`}>
             <div
               className="chat-input"
               contentEditable="true"
@@ -131,7 +132,7 @@ function ChatBot({ apiURL }) {
               onClick={() => {
                 const chatInput = document.querySelector('.chat-input').textContent.trim();
                 simulate(chatInput);
-                chatInput.textContent = ''; // Clear input
+                document.querySelector('.chat-input').textContent = '';
               }}
             >
               <img src={sendImage}></img>
