@@ -25,7 +25,7 @@ function ChatBot({ apiURL, uiSize }) {
   let contextId = localStorage.getItem('contextId');
   useEffect(() => {
     if (!contextId) {
-      contextId = generateContextUUID();
+      contextId = uuidv4();
       localStorage.setItem('contextId', contextId);
     } else {
       getChatByContext(contextId)
@@ -176,8 +176,5 @@ function ChatBot({ apiURL, uiSize }) {
   )
 }
 
-function generateContextUUID() {
-  return uuidv4();
-}
 
 export default ChatBot
