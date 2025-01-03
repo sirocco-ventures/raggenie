@@ -28,7 +28,7 @@ function ChatBot({ apiURL, uiSize }) {
       contextId = uuidv4();
       localStorage.setItem('contextId', contextId);
     } else {
-      getChatByContext(contextId)
+      getChatByContext(contextId , apiURL)
         .then(response => {
           const chats = response.data.data.chats;
   
@@ -50,7 +50,7 @@ function ChatBot({ apiURL, uiSize }) {
           });
           
           setMessages(newMessages);
-          scrollToLastMessage();
+          scrollToLastMessage(2000);
         });
     }
   }, []);  /* runs only on mount  */
@@ -63,7 +63,7 @@ function ChatBot({ apiURL, uiSize }) {
     
     setLoading(true);
 
-    scrollToLastMessage();
+    scrollToLastMessage(0);
 
     chatBotAPI(contextId, apiURL, message)
       .then(response => {
@@ -171,13 +171,13 @@ function ChatBot({ apiURL, uiSize }) {
   )
 }
 
-function scrollToLastMessage() {
+function scrollToLastMessage(delay) {
   setTimeout( () => {
     const chatBody = document.querySelector('.message-wrapper');
     const lastMessage = chatBody.lastElementChild;
     console.log(lastMessage)
     lastMessage.scrollIntoView({ behavior: 'smooth' })
-  },500);
+  },delay);
 }
 
 
