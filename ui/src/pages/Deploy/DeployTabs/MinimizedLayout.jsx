@@ -20,7 +20,6 @@ const MinimizedLayout = () => {
     const container = document.createElement('div');
     container.id = 'chatbox-container';
     document.body.appendChild(container);
-    console.log(ChatBot.mountChatbox)
     if (ChatBot.mountChatbox) {
         ChatBot.mountChatbox('chatbox-container', {
         apiURL: '${API_URL}',
