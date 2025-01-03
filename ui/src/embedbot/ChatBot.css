@@ -280,7 +280,7 @@ body {
 .input-div.large {
   width: 550px;
   border: 1px solid #E0E0E0;
-  border-radius: 100px;
+  border-radius: 25px;
   padding: 5px 20px 5px 20px;
   /* min-height: 54px; */
   margin: 0 auto 18px;
