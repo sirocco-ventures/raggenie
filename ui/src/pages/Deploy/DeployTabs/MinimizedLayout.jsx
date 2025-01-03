@@ -14,7 +14,7 @@ const MinimizedLayout = () => {
                 <CodeBlock codeString={`<script>
 (function injectChatbot() {
     const script = document.createElement('script');
-    script.src = 'http://${window.location.host}/dist-library/chatbox.js';
+    script.src = 'http://${window.location.host}/dist-library/chatbot.js';
     script.type = 'text/javascript';
     script.onload = function () {
     const container = document.createElement('div');
