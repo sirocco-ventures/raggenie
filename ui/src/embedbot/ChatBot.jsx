@@ -152,6 +152,11 @@ function ChatBot({ apiURL, uiSize }) {
                   e.target.textContent = ''; // Clear input
                 }
               }}
+              onInput={(e) => {
+                if (e.target.textContent.trim() === '') {
+                  e.target.innerHTML = ''; 
+                }
+              }}
             >
             </div>
             <button
