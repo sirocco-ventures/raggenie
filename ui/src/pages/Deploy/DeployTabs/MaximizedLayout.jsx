@@ -11,15 +11,27 @@ const MaximizedLayout = () => {
             <TitleDescription showOrder={false} title='Copy code for Maximized Layout' description='Experience a rich view environment with the minimized view' />
             <div className={style.MiniMaxContainer}>
                 <div className={style.SubContents}>
-                    <CodeBlock codeString={`<script src="${window.location.host}/dist-library/chatbot.js"></script> 
-<script>
+                <CodeBlock codeString={`<script>
+(function injectChatbot() {
+    const script = document.createElement('script');
+    script.src = 'http://${window.location.host}/dist-library/chatbox.js';
+    script.type = 'text/javascript';
+    script.onload = function () {
     const container = document.createElement('div');
     container.id = 'chatbox-container';
     document.body.appendChild(container);
-    ChatBot.mountChatbox('chatbox-container',{
+    console.log(ChatBot.mountChatbox)
+    if (ChatBot.mountChatbox) {
+        ChatBot.mountChatbox('chatbox-container', {
         apiURL: '${API_URL}',
-        uiSize: "large",    
-    });
+        uiSize: 'large',
+        });
+    } else {
+        console.error('ChatBot object is not defined.');
+    }
+    };
+    document.head.appendChild(script);
+})();
 </script>`} />
                 </div>
                 <div className={style.SubContents}>
