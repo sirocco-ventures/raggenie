@@ -48,8 +48,9 @@ function ChatBot({ apiURL, uiSize }) {
               { sender: 'bot', message: chat.chat_answer.content,entity: chat.chat_answer.main_entity,format: chat.chat_answer.main_format, kind: chat.chat_answer.kind, data: chatData },
             ];
           });
-  
+          
           setMessages(newMessages);
+          scrollToLastMessage();
         });
     }
   }, []);  /* runs only on mount  */
@@ -59,8 +60,10 @@ function ChatBot({ apiURL, uiSize }) {
       ...prevMessages,
       { sender: 'user', message: message },
     ]);
-
+    
     setLoading(true);
+
+    scrollToLastMessage();
 
     chatBotAPI(contextId, apiURL, message)
       .then(response => {
@@ -86,7 +89,7 @@ function ChatBot({ apiURL, uiSize }) {
         ]);
 
         setLoading(false);
-
+        
       })
 
 
@@ -166,6 +169,15 @@ function ChatBot({ apiURL, uiSize }) {
       )}
     </div>
   )
+}
+
+function scrollToLastMessage() {
+  setTimeout( () => {
+    const chatBody = document.querySelector('.message-wrapper');
+    const lastMessage = chatBody.lastElementChild;
+    console.log(lastMessage)
+    lastMessage.scrollIntoView({ behavior: 'smooth' })
+  },500);
 }
 
 

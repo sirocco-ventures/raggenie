@@ -1,5 +1,5 @@
 // src/ChatBotAPI.js
-import { API_URL } from "src/config/const"
+// import { API_URL } from "src/config/const"
 import PostService from "src/utils/http/PostService";
 import GetService from "src/utils/http/GetService"
 
@@ -12,7 +12,7 @@ export const chatBotAPI = (contextId, apiURL, message) => {
   };
 
   return PostService(
-    API_URL + "/query/query",
+    apiURL + "/query/query",
     { content: message, role: "user" },
     { showLoader: false, allowAuthHeaders: true },
     axiosConfig
