@@ -145,7 +145,7 @@ function ChatBot({ apiURL, uiSize }) {
                   e.preventDefault();
                   // console.log(e.target.textContent)
                   const chatInput = e.target.textContent.trim();
-                  fetchAndRender(chatInput)
+                  if (chatInput) fetchAndRender(chatInput)
                   e.target.textContent = ''; // Clear input
                 }
               }}
@@ -155,7 +155,7 @@ function ChatBot({ apiURL, uiSize }) {
               className='chat-button'
               onClick={() => {
                 const chatInput = document.querySelector('.chat-input').textContent.trim();
-                fetchAndRender(chatInput);
+                if (chatInput) fetchAndRender(chatInput);
                 document.querySelector('.chat-input').textContent = '';
               }}
             >
