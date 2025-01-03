@@ -3,7 +3,7 @@ import { API_URL } from "src/config/const"
 import PostService from "src/utils/http/PostService";
 import GetService from "src/utils/http/GetService"
 
-export const chatBotAPI = (message, contextId, apiURL) => {
+export const chatBotAPI = (contextId, apiURL, message) => {
   // console.log(contextId)
   let axiosConfig = {
     headers: {

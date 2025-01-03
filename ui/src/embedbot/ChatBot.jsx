@@ -31,9 +31,8 @@ function ChatBot({ apiURL, uiSize }) {
       getChatByContext(contextId)
         .then(response => {
           const chats = response.data.data.chats;
-          const last5chats = chats.slice(-15);
   
-          const newMessages = last5chats.flatMap(chat => {
+          const newMessages = chats.flatMap(chat => {
             const chatData = {
               chart: {
                 data: chat.chat_answer.data,
@@ -55,7 +54,7 @@ function ChatBot({ apiURL, uiSize }) {
     }
   }, []);  /* runs only on mount  */
 
-  const simulate = (message) => {
+  const fetchAndRender = (message) => {
     setMessages((prevMessages) => [
       ...prevMessages,
       { sender: 'user', message: message },
@@ -63,7 +62,7 @@ function ChatBot({ apiURL, uiSize }) {
 
     setLoading(true);
 
-    chatBotAPI(message, contextId, apiURL)
+    chatBotAPI(contextId, apiURL, message)
       .then(response => {
         const res = response.data;
         const chatMessage = res.response.content;
@@ -81,9 +80,6 @@ function ChatBot({ apiURL, uiSize }) {
           query: res.response.query
         }
 
-
-        // console.log({isBot: true, message: chatMessage, entity: chatEntity, error: chatError, format: chatFormat, kind: chatKind, data: chatData })
-        // console.log(message)
         setMessages((prevMessages) => [
           ...prevMessages,
           { sender: 'bot', message: chatMessage, entity: chatEntity, error: chatError, format: chatFormat, kind: chatKind, data: chatData },
@@ -93,10 +89,6 @@ function ChatBot({ apiURL, uiSize }) {
 
       })
 
-
-  }
-
-  const appendMessage = (user, message) => {
 
   }
 
@@ -153,7 +145,7 @@ function ChatBot({ apiURL, uiSize }) {
                   e.preventDefault();
                   // console.log(e.target.textContent)
                   const chatInput = e.target.textContent.trim();
-                  simulate(chatInput)
+                  fetchAndRender(chatInput)
                   e.target.textContent = ''; // Clear input
                 }
               }}
@@ -163,7 +155,7 @@ function ChatBot({ apiURL, uiSize }) {
               className='chat-button'
               onClick={() => {
                 const chatInput = document.querySelector('.chat-input').textContent.trim();
-                simulate(chatInput);
+                fetchAndRender(chatInput);
                 document.querySelector('.chat-input').textContent = '';
               }}
             >
