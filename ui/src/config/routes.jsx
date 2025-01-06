@@ -79,13 +79,6 @@ const  routes = [
         page: <BotConfiguration/>,
         isPrivate: true
     },
-    {
-        title: "Embed Bot",
-        path: "/embedbot",
-        icon: "",
-        page: <ChatBot/>,
-        isPrivate: true
-    },
   ]
 
   export default routes

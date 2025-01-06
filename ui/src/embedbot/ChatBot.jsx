@@ -5,7 +5,7 @@ import logoImage from './assets/logo.svg'
 import largeLogo from './assets/largelogo.svg'
 import sendImage from './assets/send.png'
 import botdpImage from './assets/bot-dp.svg'
-import {chatBotAPI, getChatByContext} from './ChatBotAPI'
+import { chatBotAPI, getChatByContext } from './ChatBotAPI'
 import { isEmptyJSON } from "src/utils/utils"
 import Message from 'src/components/ChatBox/Message'
 import Loader from '../components/ChatBox/Loader'
@@ -28,10 +28,10 @@ function ChatBot({ apiURL, uiSize }) {
       contextId = uuidv4();
       localStorage.setItem('contextId', contextId);
     } else {
-      getChatByContext(contextId , apiURL)
+      getChatByContext(contextId, apiURL)
         .then(response => {
           const chats = response.data.data.chats;
-  
+
           const newMessages = chats.flatMap(chat => {
             const chatData = {
               chart: {
@@ -42,13 +42,13 @@ function ChatBot({ apiURL, uiSize }) {
               },
               query: chat.chat_answer.query,
             };
-  
+
             return [
               { sender: 'user', message: chat.chat_query },
-              { sender: 'bot', message: chat.chat_answer.content,entity: chat.chat_answer.main_entity,format: chat.chat_answer.main_format, kind: chat.chat_answer.kind, data: chatData },
+              { sender: 'bot', message: chat.chat_answer.content, entity: chat.chat_answer.main_entity, format: chat.chat_answer.main_format, kind: chat.chat_answer.kind, data: chatData },
             ];
           });
-          
+
           setMessages(newMessages);
           scrollToLastMessage(2000);
         });
@@ -60,7 +60,7 @@ function ChatBot({ apiURL, uiSize }) {
       ...prevMessages,
       { sender: 'user', message: message },
     ]);
-    
+
     setLoading(true);
 
     scrollToLastMessage(0);
@@ -89,7 +89,7 @@ function ChatBot({ apiURL, uiSize }) {
         ]);
 
         setLoading(false);
-        
+
       })
 
 
@@ -107,7 +107,7 @@ function ChatBot({ apiURL, uiSize }) {
         <div className={`chat-box ${uiSize === 'large' ? 'large' : ''}`}>
           <div className="chat-header">
             <img src={arrowImage} onClick={toggleChatbox} className='min-btn'></img>
-            <img src={uiSize === 'large' ? largeLogo: logoImage}></img>
+            <img src={uiSize === 'large' ? largeLogo : logoImage}></img>
             <span className='header-text'>Assistant</span>
           </div>
 
@@ -154,7 +154,7 @@ function ChatBot({ apiURL, uiSize }) {
               }}
               onInput={(e) => {
                 if (e.target.textContent.trim() === '') {
-                  e.target.innerHTML = ''; 
+                  e.target.innerHTML = '';
                 }
               }}
             >
@@ -177,12 +177,11 @@ function ChatBot({ apiURL, uiSize }) {
 }
 
 function scrollToLastMessage(delay) {
-  setTimeout( () => {
+  setTimeout(() => {
     const chatBody = document.querySelector('.message-wrapper');
     const lastMessage = chatBody.lastElementChild;
-    console.log(lastMessage)
     lastMessage.scrollIntoView({ behavior: 'smooth' })
-  },delay);
+  }, delay);
 }
 
 
