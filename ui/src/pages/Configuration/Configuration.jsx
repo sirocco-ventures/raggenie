@@ -3,19 +3,22 @@ import DashboardBody from "src/layouts/dashboard/DashboadBody"
 import EmptyConfiguration from "./EmptyConfiguration"
 import ConfigurationList from "./ConfigurationList"
 import { useEffect, useState } from "react"
-
+import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify"
 import { deleteConnector, getConnectors } from "src/services/Connectors"
 
 
 const Configuration = ()=>{
 
+    const navigate = useNavigate()
     const [configurationList, setConfigurationList] = useState([])
 
     const loadConnectors = ()=>{
        getConnectors().then(response=>{
             setConfigurationList(response.data.data.connectors ?? [])
-       })
+       }).catch(() => {
+        navigate('/error')
+    })
     }
 
 

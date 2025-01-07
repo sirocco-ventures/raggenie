@@ -166,6 +166,8 @@ const BotConfiguration = () => {
 
                 }
             }
+        }).catch(() => {
+            navigate('/error')
         })
     }
 
@@ -182,6 +184,8 @@ const BotConfiguration = () => {
             setllmModels(llmList)
             setSelectedProvider(llmList[0])
             getCurrentConfig(llmList)
+        }).catch(() => {
+            navigate('/error')
         })
     }
 
