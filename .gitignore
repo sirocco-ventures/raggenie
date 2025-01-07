@@ -47,7 +47,6 @@ cover/
 
 
 # Environments
-myenv/
 .env
 .venv
 env/
