@@ -42,7 +42,7 @@ class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
         try:
             db_path = pathlib.Path(self.params['db_parent_path']).joinpath(self.params['db_name']).as_posix()
             uri_filename = f"{self._path_to_uri(db_path)}?mode=rw"            
-            self.connection = sqlite3.connect(uri_filename, uri=True)
+            self.connection = sqlite3.connect(uri_filename, uri=True, check_same_thread=False, timeout= 8.0)
             self.connection.row_factory = self._dict_factory
             self.cursor = self.connection.cursor()
             
