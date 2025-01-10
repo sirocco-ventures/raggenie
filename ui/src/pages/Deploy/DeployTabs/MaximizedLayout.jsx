@@ -36,10 +36,6 @@ const MaximizedLayout = () => {
                 <div className={style.SubContents}>
                     <img src={Screenshot} alt="raggnie UI" />
                 </div>
-
-                <div>
-
-                </div>
             </div>
         </>
     )

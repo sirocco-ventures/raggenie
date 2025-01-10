@@ -36,9 +36,6 @@ const MinimizedLayout = () => {
                     <img src={Screenshot} alt="raggnie UI" />
                 </div>
 
-                <div>
-
-                </div>
             </div>
         </>
     )
