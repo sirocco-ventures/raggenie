@@ -9,13 +9,6 @@
     height: 88vh; /* Or any desired height */
     text-align: center;
 }
-.error .background {
-    position: relative;
-    margin-top: 40%; /* 40% margin from the top */
-    margin-bottom: 60%; /* 60% margin from the bottom */
-    width: 350px; /* Set width as needed */
-    height: 135px; /* Set height as needed */
-}
 
 .errorText{
     
