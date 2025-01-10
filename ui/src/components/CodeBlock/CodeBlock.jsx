@@ -18,6 +18,7 @@ const CodeBlock = ({ codeString = "", Codestyle }) => {
     background: '#F9F9F9',
     padding: '20px',
     width: '100%', // Make code block width responsive
+    height: '260px'
   };
 
   const copyToClipboard = () => {
