@@ -67,10 +67,14 @@
     display: flex;
     justify-items: start;
     align-content: flex-end;
-    align-items: flex-end;
+    align-items: flex-start;
 
 }
 
-.SubContents{
+.MiniMaxContainer .SubContents:nth-child(2) {
+    margin-top: 41px;
+}
+
+/* .SubContents{
     width: 50%;
-}
+} */

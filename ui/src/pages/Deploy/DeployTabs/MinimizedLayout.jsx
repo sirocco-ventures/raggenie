@@ -1,7 +1,7 @@
 import CodeBlock from 'src/components/CodeBlock/CodeBlock'
 import TitleDescription from 'src/components/TitleDescription/TitleDescription'
 import style from './DeployTabs.module.css'
-import Screenshot from "src/assets/images/screen_shot.svg"
+import Screenshot from "src/assets/images/screen_shot_small.svg"
 import { API_URL } from "src/config/const"
 
 const MinimizedLayout = () => {

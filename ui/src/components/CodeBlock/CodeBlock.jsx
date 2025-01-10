@@ -4,7 +4,7 @@ import Button from '../Button/Button';
 import { PiCopySimpleBold } from 'react-icons/pi';
 import style from './CodeBlock.module.css'; // Import the CSS module
 
-const CodeBlock = ({ CopyText = () => {}, codeString = "", Codestyle }) => {
+const CodeBlock = ({ codeString = "", Codestyle }) => {
   const customTheme = {
     ...solarizedlight, // Use the base solarizedlight theme
     'comment': { color: '#888787' }, // Customize comment color
@@ -20,9 +20,14 @@ const CodeBlock = ({ CopyText = () => {}, codeString = "", Codestyle }) => {
     width: '100%', // Make code block width responsive
   };
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(codeString)
+      .catch(err => console.error("failed to copy", err))
+  }
+
   return (
-    <div className={style.CodeBlockContainer} style={Codestyle}>
-      <Button type="solid" className={`${style.LightButton}`}>
+    <div className={style.CodeBlockContainer} style={Codestyle} onClick={copyToClipboard}>
+      <Button type="solid" className={`${style.LightButton}`} >
         <span>Copy Code</span>
         <span><PiCopySimpleBold size={18} /></span>
       </Button>
