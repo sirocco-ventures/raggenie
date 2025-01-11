@@ -1,4 +1,5 @@
 import pymssql
+import pyodbc
 from loguru import logger
 import sqlvalidator
 import sqlparse
@@ -16,11 +17,22 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
         logger.info("Initializing datasource")
         super().__init__(__name__)
 
+        server = 'ip.datuminnovation.com,9600'  # Include port number with a comma
+        database = 'QR'
+        username = 'sa'
+        password = 'Datum123!'
+
+        print(f"db_name:{db_name}")
+        print(f"db_user:{db_user}")
+        print(f"db_password:{db_password}")
+        print(f"db_host:{db_host}")
+
+
         self.params = {
-            'database': db_name,
-            'user': db_user,
-            'password': db_password,
-            'server': db_host,
+            'database': database,
+            'user': username,
+            'password': password,
+            'server': server,
             'port': db_port,
         }
         self.connection = None
@@ -31,8 +43,10 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
 
     def connect(self):
         try:
-            self.connection = pymssql.connect(**self.params)
-            self.cursor = self.connection.cursor(as_dict=True)
+
+            connection_string = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={self.params['server']};DATABASE={self.params['database']};UID={self.params['user']};PWD={self.params['password']}"
+            self.connection = pyodbc.connect(connection_string)
+            self.cursor = self.connection.cursor()
             logger.info("Connection to MsSQL DB successful.")
             return True, None
         except pymssql.Error as error:
@@ -73,6 +87,7 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
         # Execute query to get all table names and schemas in the database
         self.cursor.execute("SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'")
         tables = self.cursor.fetchall()
+        print(f"tables:{tables}")
         
         for table in tables:
             schema_name = table['TABLE_SCHEMA']
