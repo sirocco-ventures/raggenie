@@ -31,8 +31,8 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
 
     def connect(self):
         try:
-
-            connection_string = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={self.params['server']};DATABASE={self.params['database']};UID={self.params['user']};PWD={self.params['password']}"
+            drivers = [driver for driver in pyodbc.drivers()]
+            connection_string = f"DRIVER={{{drivers[0]}}};SERVER={self.params['server']};DATABASE={self.params['database']};UID={self.params['user']};PWD={self.params['password']}"
             self.connection = pyodbc.connect(connection_string)
             self.cursor = self.connection.cursor()
             logger.info("Connection to MsSQL DB successful.")
