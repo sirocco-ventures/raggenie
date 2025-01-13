@@ -1,4 +1,3 @@
-import pymssql
 import pyodbc
 from loguru import logger
 import sqlvalidator
@@ -13,26 +12,15 @@ from app.base.plugin_metadata_mixin import PluginMetadataMixin
 
 class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
 
-    def __init__(self, db_name:str, db_user:str, db_password:str, db_host:str="localhost", db_port:int=1433):
+    def __init__(self, db_name:str, db_user:str, db_password:str, db_server:str="localhost", db_port:int=1433):
         logger.info("Initializing datasource")
         super().__init__(__name__)
 
-        server = 'ip.datuminnovation.com,9600'  # Include port number with a comma
-        database = 'QR'
-        username = 'sa'
-        password = 'Datum123!'
-
-        print(f"db_name:{db_name}")
-        print(f"db_user:{db_user}")
-        print(f"db_password:{db_password}")
-        print(f"db_host:{db_host}")
-
-
         self.params = {
-            'database': database,
-            'user': username,
-            'password': password,
-            'server': server,
+            'database': db_name,
+            'user': db_user,
+            'password': db_password,
+            'server': db_server,
             'port': db_port,
         }
         self.connection = None
@@ -49,9 +37,9 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
             self.cursor = self.connection.cursor()
             logger.info("Connection to MsSQL DB successful.")
             return True, None
-        except pymssql.Error as error:
+        except pyodbc.Error as error:
             logger.error(f"Error connecting to MsSQL DB: {error}")
-            return False, error
+            return False, str(error)
 
     def healthcheck(self):
         try:
@@ -63,23 +51,39 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
                 cursor.execute("SELECT 1;")
                 cursor.fetchall() 
                 return True, None
-        except pymssql.Error as error:
+        except pyodbc.Error as error:
             logger.error(f"Error during healthcheck: {error}")
-            return False, error
+            return False, str(error)
 
 
     def configure_datasource(self, init_config):
         pass
 
-    def fetch_data(self, query, params=None):
+    def fetch_data(self, query, reconnect_attempt = True, params=None):
         try:
-            self.cursor.execute(query, params)
+            self.cursor.execute(query)
+
+            # Fetch column names
+            column_names = [column[0] for column in self.cursor.description]
+
+            # Fetch data
             if "TOP" not in query.upper():
-                return self.cursor.fetchmany(self.max_limit), None
+                rows = self.cursor.fetchmany(self.max_limit)
             else:
-                return self.cursor.fetchall(), None
-        except pymssql.Error as e:
-            return None, e
+                rows = self.cursor.fetchall()
+
+            # Map column names to row data
+            result = [dict(zip(column_names, row)) for row in rows]
+
+            return result, None
+        except pyodbc.Error as error:
+            logger.error(f"Error executing query: {error}")
+            if '08S01' in str(error) and reconnect_attempt:
+                logger.info("Attempting to reconnect...")
+                self.connect()  # Attempt to reconnect
+                reconnect_attempt = False
+                self.fetch_data(self, query, reconnect_attempt = False)
+            return None, str(error)
 
     def fetch_schema_details(self):
         schema_ddl = []
@@ -90,8 +94,8 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
         print(f"tables:{tables}")
         
         for table in tables:
-            schema_name = table['TABLE_SCHEMA']
-            table_name = table['TABLE_NAME']
+            schema_name = table[0]
+            table_name = table[1]
 
             logger.info(f"Fetching DDL for table: {schema_name}.{table_name}")
             
@@ -123,11 +127,11 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
 
             # Loop through each column and add its definition to the DDL
             for column in columns:
-                column_name = column['COLUMN_NAME']
-                data_type = column['DATA_TYPE']
-                max_length = column['CHARACTER_MAXIMUM_LENGTH']
-                is_nullable = column['IS_NULLABLE']
-                column_default = column['COLUMN_DEFAULT']
+                column_name = column[0]
+                data_type = column[1]
+                max_length = column[2]
+                is_nullable = column[3]
+                column_default = column[4]
                 fields.append({
                         "column_id" : str(uuid.uuid4()),
                         "column_name": column_name,
@@ -159,6 +163,7 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
 
             # Append the DDL statement for the current table to schema_ddl
             schema_ddl.append(ddl)
+        # print(f"table_metadata:{table_metadata}")
 
         return schema_ddl, table_metadata
 
