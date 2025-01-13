@@ -91,7 +91,6 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
         # Execute query to get all table names and schemas in the database
         self.cursor.execute("SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'")
         tables = self.cursor.fetchall()
-        print(f"tables:{tables}")
         
         for table in tables:
             schema_name = table[0]
@@ -163,7 +162,6 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
 
             # Append the DDL statement for the current table to schema_ddl
             schema_ddl.append(ddl)
-        # print(f"table_metadata:{table_metadata}")
 
         return schema_ddl, table_metadata
 
