@@ -134,7 +134,7 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
                     date: new Date(item.created_at), // Convert date string to Date object
                 });
             });     
-            chatHistory = chatHistory.reverse()      
+            chatHistory.reverse()      
             setchatHistory(chatHistory);
         })
     }

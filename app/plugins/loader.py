@@ -4,6 +4,7 @@ from app.plugins.mssql.handler import Mssql
 from app.plugins.bigquery.handler import Bigquery
 from app.plugins.airtable.handler import Airtable
 from app.plugins.website.handler import Website
+from app.plugins.webhook.handler import Webhook
 from app.plugins.document.handler import Document
 from app.plugins.sqlite.handler import Sqlite
 from loguru import logger
@@ -20,6 +21,7 @@ class DSLoader:
             "bigquery": Bigquery,
             "airtable": Airtable,
             "website": Website,
+            "webhook": Webhook,
             "document" : Document,
             "sqlite" : Sqlite,
         }

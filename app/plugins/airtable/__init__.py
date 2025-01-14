@@ -9,6 +9,8 @@ __display_name__ = 'Airtable'
 __description__ = 'Airtable integration for handling Airtable database operations.'
 __icon__ = '/assets/plugins/logos/airtable.svg'
 __category__ = 2
+__actions_enabled__ = False
+__actions_supported__ = []
 
 
 # Connection arguments

@@ -9,6 +9,8 @@ __display_name__ = 'document loader'
 __description__ = 'document integration for handling document data'
 __icon__ = '/assets/plugins/logos/document.svg'
 __category__ = 4
+__actions_enabled__ = False
+__actions_supported__ = []
 
 # Connection arguments
 __connection_args__ = OrderedDict(

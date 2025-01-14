@@ -9,6 +9,8 @@ __display_name__ = "MySQL DB"
 __description__ = 'MySQL integration for handling MySQL database operations.'
 __icon__ = '/assets/plugins/logos/mysql.svg'
 __category__ = 2
+__actions_enabled__ = False
+__actions_supported__ = []
 
 
 # Connection arguments

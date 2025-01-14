@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Input from 'src/components/Input/Input';
 import Tab from 'src/components/Tab/Tab';
 import Tabs from 'src/components/Tab/Tabs';
 import Textarea from 'src/components/Textarea/Textarea';
 import DashboardBody from 'src/layouts/dashboard/DashboadBody';
+import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
 import style from './ChatConfiguration.module.css';
 import { useForm, Controller } from "react-hook-form"
 import Button from "src/components/Button/Button"
@@ -19,9 +21,11 @@ import { v4  as uuid4} from "uuid"
 import Capability from './Capability/Capability';
 import Modal from 'src/components/Modal/Modal';
 import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src/services/Capability';
+import { getAllActions } from 'src/services/Action';
 import { getBotConfiguration, getLLMProviders, saveBotConfiguration, saveBotInferene, testInference } from 'src/services/BotConfifuration';
-import { useNavigate } from 'react-router-dom';
-import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
+import confirmDialog from 'src/utils/ConfirmDialog';
+
+
 import PostService from 'src/utils/http/PostService';
 import ToastIcon from "./assets/ToastIcon.svg"
 import { RiRestartLine } from 'react-icons/ri';
@@ -45,7 +49,7 @@ const BotConfiguration = () => {
     const [selectedProvider, setSelectedProvider] = useState()
 
     const [capabalities, setCapabalities] = useState([])
-
+    const [actions, setActions] = useState([])
     const [llmModels, setllmModels] = useState([])
 
     const [editCapabilityIndexRef, setEditCapabilityIndexRef] = useState("")
@@ -68,6 +72,19 @@ const BotConfiguration = () => {
 
     const { register: inferenceRegister, getValues: inferenceGetValues , setValue: inferenceSetValue, handleSubmit : inferenceHandleSubmit, formState: inferenceFormState, control: inferenceController, trigger: inferenceTrigger, watch: inferenceWatch } = useForm({mode : "all"})
     const { errors: inferenceFormError } = inferenceFormState
+   
+
+
+    const getActionsList = ()=>{
+        getAllActions().then(response=>{
+            let tempAcitions = [];
+            response.data?.data?.actions?.map(item=>{
+                tempAcitions.push({id: item.id, name: item.name})
+            });
+            setActions(tempAcitions)
+        })
+    }
+
 
     const ToastCloseButton = ({ closeToast }) => {
         return (
@@ -100,7 +117,7 @@ const BotConfiguration = () => {
             toast.error("Failed to restart bot");
           });
       };
-      
+   
       const onBotConfigSave = (data) => {
         saveBotConfiguration(currentConfigID, data)
           .then((response) => {
@@ -277,14 +294,14 @@ const BotConfiguration = () => {
 
 
         if(capabilityId == ""){
-            saveBotCapability(currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements).then(response=>{
+            saveBotCapability(currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements, formData.getAll("actions[]")).then(response=>{
                 toast.success("Capability saved")
             }).catch(()=>{
                 toast.error("Capability save failed")
             })
 
         }else{
-            updateBotCapability(capabilityId, currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements).then(response=>{
+            updateBotCapability(capabilityId, currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements, formData.getAll("actions[]")).then(response=>{
                 toast.success("Capability updated")
             }).catch(()=>{
                 toast.error("Capability update failed")
@@ -294,7 +311,21 @@ const BotConfiguration = () => {
     }
 
     const deleteCapability = (capabilityIndex, capabilityId)=>{
-        deleteBotCapability(capabilityId).then(()=>toast.success("Capability deleted")).catch(()=>toast.error("Capability deletion failed"))
+        confirmDialog("Do you want to delete this", "" ,()=>{
+            if(capabilityId){
+                deleteBotCapability(capabilityId).then(()=>{
+                    toast.success("Capability deleted")
+                    let capabilityContainer = document.querySelector(`[data-capability-index='${capabilityIndex}']`)
+                    capabilityContainer.remove()
+                }).catch(()=>toast.error("Capability deletion failed"))
+            }else{
+                let capabilityContainer = document.querySelector(`[data-capability-index='${capabilityIndex}']`)
+                capabilityContainer.remove()
+            }
+
+        })
+        
+       
     }
     
     const onClickNewParams = (capabilityId, capabilityIndex)=>{
@@ -372,6 +403,7 @@ const BotConfiguration = () => {
     
     useEffect(() => {
         getLLMModels();
+        getActionsList();
     }, [])
 
 
@@ -448,7 +480,7 @@ const BotConfiguration = () => {
                         </div>
                     </form>
                 </Tab>
-                <Tab title="Capabilities" disabled={activeInferencepiontTab} tabKey="capabalities" key={"capabalities"}>
+                <Tab title={<>Capabilities <span className="beta-tag">Beta</span></>} disabled={activeInferencepiontTab} tabKey="capabalities" key={"capabalities"}>
                             <div style={{marginBottom: "30px"}}>
                                 <h4>Capabilities details</h4>
                                 <p>Explore and define the functionalities offered by the plugin. By incorporating additional capabilities, you can maximize its benefits and fully leverage the plugin's potential.</p>
@@ -467,6 +499,8 @@ const BotConfiguration = () => {
                                                 name={item.name}
                                                 description={item.description} 
                                                 parameters={item.requirements}
+                                                actions={item.actions}
+                                                actionsList={actions}
                                                 isCollapse={item.isCollapse}
                                                 onCapabilitySave={onSaveCapability}
                                                 onParamEdit={editParameter}
