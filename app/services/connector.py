@@ -3,6 +3,7 @@ import app.repository.connector as repo
 import app.repository.provider as config_repo
 import app.schemas.connector as schemas
 from app.services import provider as provider_svc
+from app.schemas.provider import VectorDBResponse
 import requests
 import os
 import uuid
@@ -342,6 +343,36 @@ def updateschemas(connector_id: int, connector: schemas.SchemaUpdate, db: Sessio
     return connector_response, None
 
 
+def get_inference_by_config_id(config_id:int , db:Session):
+    """
+    Retrieves the inference configuration based on the configuration ID.
+
+    Args:
+        config_id (int): The ID of the configuration.
+        db (Session): Database session dependency.
+
+    Returns:
+        Tuple: Inference configuration response and error message (if any).
+    """
+
+    inference_mapping, is_error = repo.get_inference_by_config(config_id, db)
+
+    if is_error:
+        return inference_mapping, "DB Error"
+
+    if inference_mapping is None:
+        return schemas.InferenceResponse(), None
+
+    return schemas.InferenceResponse(
+        id=inference_mapping.inference.id,
+        name=inference_mapping.inference.name,
+        apikey=inference_mapping.inference.apikey,
+        config_id=inference_mapping.inference.config_id,
+        llm_provider=inference_mapping.inference.llm_provider,
+        model=inference_mapping.inference.model,
+        endpoint=inference_mapping.inference.endpoint,
+    ), None
+
 
 def list_configurations(db: Session):
 
@@ -384,7 +415,13 @@ def list_configurations(db: Session):
             model=inference_mapping.inference.model,
             endpoint=inference_mapping.inference.endpoint,
             config_id=inference_mapping.config_id
-        ) for inference_mapping in config.inference_mapping]
+        ) for inference_mapping in config.inference_mapping],
+        vectordb=[VectorDBResponse(
+            id= vector_db.vector_db.id,
+            vectordb=vector_db.vector_db.vectordb,
+            vectordb_config=vector_db.vector_db.vectordb_config,
+            config_id=config.id,
+        ) for vector_db in config.vectordb_config_mapping if vector_db.vector_db]
     ) for config in configurations]
 
     return config_list, None

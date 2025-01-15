@@ -2,30 +2,32 @@ from sqlalchemy.orm import Session
 import app.repository.provider as repo
 import app.schemas.provider as schemas
 import app.schemas.connector as conn_schemas
-from app.services.connector_details import test_plugin_connection
+from app.services.connector_details import test_plugin_connection, test_vector_db_credentials
 from app.loaders.base_loader import BaseLoader
 from app.repository import connector as conn_repo
 from fastapi import Request
-from app.utils.module_reader import get_plugin_providers
-from app.models.provider import Provider, ProviderConfig
+from app.utils.module_reader import get_plugin_providers, get_vectordb_providers
+from app.models.provider import Provider, ProviderConfig, VectorDBConfig
 from loguru import logger
-from app.utils.module_reader import get_llm_providers
+from app.utils.module_reader import get_llm_providers, get_all_embedding
+from app.vectordb.loader import VectorDBLoader
+from app.embeddings.loader import EmLoader
 
 def test_inference_credentials(inference: conn_schemas.InferenceBase):
     """
     Tests the connection credentials for a specific LLM inference based on its provider.
 
     Args:
-        inference (conn_schemas.InferenceBase): 
+        inference (conn_schemas.InferenceBase):
             A configuration object containing the provider details for testing the credentials.
 
     Returns:
-        Tuple[bool, str]: 
+        Tuple[bool, str]:
             - (True, "Test Credentials successfully completed") if the credentials are valid and the test is successful.
             - (None, error_message) if there was an error during the test or inference.
             - (False, "Unsupported Inference") if the LLM provider is not recognized or unsupported.
     """
-    
+
     model_configs = [{
         "unique_name": inference.name,
         "name": inference.model,
@@ -38,13 +40,39 @@ def test_inference_credentials(inference: conn_schemas.InferenceBase):
         inference_model = BaseLoader(model_configs= model_configs).load_model(inference.name)
     except Exception as error:
         return None, str(error)
-    
+
     output, response_metadata = inference_model.do_inference(
             "hi", []
     )
     if output['error'] is not None:
         return None, output['error']
     return True, "Test Credentials successfully completed"
+
+def initialize_vectordb_provider(db:Session):
+    """
+    Initializes the vector database by fetching the vector database data and inserting or updating
+    their details in the database.
+
+    Args:
+        db (Session): Database session used for performing transactions.
+    """
+
+    vector_dbs = get_vectordb_providers()
+
+    for i in vector_dbs:
+        data, is_error = repo.insert_or_update_data(db,VectorDBConfig, {"key":i['vectordb_name']},{
+            "name":i["display_name"],
+            "description":i["description"],
+            "icon":i["icon"],
+            "key":i["vectordb_name"],
+            "config": i["config"] if i["config"] is not None else None
+        })
+
+        if is_error:
+            logger.error(f"Error inserting {i['vectordb_name']} {data}")
+
+def initialize_embeddings(db:Session):
+    pass
 
 
 def initialize_plugin_providers(db:Session):
@@ -190,6 +218,43 @@ def get_provider(provider_id: int,db: Session):
 
     return provider_resp, None
 
+def test_vectordb_credentials(config:schemas.TestVectorDBCredentials, db:Session):
+    """
+    Tests the credentials of a specific vector database based on its configuration.
+
+    Args:
+        config (schemas.TestVectorDBCredentials): Credentials to test.
+        db (Session): Database session used for performing transactions.
+
+    Returns:
+        (str, str | None): A success message or an error message if unsupported.
+    """
+    db_config, is_error = repo.get_vector_db_config(db, config.vectordb_config["key"])
+
+    if is_error:
+        return None, db_config
+
+    # if config.embedding_config:
+    #     config.embedding_config["vectordb"] = config.vectordb_config["key"]
+
+
+    return vector_embedding_connector(config, db_config)
+
+def vector_embedding_connector(config, db_config):
+
+    # if config.embedding_config:
+    #     err = EmLoader(config.embedding_config).load_embclass().health_check()
+    #     if err:
+    #         return err, False
+
+    match config.vectordb_config["key"]:
+        case ("chroma" | "mongodb"):
+            return test_vector_db_credentials(db_config,config, config.vectordb_config["key"])
+        case _:
+            return None, "Unsupported Vector Database Provider"
+
+
+
 
 def test_credentials(provider_id: int, config: schemas.TestCredentials, db: Session):
 
@@ -223,6 +288,37 @@ def test_credentials(provider_id: int, config: schemas.TestCredentials, db: Sess
         case _:
             return None, "Unsupported Provider"
 
+def getvectordbs(db: Session):
+    """
+    Returns a list of available vector databases.
+
+    Args:
+        request (Request): Request object used for handling incoming requests.
+
+    Returns:
+        dict: List of available vector databases.
+    """
+
+    vector_dbs,is_error = repo.get_vectordb_providers(db)
+
+    if is_error:
+        return vector_dbs, "DB Error"
+
+    if not vector_dbs:
+        return [], None
+
+    resp = [
+        schemas.VectorDBConfigResponse(
+            id=db.id,
+            name=db.name,
+            description=db.description,
+            icon=db.icon,
+            key=db.key,
+            config=db.config if db.config is not None else [],
+        ) for db in vector_dbs
+    ]
+
+    return resp, None
 
 def getllmproviders(request: Request):
 
@@ -483,3 +579,168 @@ def insert_vector_store(request, sql, db: Session):
     except Exception as e:
 
         return str(e)
+
+def create_vector_db_default_config(vectordb):
+    if vectordb.embedding_config is None:
+        vectordb.embedding_config = {"provider": "default", "params": {}}
+
+    if not vectordb.vectordb:
+        vectordb.vectordb = "chroma"
+        vectordb.vectordb_config = {"path": "./vector_db"}
+
+    return vectordb
+
+def attach_vector_config_if_missing(vectordb, db):
+
+    inference, is_error = conn_repo.get_inference_by_config(vectordb.config_id, db)
+
+    if is_error:
+        return "Inference not found", is_error
+
+    if vectordb.embedding_config.get("provider") == inference.llm_provider and not vectordb.embedding_config["params"].get("api_key"):
+        vectordb.embedding_config["params"]["api_key"] = inference.apikey
+
+    return vectordb, None
+
+
+def create_vectordb_and_embedding(key,id,vectordb, db):
+
+    """
+    Creates a new VectorDB instance and inserts an embedding into the vector store.
+
+    Args:
+        vectordb (schemas.VectorDB): VectorDB instance data.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: VectorDBResponse schema and error message (if any).
+    """
+
+    vectordb = create_vector_db_default_config(vectordb)
+
+    vectordb, is_error = attach_vector_config_if_missing(vectordb, db)
+
+    if is_error:
+        return vectordb, is_error
+
+    db_data, is_error = repo.create_vectordb_with_embedding(key,id, vectordb, db)
+
+    if is_error:
+        return vectordb, "DB Error"
+
+    response_data = {
+        'id': db_data['vectordb'].id,
+        'vectordb': db_data['vectordb'].vectordb,
+        'vectordb_config': db_data['vectordb'].vectordb_config,
+        'config_id': db_data['vectordb_mapping'].config_id,
+    }
+
+    return schemas.VectorDBResponse(**response_data), None
+
+
+def get_vectordb_instance(id: int, db: Session):
+    """
+    Retrieves a VectorDB instance by its ID.
+
+    Args:
+        id (int): The ID of the VectorDB instance.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: VectorDBResponse schema and error message (if any).
+    """
+
+    (vectordb_instance, embedding), is_error = repo.get_vectordb_instance(id, db)
+
+    if is_error:
+        return vectordb_instance, "DB Error"
+
+
+    return schemas.VectorDBResponse(
+        id=vectordb_instance.id,
+        vectordb=vectordb_instance.vectordb,
+        vectordb_config=vectordb_instance.vectordb_config,
+        config_id=vectordb_instance.vectordb_config_mapping[0].config_id,
+        embedding_config={"provider": embedding.provider,"config": embedding.config}
+    ), None
+
+def delete_vectordb_instance(id: int, db: Session):
+    """
+    Deletes a VectorDB instance and its associated config mapping by ID.
+
+    Args:
+        id (int): The ID of the VectorDB instance to delete.
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: Success message and error message (if any).
+    """
+
+    success, is_error = repo.revoke_existing_vectordb_confg(id, db)
+
+    if is_error:
+        return success, "DB Error or VectorDB not found"
+
+    return success, None
+
+def create_vectorstore_instance(db:Session):
+    """
+    Creates a new vector store instance.
+
+    Args:
+        db (Session): Database session object.
+
+    Returns:
+        Tuple: VectorStoreConfigResponse schema and error message (if any).
+    """
+    configs, is_error = conn_repo.getbotconfiguration(db)
+    vector_store_formatting=None
+    vectore_store = None
+
+    if is_error:
+        return configs, "DB Error"
+
+    if configs:
+
+        vectore_store, is_error = repo.get_mapped_vector_store(db, configs.id)
+
+    if vectore_store:
+        vector_store_formatting = {
+            "name": vectore_store.get("vectordb"),
+            "params": {**vectore_store.get("vectordb_config", {})}
+        }
+
+
+        vectordb_config = vectore_store.get("vectordb_config", {})
+
+        if vectordb_config:
+            embeddings = vectore_store.get("embedding_config", {})
+
+            vector_store_formatting["embeddings"] = {
+                **embeddings,
+                "provider": vectore_store.get("em_provider"),
+                "vectordb": vectore_store.get("vectordb")
+            }
+
+            vector_store_formatting={**vector_store_formatting,**vectordb_config}
+
+    vectorloader = VectorDBLoader(vector_store_formatting) if vector_store_formatting else VectorDBLoader(config={"name":"chroma", "params":{"path":"./chromadb"}})
+
+    return vectorloader.load_class(), None
+
+
+def get_all_embeddings():
+
+    """
+    Returns a list of available LLM providers.
+
+    Args:
+        request (Request): Request object used for handling incoming requests.
+
+    Returns:
+        dict: List of available LLM providers.
+    """
+
+    embeddings = get_all_embedding()
+
+    return embeddings, None
