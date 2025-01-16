@@ -61,7 +61,7 @@ const ProviderForm = ()=>{
     const {providerId, connectorId} = useParams()
     const navigate = useNavigate()
 
-    const maxFileSizeMB = 10;
+    const maxFileSizeMB = 100;
     const maxFiles = 5; 
 
     let tableColumns = [
@@ -381,7 +381,7 @@ const onRemoveFile = (fileId) => {
             pdfUploadRef:pdfUploadRef,
             title:"Upload your files",
             description:"You can upload up to 5 files, with each file having a maximum size of 10 MB.",
-            accept:".pdf,.yaml,.txt,.docx",
+            accept:".pdf,.yaml,.txt,.docx,.csv",
             dragMessage:"Drag your files to start uploading",
             progressPrecentage:progressPrecentage,
             showProgressBar:showProgressBar,

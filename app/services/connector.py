@@ -146,7 +146,7 @@ async def fileValidation(file):
         Tuple[str, int]: An error message if validation fails, or the size of the file if it passes.
     """
 
-    if not file.filename.endswith((".pdf", ".txt", ".yaml", ".docx")):
+    if not file.filename.endswith((".pdf", ".txt", ".yaml", ".docx",".csv")):
         return "Invalid file format", None
 
     content = await file.read()
@@ -154,7 +154,7 @@ async def fileValidation(file):
 
     await file.seek(0)
 
-    max_file_size_bytes = 10 * 1024 * 1024
+    max_file_size_bytes = 100 * 1024 * 1024
     if file_size > max_file_size_bytes:
         return "File size exceeds the limit", None
 
@@ -208,7 +208,7 @@ def create_connector(connector: schemas.ConnectorBase, db: Session):
         return None, "DB Error"
 
     match provider.category_id:
-        case 2:
+        case 4:
             logger.info("creating plugin with category database")
             schema_details, is_error = get_plugin_metadata(provider_configs, connector.connector_config, provider.key)
             if is_error is None:
@@ -691,8 +691,12 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
                     sd = SourceDocuments(schema_details, schema_config, [])
                     queries = get_all_connector_samples(connector_details.get("id"), db)
                 case 4:
-                    documentations = datasource.fetch_data()
-                    sd = SourceDocuments([], [], documentations)
+                    # documentations = datasource.fetch_data()
+                    # sd = SourceDocuments([], [], documentations)
+                    schema_config = connector_details.get("schema_config",[])
+                    schema_details, metadata = datasource.fetch_schema_details()
+                    sd = SourceDocuments(schema_details, schema_config, [])
+                    queries = get_all_connector_samples(connector_details.get("id"), db)
 
             chunked_document, chunked_schema = sd.get_source_documents()
             vector_store.prepare_data(key, chunked_document,chunked_schema, queries)
