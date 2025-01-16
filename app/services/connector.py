@@ -208,7 +208,7 @@ def create_connector(connector: schemas.ConnectorBase, db: Session):
         return None, "DB Error"
 
     match provider.category_id:
-        case 4:
+        case 2 | 5:
             logger.info("creating plugin with category database")
             schema_details, is_error = get_plugin_metadata(provider_configs, connector.connector_config, provider.key)
             if is_error is None:
@@ -685,18 +685,14 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
                 case 1:
                     documentations = datasource.fetch_data()
                     sd = SourceDocuments([], [], documentations)
-                case 2:
+                case 2 | 5:
                     schema_config = connector_details.get("schema_config",[])
                     schema_details, metadata = datasource.fetch_schema_details()
                     sd = SourceDocuments(schema_details, schema_config, [])
                     queries = get_all_connector_samples(connector_details.get("id"), db)
                 case 4:
-                    # documentations = datasource.fetch_data()
-                    # sd = SourceDocuments([], [], documentations)
-                    schema_config = connector_details.get("schema_config",[])
-                    schema_details, metadata = datasource.fetch_schema_details()
-                    sd = SourceDocuments(schema_details, schema_config, [])
-                    queries = get_all_connector_samples(connector_details.get("id"), db)
+                    documentations = datasource.fetch_data()
+                    sd = SourceDocuments([], [], documentations)
 
             chunked_document, chunked_schema = sd.get_source_documents()
             vector_store.prepare_data(key, chunked_document,chunked_schema, queries)
