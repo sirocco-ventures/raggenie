@@ -61,7 +61,6 @@ const ProviderForm = ()=>{
     const {providerId, connectorId} = useParams()
     const navigate = useNavigate()
 
-    const maxFileSizeMB = 100;
     const maxFiles = 5; 
 
     let tableColumns = [
@@ -301,13 +300,20 @@ const ProviderForm = ()=>{
     };
     
 
-
-
+    const getMaxFileSize = (extension) => {
+        if (extension === "text/csv") {
+            return 100
+        } else {
+            return 10
+        }
+    }
+ 
 
     const onFileChange = (event) => {
         const selectedFile = event.target.files[0];
         if (!selectedFile) return;
-    
+        const maxFileSizeMB = getMaxFileSize(selectedFile.type)
+        
         const fileSizeMB = selectedFile.size / (1024 * 1024); 
     
         if (files.length >= maxFiles) {
@@ -326,7 +332,8 @@ const ProviderForm = ()=>{
     const onAddFileOnDrag = (event) => {
         event.preventDefault();
         const draggedFile = event.dataTransfer.files[0];
-    
+        const maxFileSizeMB = getMaxFileSize(draggedFile.type)
+
         if (!draggedFile) return;
     
         const fileSizeMB = draggedFile.size / (1024 * 1024); 
@@ -374,14 +381,14 @@ const onRemoveFile = (fileId) => {
         providerConfig.sort((firstItem, secondItem) => {
             return firstItem.order > secondItem.order ? -1 : 1
         })
-
+        
         const fileConfig = {
             onRemoveFile:onRemoveFile,
             onAddFileOnDrag:onAddFileOnDrag,
             pdfUploadRef:pdfUploadRef,
             title:"Upload your files",
             description:"You can upload up to 5 files, with each file having a maximum size of 10 MB.",
-            accept:".pdf,.yaml,.txt,.docx,.csv",
+            accept:providerDetails.category_id === 5 ? ".csv" : ".pdf,.yaml,.txt,.docx",
             dragMessage:"Drag your files to start uploading",
             progressPrecentage:progressPrecentage,
             showProgressBar:showProgressBar,
@@ -437,7 +444,7 @@ console.log(providerConfig);
     const onSaveConnector = async (data) => {
 
         let { formValues } = await getConfigFormData();
-        if(providerDetails.category_id == 4){
+        if(providerDetails.category_id == 4 || providerDetails.category_id == 5){
             formValues.document_files = files; 
         }
             
@@ -618,7 +625,7 @@ console.log(providerConfig);
                         </form>
                     </Tab>
                    
-                     <Tab title="Database Schema" tabKey="database-table" key={"database-table"} disabled={connectorId ? false : true} hide={![2].includes(providerDetails.category_id)}>
+                     <Tab title="Database Schema" tabKey="database-table" key={"database-table"} disabled={connectorId ? false : true} hide={![2,5].includes(providerDetails.category_id)}>
                         <TitleDescription title="Schema Details" description="Here are the tables and their columns for the plugin. Please describe the tables and it's column details to improve understanding of the plugin schema structure." />
                         <div style={{marginBottom: "30px"}}>
                             <Table columns={tableColumns} data={providerSchema} expandableRows={true} expandableRowsComponent={rowExpandComponent} onRowExpandToggled={onRowExpand} />
