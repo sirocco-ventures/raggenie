@@ -494,7 +494,6 @@ const onRemoveFile = (fileId) => {
             if(providerDetails.category_id == 4 || providerDetails.category_id == 5){
                 formValues.document_files = files; 
             }
-            console.log(formValues,getValues("pluginName"))
             healthCheck(providerId, { provider_config: formValues, name: getValues("pluginName") }).then(response=>{
                 if(response.data.status == false){
                     toast.error("Connection check failed")
