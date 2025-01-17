@@ -133,7 +133,7 @@ This configuration ensures that the RAGGENIE system connects to the `chroma` vec
 
 #### Raggenie Frontend
 
-* Move into the ui folder
+* **Move into the ui folder.**
   ```
   cd ./ui
   ```
@@ -153,21 +153,6 @@ This configuration ensures that the RAGGENIE system connects to the `chroma` vec
   * To start the server, run
     ```bash
     npm run dev
-    ```
-* Running RAGGENIE Frontend using fast api
-
-  * Update .env file inside `./ui` folder
-    ```env
-    VITE_BACKEND_URL=""
-    ```
-  * To serve UI using python server first build the UI 
-    ```bash
-    npm run build
-    ```
-  * Stop and start python server
-
-    ```bash
-    python main.py --config ./config.yaml llm
     ```
 
 for more details visit [frontend readme](./ui/README.md)

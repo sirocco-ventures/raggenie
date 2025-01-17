@@ -28,7 +28,7 @@ export const saveConnector = (connectorId = undefined, connectorType, connectorN
 }
 
 export const deleteConnector = (connectorId)=>{
-    return PostService(API_URL + `/connector/delete/${connectorId}`);
+    return DeleteService(API_URL + `/connector/delete/${connectorId}`);
 }
 
 export const updateDocument = (connectorId, document)=>{

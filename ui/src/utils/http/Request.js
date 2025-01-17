@@ -71,7 +71,7 @@ const Request = (method, url, data = {}, params = {}, config = {}, axiosConfig =
                 loaderContainer.style.display = "none";
             }
             if (error.response?.status == 401) {
-                window.location.href = '/ui/login';
+                window.location.href = '/login';
                 return null
             }
             return reject(error)
