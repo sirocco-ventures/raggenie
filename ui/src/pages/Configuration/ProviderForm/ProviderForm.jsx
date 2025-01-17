@@ -286,7 +286,7 @@ const ProviderForm = ()=>{
                 }
             ]);
     
-            setDisableConnectorSave(false);
+            setDisableConnectorSave(true);
             setShowProgressBar(false);
         })
         .catch(error => {
@@ -465,7 +465,6 @@ const onRemoveFile = (fileId) => {
         if(providerDetails.category_id == 4 || providerDetails.category_id == 5){
             formValues.document_files = files; 
         }
-            
         saveConnector(connectorId, providerId, data.pluginName, data.pluginDescription, formValues).then(response => {
             toast.success("Successfuly plugin added")
             if (connectorId == undefined) {
@@ -492,7 +491,11 @@ const onRemoveFile = (fileId) => {
      const onTestConnection = async ()=>{
         let {formValues, formFilled} = await getConfigFormData()
         if(formFilled){
-            healthCheck(providerId, { provider_config: formValues }).then(response=>{
+            if(providerDetails.category_id == 4 || providerDetails.category_id == 5){
+                formValues.document_files = files; 
+            }
+            console.log(formValues,getValues("pluginName"))
+            healthCheck(providerId, { provider_config: formValues, name: getValues("pluginName") }).then(response=>{
                 if(response.data.status == false){
                     toast.error("Connection check failed")
                 }else {
