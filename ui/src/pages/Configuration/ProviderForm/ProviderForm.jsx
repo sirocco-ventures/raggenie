@@ -470,13 +470,13 @@ const onRemoveFile = (fileId) => {
             toast.success("Successfuly plugin added")
             if (connectorId == undefined) {
                 let url = window.location.href.split('/');
-                if(providerDetails.category_id == 2 || providerDetails.category_id == 5 || providerDetails.category_id == 4 ){
+                if(providerDetails.category_id == 2 || providerDetails.category_id == 5){
                     window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=database-table`
                 }else{
                     window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=documentation`
                 }
             } else {
-                if(providerDetails.category_id == 2 || providerDetails.category_id == 5 || providerDetails.category_id == 4){
+                if(providerDetails.category_id == 2 || providerDetails.category_id == 5){
                     setCurrentActiveTab("database-table")
                 }else{
                     setCurrentActiveTab("documentation")
