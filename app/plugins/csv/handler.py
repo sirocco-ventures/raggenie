@@ -40,6 +40,9 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
         :return: Tuple containing connection status (True/False) and an error message if any.
         """
         try:
+            if 'db_name' not in self.params or not self.params['db_name']:
+                raise ValueError("Database name is missing or invalid in parameters.")
+
             self.connection = sqlite3.connect(
                 self.params['db_name'], 
                 uri=True, 
@@ -52,25 +55,35 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
             
             # Fetch all tables in the database
             self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-            tables = [row[0] for row in self.cursor.fetchall()]
+            tables = self.cursor.fetchall()
 
-            # Drop all tables
-            for table in tables:
-                logger.info(f"Dropping table: {table}")
-                self.cursor.execute(f"DROP TABLE IF EXISTS {table};")
+            if not tables:
+                logger.info("No tables found in the database.")
+            else:
+                # Drop all tables
+                for row in tables:
+                    table_name = row[0] if isinstance(row, (list, tuple)) else row.get('name')
+                    if table_name:
+                        logger.info(f"Dropping table: {table_name}")
+                        self.cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
             
             self.connection.commit()
             logger.info("All tables dropped successfully.")
             
             # Insert data from CSV files into the database
-            for csv_file in self.params['csv_files']:
+            for csv_file in self.params.get('csv_files', []):
+                if 'file_name' not in csv_file or 'file_path' not in csv_file:
+                    logger.warning(f"Invalid CSV file entry: {csv_file}")
+                    continue
+
                 table_name = csv_file['file_name'].rsplit('.', 1)[0]
                 self._insert_csv_to_db(csv_file['file_path'], table_name)
             
             return True, None
         except Exception as e:
-            logger.exception(f"Failed to connect to database: {str(e)}")
-            return False, str(e)
+            logger.exception(f"Failed to connect to database: {type(e).__name__}, {e}")
+            return False, f"{type(e).__name__}: {e}"
+
 
     def healthcheck(self):
         try:
