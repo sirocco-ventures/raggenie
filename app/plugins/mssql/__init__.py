@@ -40,14 +40,14 @@ __connection_args__ = OrderedDict(
         value = None,
         slug = "db_password"
     ),
-    db_host=ConnectionArgument(
+    db_server=ConnectionArgument(
         type= 1,
-        generic_name= 'MSSQL Database host',
-        description= 'Database hostname',
+        generic_name= 'MSSQL Database Server',
+        description= 'Include port number with a comma in server eg: ip.aaaaaaa.com,9600',
         order= 1,
         required = True,
         value = None,
-        slug = "db_host"
+        slug = "db_server"
     ),
     db_port=ConnectionArgument(
         type= 3,
