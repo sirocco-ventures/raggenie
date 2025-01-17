@@ -371,6 +371,10 @@ const onRemoveFile = (fileId) => {
 
     const updatedFilePaths = filePaths.filter(filePath => filePath.file_id !== fileId);
     setFilePaths(updatedFilePaths);
+
+    if (updatedFiles.length === 0) {
+        setDisableConnectorSave(true);
+    }
 };
 
 
@@ -414,7 +418,6 @@ const onRemoveFile = (fileId) => {
             multipleFileSupport:false
         }
 
-console.log(providerConfig);
 
         return (
             <>
@@ -432,7 +435,9 @@ console.log(providerConfig);
     }
 
     const onChangesOption=()=>{
-        setDisableConnectorSave(true)
+        if (files.length === 0) {
+            setDisableConnectorSave(true);
+        }
     }
 
 
@@ -465,13 +470,13 @@ console.log(providerConfig);
             toast.success("Successfuly plugin added")
             if (connectorId == undefined) {
                 let url = window.location.href.split('/');
-                if(providerDetails.category_id == 2){
+                if(providerDetails.category_id == 2 || providerDetails.category_id == 5 || providerDetails.category_id == 4 ){
                     window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=database-table`
                 }else{
                     window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=documentation`
                 }
             } else {
-                if(providerDetails.category_id == 2){
+                if(providerDetails.category_id == 2 || providerDetails.category_id == 5 || providerDetails.category_id == 4){
                     setCurrentActiveTab("database-table")
                 }else{
                     setCurrentActiveTab("documentation")
