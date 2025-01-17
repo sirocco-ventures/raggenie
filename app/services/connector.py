@@ -210,7 +210,7 @@ def create_connector(connector: schemas.ConnectorBase, db: Session):
     match provider.category_id:
         case 2 | 5:
             logger.info("creating plugin with category database")
-            schema_details, is_error = get_plugin_metadata(provider_configs, connector.connector_config, provider.key)
+            schema_details, is_error = get_plugin_metadata(provider_configs, connector.connector_config, connector.connector_name, provider.key)
             if is_error is None:
                 connector.schema_config = schema_details
             else:
@@ -870,7 +870,7 @@ def formatting_datasource(connector, provider):
             'params': connector.connector_config,
             'documentations': [{'type': 'text', 'value': connector.connector_docs}]
         }
-    elif provider.category_id == 2:
+    elif provider.category_id == 2 or provider.category_id == 5:
         return {
             'type': provider.key,
             'params': connector.connector_config,

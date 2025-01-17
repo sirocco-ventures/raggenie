@@ -15,14 +15,15 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
     CSVPlugin class for interacting with CSV data and inserting it into an SQL database.
     """
 
-    def __init__(self, document_files: List[str]):
+    def __init__(self, connector_name : str, document_files: List[str]):
         super().__init__(__name__)
-
-        self.connection = None
+        
+        self.connector_name = connector_name.replace(' ','_')
         self.params = {
             'csv_files': document_files,
-            'db_name': "csv_db.sqlite",
+            'db_name': f"{self.connector_name}.sqlite",
         }
+        self.connection = None
         self.max_limit = 10
 
     def _dict_factory(self, cursor, row):
@@ -33,15 +34,33 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
 
     def connect(self) -> Tuple[bool, Optional[str]]:
         """
-        Establish a connection to the SQLite database and insert data from CSV files.
+        Establish a connection to the SQLite database, delete all tables,
+        and insert data from CSV files.
 
         :return: Tuple containing connection status (True/False) and an error message if any.
         """
         try:
-            self.connection = sqlite3.connect(self.params['db_name'], uri=True, check_same_thread=False, timeout= 8.0)
+            self.connection = sqlite3.connect(
+                self.params['db_name'], 
+                uri=True, 
+                check_same_thread=False, 
+                timeout=8.0
+            )
             self.connection.row_factory = self._dict_factory
             self.cursor = self.connection.cursor()
             logger.info(f"Connected to database: {self.params['db_name']}")
+            
+            # Fetch all tables in the database
+            self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+            tables = [row[0] for row in self.cursor.fetchall()]
+
+            # Drop all tables
+            for table in tables:
+                logger.info(f"Dropping table: {table}")
+                self.cursor.execute(f"DROP TABLE IF EXISTS {table};")
+            
+            self.connection.commit()
+            logger.info("All tables dropped successfully.")
             
             # Insert data from CSV files into the database
             for csv_file in self.params['csv_files']:

@@ -26,15 +26,16 @@ class DSLoader:
             "sqlite" : Sqlite,
             "CSV" : CSVPlugin,
         }
-        db_type = self.config.get("type")
-        connection_params = self.config.get("params")
+        db_type = self.config.get("type","")
+        connection_params = self.config.get("params",{})
+        connector_name = self.config.get("connector_name","default")
 
         logger.info(f"initialising {db_type}")
 
         db_class = db_classes.get(db_type)
         if db_class:
             try:
-                ds = db_class(**connection_params)
+                ds = db_class(connector_name=connector_name,**connection_params)
                 return ds
             except Exception as e:
                 raise e

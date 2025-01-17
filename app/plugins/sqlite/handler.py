@@ -12,10 +12,11 @@ from app.base.query_plugin import QueryPlugin
 from app.base.plugin_metadata_mixin import PluginMetadataMixin
 
 class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
-    def __init__(self, db_name:str, db_parent_path:str=''):
+    def __init__(self, connector_name : str, db_name:str, db_parent_path:str=''):
         logger.info("Initializing datasource")
         super().__init__(__name__)
 
+        self.connector_name = connector_name.replace(' ','_')
         self.params = {
             'db_name': db_name,
             'db_parent_path': db_parent_path,
