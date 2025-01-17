@@ -8,6 +8,7 @@ from typing import Tuple, Optional, List
 import uuid
 import sqlparse
 import sqlvalidator
+import os
 
 
 class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
@@ -42,6 +43,11 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
         try:
             if 'db_name' not in self.params or not self.params['db_name']:
                 raise ValueError("Database name is missing or invalid in parameters.")
+            
+            if os.path.exists(self.params['db_name']):
+                # Delete the file
+                os.remove(self.params['db_name'])
+                print(f"The database file '{self.params['db_name']}' has been deleted successfully.")
 
             self.connection = sqlite3.connect(
                 self.params['db_name'], 
@@ -52,31 +58,14 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
             self.connection.row_factory = self._dict_factory
             self.cursor = self.connection.cursor()
             logger.info(f"Connected to database: {self.params['db_name']}")
-            
-            # Fetch all tables in the database
-            self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-            tables = self.cursor.fetchall()
-
-            if not tables:
-                logger.info("No tables found in the database.")
-            else:
-                # Drop all tables
-                for row in tables:
-                    table_name = row[0] if isinstance(row, (list, tuple)) else row.get('name')
-                    if table_name:
-                        logger.info(f"Dropping table: {table_name}")
-                        self.cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
-            
-            self.connection.commit()
-            logger.info("All tables dropped successfully.")
-            
+                        
             # Insert data from CSV files into the database
             for csv_file in self.params.get('csv_files', []):
                 if 'file_name' not in csv_file or 'file_path' not in csv_file:
                     logger.warning(f"Invalid CSV file entry: {csv_file}")
                     continue
 
-                table_name = csv_file['file_name'].rsplit('.', 1)[0]
+                table_name = csv_file['file_name'].rsplit('.', 1)[0].replace(' ','_')
                 self._insert_csv_to_db(csv_file['file_path'], table_name)
             
             return True, None
