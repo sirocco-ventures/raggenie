@@ -326,7 +326,14 @@ const ProviderForm = ()=>{
             return;
         }
     
-        onSaveFiles(selectedFile)
+        if (providerDetails.category_id === 5 && selectedFile.type === "text/csv"){
+            onSaveFiles(selectedFile)
+        } else if (providerDetails.category_id === 4 && selectedFile.type != "text/csv") {
+            onSaveFiles(selectedFile)
+        }
+        else {
+            toast.error("Invalid file type")
+        }
     };
     
     const onAddFileOnDrag = (event) => {
@@ -347,8 +354,14 @@ const ProviderForm = ()=>{
             toast.error(`File size should not exceed ${maxFileSizeMB} MB. The selected file is ${fileSizeMB.toFixed(2)} MB.`)
             return;
         }
-    
-        onSaveFiles(draggedFile)
+        if (providerDetails.category_id === 5 && draggedFile.type === "text/csv"){
+            onSaveFiles(draggedFile)
+        } else if (providerDetails.category_id === 4 && draggedFile.type != "text/csv") {
+            onSaveFiles(draggedFile)
+        }
+        else {
+            toast.error("Invalid file type")
+        }
     };
 
 
