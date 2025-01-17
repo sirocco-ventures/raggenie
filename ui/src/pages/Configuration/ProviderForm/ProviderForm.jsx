@@ -400,7 +400,7 @@ const onRemoveFile = (fileId) => {
             onAddFileOnDrag:onAddFileOnDrag,
             pdfUploadRef:pdfUploadRef,
             title:"Upload your files",
-            description:"You can upload up to 5 files, with each file having a maximum size of 10 MB.",
+            description:`You can upload up to 5 files, with each file having a maximum size of ${providerDetails.category_id === 5 ? 100 : 10} MB.`,
             accept:providerDetails.category_id === 5 ? ".csv" : ".pdf,.yaml,.txt,.docx",
             dragMessage:"Drag your files to start uploading",
             progressPrecentage:progressPrecentage,
