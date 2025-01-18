@@ -52,7 +52,7 @@ def list_connectors(db: Session):
 
     return connectors_response, None
 
-def list_connectors_by_provider_category(category_id: int, db: Session):
+def list_connectors_by_provider_category(category_ids: int, db: Session):
     """
     Retrieves all connector records from the database filtered by provider category.
 
@@ -68,7 +68,9 @@ def list_connectors_by_provider_category(category_id: int, db: Session):
     if error:
         return [], error
 
-    filtered_connectors = [connector for connector in connectors if connector.provider_id == category_id]
+    filtered_connectors = []
+    for category_id in category_ids:
+        filtered_connectors.extend([connector for connector in connectors if connector.provider_id == category_id])
 
     return filtered_connectors, None
 

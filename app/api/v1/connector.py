@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 import app.schemas.connector as schemas
@@ -27,7 +27,7 @@ inference_router = APIRouter()
 actions = APIRouter()
 
 @router.get("/list", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
-def list_connectors(db: Session = Depends(get_db), provider_category_id: Optional[int] = None ):
+def list_connectors(db: Session = Depends(get_db), provider_category_ids:  Optional[List[int]] = None ):
 
     """
     Retrieves a list of all connectors from the database. If a provider category ID is provided, only connectors from that category are returned.
@@ -39,8 +39,8 @@ def list_connectors(db: Session = Depends(get_db), provider_category_id: Optiona
         CommonResponse: A response containing either the list of connectors or an error message.
     """
 
-    if provider_category_id:
-        result, error = svc.list_connectors_by_provider_category(provider_category_id, db)
+    if provider_category_ids:
+        result, error = svc.list_connectors_by_provider_category(provider_category_ids, db)
     else:
         result, error = svc.list_connectors(db)
 
