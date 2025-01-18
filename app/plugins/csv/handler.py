@@ -41,14 +41,16 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
         :return: Tuple containing connection status (True/False) and an error message if any.
         """
         try:
-            db_path = f"/assets/csv_db/{self.params['db_name']}"
+            db_path = f"assets/datasourc/csv_db/{self.params['db_name']}"
             if 'db_name' not in self.params or not self.params['db_name']:
                 raise ValueError("Database name is missing or invalid in parameters.")
-            
+                        
             if os.path.exists(db_path):
                 # Delete the file
                 os.remove(db_path)
                 print(f"The database file '{db_path}' has been deleted successfully.")
+
+            os.makedirs(os.path.dirname(db_path), exist_ok=True)
 
             self.connection = sqlite3.connect(
                 db_path, 
