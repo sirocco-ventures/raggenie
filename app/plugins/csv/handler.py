@@ -41,7 +41,7 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
         :return: Tuple containing connection status (True/False) and an error message if any.
         """
         try:
-            db_path = f"assets/datasourc/csv_db/{self.params['db_name']}"
+            db_path = f"assets/datasource/csv_db/{self.params['db_name']}"
             if 'db_name' not in self.params or not self.params['db_name']:
                 raise ValueError("Database name is missing or invalid in parameters.")
                         
