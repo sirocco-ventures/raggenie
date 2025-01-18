@@ -8,7 +8,7 @@ __plugin_name__ = 'CSV'
 __display_name__ = 'CSV loader'
 __description__ = 'CSV loader for interacting with CSV data'
 __icon__ = '/assets/plugins/logos/csv.svg'
-__category__ = 4
+__category__ = 5
 
 # Connection arguments
 __connection_args__ = OrderedDict(

@@ -8,6 +8,7 @@ from typing import Tuple, Optional, List
 import uuid
 import sqlparse
 import sqlvalidator
+import os
 
 
 class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
@@ -15,14 +16,15 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
     CSVPlugin class for interacting with CSV data and inserting it into an SQL database.
     """
 
-    def __init__(self, document_files: List[str]):
+    def __init__(self, connector_name : str, document_files: List[str]):
         super().__init__(__name__)
-
-        self.connection = None
+        
+        self.connector_name = connector_name.replace(' ','_')
         self.params = {
             'csv_files': document_files,
-            'db_name': "csv_db.sqlite",
+            'db_name': f"{self.connector_name}.sqlite",
         }
+        self.connection = None
         self.max_limit = 10
 
     def _dict_factory(self, cursor, row):
@@ -33,25 +35,47 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
 
     def connect(self) -> Tuple[bool, Optional[str]]:
         """
-        Establish a connection to the SQLite database and insert data from CSV files.
+        Establish a connection to the SQLite database, delete all tables,
+        and insert data from CSV files.
 
         :return: Tuple containing connection status (True/False) and an error message if any.
         """
         try:
-            self.connection = sqlite3.connect(self.params['db_name'], uri=True, check_same_thread=False, timeout= 8.0)
+            db_path = f"assets/datasource/csv_db/{self.params['db_name']}"
+            if 'db_name' not in self.params or not self.params['db_name']:
+                raise ValueError("Database name is missing or invalid in parameters.")
+                        
+            if os.path.exists(db_path):
+                # Delete the file
+                os.remove(db_path)
+                print(f"The database file '{db_path}' has been deleted successfully.")
+
+            os.makedirs(os.path.dirname(db_path), exist_ok=True)
+
+            self.connection = sqlite3.connect(
+                db_path, 
+                uri=True, 
+                check_same_thread=False, 
+                timeout=8.0
+            )
             self.connection.row_factory = self._dict_factory
             self.cursor = self.connection.cursor()
-            logger.info(f"Connected to database: {self.params['db_name']}")
-            
+            logger.info(f"Connected to database: {db_path}")
+                        
             # Insert data from CSV files into the database
-            for csv_file in self.params['csv_files']:
-                table_name = csv_file['file_name'].rsplit('.', 1)[0]
+            for csv_file in self.params.get('csv_files', []):
+                if 'file_name' not in csv_file or 'file_path' not in csv_file:
+                    logger.warning(f"Invalid CSV file entry: {csv_file}")
+                    continue
+
+                table_name = csv_file['file_name'].rsplit('.', 1)[0].replace(' ','_')
                 self._insert_csv_to_db(csv_file['file_path'], table_name)
             
             return True, None
         except Exception as e:
-            logger.exception(f"Failed to connect to database: {str(e)}")
-            return False, str(e)
+            logger.exception(f"Failed to connect to database: {type(e).__name__}, {e}")
+            return False, f"{type(e).__name__}: {e}"
+
 
     def healthcheck(self):
         try:

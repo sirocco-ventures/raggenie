@@ -12,10 +12,12 @@ from app.base.plugin_metadata_mixin import PluginMetadataMixin
 
 class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
 
-    def __init__(self, db_name:str, db_user:str, db_password:str, db_server:str="localhost", db_port:int=1433):
+
+    def __init__(self, connector_name : str, db_name:str, db_user:str, db_password:str, db_host:str="localhost", db_port:int=1433):
         logger.info("Initializing datasource")
         super().__init__(__name__)
 
+        self.connector_name = connector_name.replace(' ','_')
         self.params = {
             'database': db_name,
             'user': db_user,

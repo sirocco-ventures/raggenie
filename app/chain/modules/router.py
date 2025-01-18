@@ -61,7 +61,7 @@ class Router(AbstractHandler):
             if intent in  self.forwared_handler.data_sources:
                 datasource = self.forwared_handler.data_sources[intent]
 
-                if datasource.__category__ == 4:
+                if datasource.__category__ == 2 or datasource.__category__ == 5:
                     logger.info("entered database workflow")
                     return super().handle(self.forwared_handler.invoke(request))
                 else:
