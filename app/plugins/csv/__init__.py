@@ -69,9 +69,10 @@ __prompt__ = Prompt(**{
             2. Understand the question and check whether it's doable with the given context
             3. Do only the task asked, Don't hallucinate and overdo the task
             4. Strictly return all the fields in the schema during listing operations
-            5. Strictly return at least 1 text fields and an id field during aggregation/group by operations
-            6. Generate a query to solve the problem using the schema, context, and strictly follow the rules
-            7. output in the given json format, extra explanation is strictly prohibited
+            5. Always enclose column names in double quotes ("") in SQL queries, even for single-word column names or variables, to ensure compatibility and prevent errors like no such column.
+            6. Strictly return at least 1 text fields and an id field during aggregation/group by operations
+            7. Generate a query to solve the problem using the schema, context, and strictly follow the rules
+            8. output in the given json format, extra explanation is strictly prohibited
 
             {
                 "explanation": "Explain how you finalized the sql query using the schemas and rules provided",

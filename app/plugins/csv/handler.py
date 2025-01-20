@@ -144,14 +144,13 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
                 fields= []
                 table_ddl = f"\n\nCREATE TABLE {table} ("
                 for column in columns:
-                    column_name = column['name'].replace('-','_')
                     fields.append({
                         "column_id" : str(uuid.uuid4()),
-                        "column_name": column_name,
+                        "column_name": column['name'],
                         "column_type": column['type'],
                         "description": "",
                     })
-                    table_ddl +=f"\n{column_name} {column['type']} ,"
+                    table_ddl +=f"\n{column['name']} {column['type']} ,"
                 table_ddl +=f");"
 
                 schema["columns"] = fields
