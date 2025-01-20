@@ -178,7 +178,7 @@ def update_connector(connector_id: int, connector: schemas.ConnectorUpdate, db: 
         error=None
     )
 
-@router.delete("/delete/{connector_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+@router.post("/delete/{connector_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_connector(connector_id: int, db: Session = Depends(get_db)):
 
     """
