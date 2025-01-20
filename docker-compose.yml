@@ -19,7 +19,7 @@ services:
       context: ./ui
       dockerfile: Dockerfile
       args:
-        - BACKEND_URL=http://34.45.247.254/:80
+        - BACKEND_URL=http://34.45.247.254:80
     ports:
       - "80:5000"
     volumes:
