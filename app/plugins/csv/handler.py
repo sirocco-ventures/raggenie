@@ -146,7 +146,7 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
                 for column in columns:
                     fields.append({
                         "column_id" : str(uuid.uuid4()),
-                        "column_name": column['name'],
+                        "column_name": column['name'].replace('-','_'),
                         "column_type": column['type'],
                         "description": "",
                     })
