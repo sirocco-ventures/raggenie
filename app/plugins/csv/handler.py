@@ -203,10 +203,12 @@ class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
             return "Sorry, I am not designed for data manipulation operations"
 
         sql_query = sqlvalidator.parse(formated_sql)
-        if not sql_query.is_valid():
-            logger.info(sql_query.is_valid())
-            return "I didn't get you, Please reframe your question"
-
+        try:
+            if not sql_query.is_valid():
+                logger.info(sql_query.is_valid())
+                return "I didn't get you, Please reframe your question"
+        except Exception as error:
+            logger.critical(f"error:{error}")
         return  None
 
     def close_conection(self):
