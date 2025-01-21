@@ -5,7 +5,7 @@ from app.models.request import ConnectionArgument
 # Plugin Metadata
 __version__ = '1.0.0'
 __plugin_name__ = 'CSV'
-__display_name__ = 'CSV loader'
+__display_name__ = 'CSV Loader'
 __description__ = 'CSV loader for interacting with CSV data'
 __icon__ = '/assets/plugins/logos/csv.svg'
 __category__ = 5
