@@ -12,6 +12,8 @@ from app.api.v1.provider import sample as sample_sql
 from app.api.v1.auth import login as login
 import app.services.connector_details as commonservices
 
+from fastapi.responses import HTMLResponse
+
 
 # from app.providers.middleware import AuthMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -28,6 +30,10 @@ from loguru import logger
 import app.services.connector as svc
 import app.services.provider as provider_svc
 from app.utils.database import SessionLocal, Base, engine
+
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
+from typing import Optional
 
 session = SessionLocal()
 
@@ -117,8 +123,20 @@ def create_app(config):
     logger.info("creating llm fast_api server")
     app = FastAPI()
 
-    app.mount("/assets",StaticFiles(directory="assets"), name="assets")
 
+    app.mount("/assets",StaticFiles(directory="./assets"), name="assets")
+    app.mount("/ui/assets",StaticFiles(directory="./ui/dist/assets",  html=True), name="ui", )
+    
+    templates = Jinja2Templates(directory="./ui/dist")
+
+    @app.get("/ui", response_class=HTMLResponse)
+    @app.get("/ui/{full_path:path}", response_class=HTMLResponse)
+    def serve_home(request: Request, full_path: Optional[str]=""):
+        if request:
+            return templates.TemplateResponse("index.html", context= {"request": request}) 
+        else:
+            return templates.TemplateResponse("index.html") 
+    
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],

@@ -52,7 +52,7 @@ def list_connectors(db: Session):
 
     return connectors_response, None
 
-def list_connectors_by_provider_category(category_ids: int, db: Session):
+def list_connectors_by_provider_category(category_id: int, db: Session):
     """
     Retrieves all connector records from the database filtered by provider category.
 
@@ -68,9 +68,7 @@ def list_connectors_by_provider_category(category_ids: int, db: Session):
     if error:
         return [], error
 
-    filtered_connectors = []
-    for category_id in category_ids:
-        filtered_connectors.extend([connector for connector in connectors if connector.provider_id == category_id])
+    filtered_connectors = [connector for connector in connectors if connector.provider_id == category_id]
 
     return filtered_connectors, None
 
@@ -148,7 +146,7 @@ async def fileValidation(file):
         Tuple[str, int]: An error message if validation fails, or the size of the file if it passes.
     """
 
-    if not file.filename.endswith((".pdf", ".txt", ".yaml", ".docx",".csv")):
+    if not file.filename.endswith((".pdf", ".txt", ".yaml", ".docx")):
         return "Invalid file format", None
 
     content = await file.read()
@@ -156,7 +154,7 @@ async def fileValidation(file):
 
     await file.seek(0)
 
-    max_file_size_bytes = 100 * 1024 * 1024
+    max_file_size_bytes = 10 * 1024 * 1024
     if file_size > max_file_size_bytes:
         return "File size exceeds the limit", None
 
@@ -210,9 +208,9 @@ def create_connector(connector: schemas.ConnectorBase, db: Session):
         return None, "DB Error"
 
     match provider.category_id:
-        case 2 | 5:
+        case 2:
             logger.info("creating plugin with category database")
-            schema_details, is_error = get_plugin_metadata(provider_configs, connector.connector_config, connector.connector_name, provider.key)
+            schema_details, is_error = get_plugin_metadata(provider_configs, connector.connector_config, provider.key)
             if is_error is None:
                 connector.schema_config = schema_details
             else:
@@ -687,7 +685,7 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
                 case 1:
                     documentations = datasource.fetch_data()
                     sd = SourceDocuments([], [], documentations)
-                case 2 | 5:
+                case 2:
                     schema_config = connector_details.get("schema_config",[])
                     schema_details, metadata = datasource.fetch_schema_details()
                     sd = SourceDocuments(schema_details, schema_config, [])
@@ -872,7 +870,7 @@ def formatting_datasource(connector, provider):
             'params': connector.connector_config,
             'documentations': [{'type': 'text', 'value': connector.connector_docs}]
         }
-    elif provider.category_id == 2 or provider.category_id == 5:
+    elif provider.category_id == 2:
         return {
             'type': provider.key,
             'params': connector.connector_config,

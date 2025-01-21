@@ -13,10 +13,9 @@ from app.base.query_plugin import QueryPlugin
 
 class Bigquery(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
 
-    def __init__(self, connector_name : str, project_id: str, service_account_json: str):
+    def __init__(self, project_id: str, service_account_json: str):
         super().__init__(__name__)
 
-        self.connector_name = connector_name.replace(' ','_')
         self.params = {
             'project' : project_id,
             'credentials' : service_account.Credentials.from_service_account_info(json.loads(service_account_json)),

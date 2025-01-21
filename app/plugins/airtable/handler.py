@@ -14,14 +14,14 @@ class Airtable(BasePlugin, QueryPlugin, PluginMetadataMixin, Formatter):
     Airtable class for interacting with Airtable API and fetching table data, schemas, and more.
     """
 
-    def __init__(self, connector_name : str, token:str, workspace:str):
+    def __init__(self, token:str, workspace:str):
         super().__init__(__name__)
 
         self.connection = {
             "base_url": "https://api.airtable.com/v0",
         }
 
-        self.connector_name = connector_name.replace(' ','_')
+        # common
         self.params = {
             'token': token,
             'base_id': workspace

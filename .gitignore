@@ -59,9 +59,6 @@ venv.bak/
 # Default vector db path
 vector_db
 
-#assets files
-assets/datasource
-
 # Default log file
 .cache
 
@@ -69,7 +66,6 @@ assets/datasource
 context_store.db
 raggenie.db
 test_db.db
-csv_db.sqlite
 
 # node_modules folder
 ui/node_modules

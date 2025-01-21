@@ -13,11 +13,10 @@ from app.base.plugin_metadata_mixin import PluginMetadataMixin
 
 class Mysql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
 
-    def __init__(self, connector_name : str, db_name:str, db_user:str="root", db_password:str="", db_host:str="localhost", db_port:int=3306):
+    def __init__(self, db_name:str, db_user:str="root", db_password:str="", db_host:str="localhost", db_port:int=3306):
         logger.info("Initializing datasource")
         super().__init__(__name__)
 
-        self.connector_name = connector_name.replace(' ','_')
         # common
         self.params = {
             'database': db_name,

@@ -83,7 +83,6 @@ class ProviderConfigList(BaseModel):
 
 class TestCredentials(BaseModel):
     provider_config: Dict[str, Any]
-    connector_name: str
 
 class TestVectorDBCredentials(BaseModel):
     vectordb_config: Dict[str, Any]

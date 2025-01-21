@@ -13,11 +13,10 @@ from app.base.plugin_metadata_mixin import PluginMetadataMixin
 
 class Postresql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
 
-    def __init__(self, connector_name : str, db_name:str, db_user:str="postgres", db_password:str="", db_host:str="localhost", db_port:int=5432, db_sslmode:str="disable"):
+    def __init__(self, db_name:str, db_user:str="postgres", db_password:str="", db_host:str="localhost", db_port:int=5432, db_sslmode:str="disable"):
         logger.info("Initializing datasource")
         super().__init__(__name__)
 
-        self.connector_name = connector_name.replace(' ','_')
         # common
         self.params = {
             'dbname': db_name,
