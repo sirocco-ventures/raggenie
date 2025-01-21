@@ -12,3 +12,4 @@ setup.py
 Makefile
 .pre-commit-config.yaml
 .env.example
+ui/node_modules
