@@ -14,12 +14,12 @@ class Document(BasePlugin, PluginMetadataMixin,DocumentDataPlugin,  Formatter):
     Document class for interacting with document data.
     """
 
-    def __init__(self, document_files:str):
+    def __init__(self, connector_name : str, document_files:str):
         super().__init__(__name__)
 
         self.connection = {}
 
-        # common
+        self.connector_name = connector_name.replace(' ','_')
         self.params = {
             'document_files': document_files,
         }

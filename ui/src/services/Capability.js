@@ -3,7 +3,7 @@ import DeleteService from "src/utils/http/DeleteService"
 import PostService from "src/utils/http/PostService"
 
 export const saveBotCapability = async (configurationId, capabilityName, capabilityDescription, params = {}) => {
-
+    
     let saveData = {
         config_id: configurationId,
         name: capabilityName,

@@ -16,7 +16,8 @@ def test_plugin_connection(db_configs, config, provider_class):
             params[conf.field] = config.provider_config[conf.slug]
 
     params = {
-        "type": provider_class,
+        "type" : provider_class,
+        "connector_name" : config.connector_name,
         "params": params,
     }
 
@@ -32,7 +33,7 @@ def test_plugin_connection(db_configs, config, provider_class):
 
     return True, "Test Credentials successfully completed"
 
-def get_plugin_metadata(db_configs, config, provider_class):
+def get_plugin_metadata(db_configs, config, connector_name, provider_class):
 
     params = {}
     for conf in db_configs:
@@ -41,7 +42,8 @@ def get_plugin_metadata(db_configs, config, provider_class):
         else:
             params[conf.field] = config.get(conf.slug, "")
     params = {
-        "type": provider_class,
+        "type" : provider_class,
+        "connector_name" : connector_name,
         "params": params,
     }
 

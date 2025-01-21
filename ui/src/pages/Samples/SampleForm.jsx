@@ -20,7 +20,7 @@ const SampleForm = ({ sample = {}, afterCreate = ()=>{}, onCancel = ()=>{}})=>{
 
 
     const getAllConnectors = ()=>{
-        getConnectors(2).then(response=>{
+        getConnectors([2, 5]).then(response=>{
 
             let tempOptions = [];
             response.data?.data?.connectors?.map(item=>{

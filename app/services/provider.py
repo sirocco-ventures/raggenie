@@ -285,6 +285,8 @@ def test_credentials(provider_id: int, config: schemas.TestCredentials, db: Sess
             return test_plugin_connection(provider_configs, config, provider.key)
         case 4:
             return test_plugin_connection(provider_configs, config, provider.key)
+        case 5:
+            return test_plugin_connection(provider_configs, config, provider.key)
         case _:
             return None, "Unsupported Provider"
 

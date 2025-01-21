@@ -61,7 +61,6 @@ const ProviderForm = ()=>{
     const {providerId, connectorId} = useParams()
     const navigate = useNavigate()
 
-    const maxFileSizeMB = 10;
     const maxFiles = 5; 
 
     let tableColumns = [
@@ -287,7 +286,7 @@ const ProviderForm = ()=>{
                 }
             ]);
     
-            setDisableConnectorSave(false);
+            setDisableConnectorSave(true);
             setShowProgressBar(false);
         })
         .catch(error => {
@@ -301,13 +300,20 @@ const ProviderForm = ()=>{
     };
     
 
-
-
+    const getMaxFileSize = (extension) => {
+        if (extension === "text/csv") {
+            return 100
+        } else {
+            return 10
+        }
+    }
+ 
 
     const onFileChange = (event) => {
         const selectedFile = event.target.files[0];
         if (!selectedFile) return;
-    
+        const maxFileSizeMB = getMaxFileSize(selectedFile.type)
+        
         const fileSizeMB = selectedFile.size / (1024 * 1024); 
     
         if (files.length >= maxFiles) {
@@ -320,13 +326,21 @@ const ProviderForm = ()=>{
             return;
         }
     
-        onSaveFiles(selectedFile)
+        if (providerDetails.category_id === 5 && selectedFile.type === "text/csv"){
+            onSaveFiles(selectedFile)
+        } else if (providerDetails.category_id === 4 && selectedFile.type != "text/csv") {
+            onSaveFiles(selectedFile)
+        }
+        else {
+            toast.error("Invalid file type")
+        }
     };
     
     const onAddFileOnDrag = (event) => {
         event.preventDefault();
         const draggedFile = event.dataTransfer.files[0];
-    
+        const maxFileSizeMB = getMaxFileSize(draggedFile.type)
+
         if (!draggedFile) return;
     
         const fileSizeMB = draggedFile.size / (1024 * 1024); 
@@ -340,8 +354,14 @@ const ProviderForm = ()=>{
             toast.error(`File size should not exceed ${maxFileSizeMB} MB. The selected file is ${fileSizeMB.toFixed(2)} MB.`)
             return;
         }
-    
-        onSaveFiles(draggedFile)
+        if (providerDetails.category_id === 5 && draggedFile.type === "text/csv"){
+            onSaveFiles(draggedFile)
+        } else if (providerDetails.category_id === 4 && draggedFile.type != "text/csv") {
+            onSaveFiles(draggedFile)
+        }
+        else {
+            toast.error("Invalid file type")
+        }
     };
 
 
@@ -351,6 +371,10 @@ const onRemoveFile = (fileId) => {
 
     const updatedFilePaths = filePaths.filter(filePath => filePath.file_id !== fileId);
     setFilePaths(updatedFilePaths);
+
+    if (updatedFiles.length === 0) {
+        setDisableConnectorSave(true);
+    }
 };
 
 
@@ -374,14 +398,14 @@ const onRemoveFile = (fileId) => {
         providerConfig.sort((firstItem, secondItem) => {
             return firstItem.order > secondItem.order ? -1 : 1
         })
-
+        
         const fileConfig = {
             onRemoveFile:onRemoveFile,
             onAddFileOnDrag:onAddFileOnDrag,
             pdfUploadRef:pdfUploadRef,
             title:"Upload your files",
-            description:"You can upload up to 5 files, with each file having a maximum size of 10 MB.",
-            accept:".pdf,.yaml,.txt,.docx",
+            description:`You can upload up to 5 files, with each file having a maximum size of ${providerDetails.category_id === 5 ? 100 : 10} MB.`,
+            accept:providerDetails.category_id === 5 ? ".csv" : ".pdf,.yaml,.txt,.docx",
             dragMessage:"Drag your files to start uploading",
             progressPrecentage:progressPrecentage,
             showProgressBar:showProgressBar,
@@ -394,7 +418,6 @@ const onRemoveFile = (fileId) => {
             multipleFileSupport:false
         }
 
-console.log(providerConfig);
 
         return (
             <>
@@ -412,7 +435,9 @@ console.log(providerConfig);
     }
 
     const onChangesOption=()=>{
-        setDisableConnectorSave(true)
+        if (files.length === 0) {
+            setDisableConnectorSave(true);
+        }
     }
 
 
@@ -437,21 +462,20 @@ console.log(providerConfig);
     const onSaveConnector = async (data) => {
 
         let { formValues } = await getConfigFormData();
-        if(providerDetails.category_id == 4){
+        if(providerDetails.category_id == 4 || providerDetails.category_id == 5){
             formValues.document_files = files; 
         }
-            
         saveConnector(connectorId, providerId, data.pluginName, data.pluginDescription, formValues).then(response => {
             toast.success("Successfuly plugin added")
             if (connectorId == undefined) {
                 let url = window.location.href.split('/');
-                if(providerDetails.category_id == 2){
+                if(providerDetails.category_id == 2 || providerDetails.category_id == 5){
                     window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=database-table`
                 }else{
                     window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=documentation`
                 }
             } else {
-                if(providerDetails.category_id == 2){
+                if(providerDetails.category_id == 2 || providerDetails.category_id == 5){
                     setCurrentActiveTab("database-table")
                 }else{
                     setCurrentActiveTab("documentation")
@@ -467,7 +491,10 @@ console.log(providerConfig);
      const onTestConnection = async ()=>{
         let {formValues, formFilled} = await getConfigFormData()
         if(formFilled){
-            healthCheck(providerId, { provider_config: formValues }).then(response=>{
+            if(providerDetails.category_id == 4 || providerDetails.category_id == 5){
+                formValues.document_files = files; 
+            }
+            healthCheck(providerId, { provider_config: formValues, connector_name: getValues("pluginName") }).then(response=>{
                 if(response.data.status == false){
                     toast.error("Connection check failed")
                 }else {
@@ -618,7 +645,7 @@ console.log(providerConfig);
                         </form>
                     </Tab>
                    
-                     <Tab title="Database Schema" tabKey="database-table" key={"database-table"} disabled={connectorId ? false : true} hide={![2].includes(providerDetails.category_id)}>
+                     <Tab title="Database Schema" tabKey="database-table" key={"database-table"} disabled={connectorId ? false : true} hide={![2,5].includes(providerDetails.category_id)}>
                         <TitleDescription title="Schema Details" description="Here are the tables and their columns for the plugin. Please describe the tables and it's column details to improve understanding of the plugin schema structure." />
                         <div style={{marginBottom: "30px"}}>
                             <Table columns={tableColumns} data={providerSchema} expandableRows={true} expandableRowsComponent={rowExpandComponent} onRowExpandToggled={onRowExpand} />
