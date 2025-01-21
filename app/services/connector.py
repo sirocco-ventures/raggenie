@@ -293,7 +293,6 @@ def delete_connector(connector_id: int, db: Session):
 
     """
 
-
     deleted_connector, is_error = repo.delete_connector_by_id(connector_id, db)
 
     if is_error:

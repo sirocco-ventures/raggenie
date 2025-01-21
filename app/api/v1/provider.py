@@ -356,7 +356,7 @@ def update_sql(id: int, request: Request, sql: schemas.SampleSQLUpdate, db: Sess
         data={"sql": result}
     )
 
-@sample.delete("delete/{id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+@sample.post("delete/{id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_sql(id: int, db: Session = Depends(get_db)):
 
     """

@@ -19,8 +19,8 @@ class Connector(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     provider = relationship('Provider', back_populates='connectors')
-    actions = relationship('Actions', back_populates='connectors')
-    sample_sql = relationship('SampleSQL', back_populates='connectors')
+    actions = relationship('Actions', back_populates='connectors', cascade="all, delete-orphan")
+    sample_sql = relationship('SampleSQL', back_populates='connectors', cascade="all, delete-orphan")
 
 
 

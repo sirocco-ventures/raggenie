@@ -814,7 +814,7 @@ def update_action(action_id: int, action: schemas.ActionsUpdate, db: Session = D
         error=None
     )
 
-@actions.delete("/{action_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+@actions.post("/{action_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_action(action_id: int, db: Session = Depends(get_db)):
 
     """
