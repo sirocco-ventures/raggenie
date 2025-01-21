@@ -7,7 +7,7 @@ __version__ = '1.0.0'
 __plugin_name__ = 'maria'
 __display_name__ = "MariaDB"
 __description__ = 'MariaDB integration for handling MariaDB database operations.'
-__icon__ = '/assets/plugins/logos/mariadb.svg'
+__icon__ = '/assets/plugins/logos/mariaDB.svg'
 __category__ = 2
 
 

@@ -1,5 +1,3 @@
-import pymysql
-import mysql.connector
 import mariadb
 from loguru import logger
 import sqlvalidator
