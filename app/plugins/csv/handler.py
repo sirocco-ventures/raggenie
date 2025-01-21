@@ -1,79 +1,113 @@
-import sqlite3
-import pathlib
-import urllib
-from loguru import logger
-import sqlvalidator
-import sqlparse
 from .formatter import Formatter
-import uuid
-
+from loguru import logger
+import sqlite3
+import pandas as pd
 from app.base.base_plugin import BasePlugin
-from app.base.query_plugin import QueryPlugin
 from app.base.plugin_metadata_mixin import PluginMetadataMixin
+from typing import Tuple, Optional, List
+import uuid
+import sqlparse
+import sqlvalidator
+import os
 
-class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
-    def __init__(self, connector_name : str, db_name:str, db_parent_path:str=''):
-        logger.info("Initializing datasource")
+
+class CSVPlugin(BasePlugin, PluginMetadataMixin, Formatter):
+    """
+    CSVPlugin class for interacting with CSV data and inserting it into an SQL database.
+    """
+
+    def __init__(self, connector_name : str, document_files: List[str]):
         super().__init__(__name__)
-
+        
         self.connector_name = connector_name.replace(' ','_')
         self.params = {
-            'db_name': db_name,
-            'db_parent_path': db_parent_path,
+            'csv_files': document_files,
+            'db_name': f"{self.connector_name}.sqlite",
         }
         self.connection = None
-
-        # class specific
-        self.cursor = None
-        self.max_limit = 5
+        self.max_limit = 10
 
     def _dict_factory(self, cursor, row):
         d = {}
         for idx, col in enumerate(cursor.description):
             d[col[0]] = row[idx]
         return d
-    
-    def _path_to_uri(self, path):
-        path = pathlib.Path(path)
-        if path.is_absolute():
-            return path.as_uri()
-        return 'file:' + urllib.parse.quote(path.as_posix(), safe=':/')
 
-    def connect(self):
+    def connect(self) -> Tuple[bool, Optional[str]]:
+        """
+        Establish a connection to the SQLite database, delete all tables,
+        and insert data from CSV files.
+
+        :return: Tuple containing connection status (True/False) and an error message if any.
+        """
         try:
-            db_path = pathlib.Path(self.params['db_parent_path']).joinpath(self.params['db_name']).as_posix()
-            uri_filename = f"{self._path_to_uri(db_path)}?mode=rw"            
-            self.connection = sqlite3.connect(uri_filename, uri=True, check_same_thread=False, timeout= 8.0)
+            db_path = f"assets/datasource/csv_db/{self.params['db_name']}"
+            if 'db_name' not in self.params or not self.params['db_name']:
+                raise ValueError("Database name is missing or invalid in parameters.")
+                        
+            if os.path.exists(db_path):
+                # Delete the file
+                os.remove(db_path)
+                print(f"The database file '{db_path}' has been deleted successfully.")
+
+            os.makedirs(os.path.dirname(db_path), exist_ok=True)
+
+            self.connection = sqlite3.connect(
+                db_path, 
+                uri=True, 
+                check_same_thread=False, 
+                timeout=8.0
+            )
             self.connection.row_factory = self._dict_factory
             self.cursor = self.connection.cursor()
+            logger.info(f"Connected to database: {db_path}")
+                        
+            # Insert data from CSV files into the database
+            for csv_file in self.params.get('csv_files', []):
+                if 'file_name' not in csv_file or 'file_path' not in csv_file:
+                    logger.warning(f"Invalid CSV file entry: {csv_file}")
+                    continue
+
+                table_name = csv_file['file_name'].rsplit('.', 1)[0].replace(' ','_')
+                self._insert_csv_to_db(csv_file['file_path'], table_name)
             
-            logger.info("Connection to SQLite DB successful.")
             return True, None
-        except sqlite3.Error as error:
-            logger.error(f"Error connecting to SQLite DB: {error}")
-            return False, error
+        except Exception as e:
+            logger.exception(f"Failed to connect to database: {type(e).__name__}, {e}")
+            return False, f"{type(e).__name__}: {e}"
+
 
     def healthcheck(self):
         try:
             if self.connection is None:
-                logger.warning("Connection to SQLite DB is not established.")
-                return False, "Connection to SQLite DB is not established."
+                logger.warning("Connection to CSV is not established.")
+                return False, "Connection to CSV is not established."
 
             self.cursor.execute("SELECT 1;")
             return True, None        
         except sqlite3.Error as error:
             return False, error
 
-    def configure_datasource(self, init_config):
-        logger.info("Configuring datasource")
-        if init_config is not None and "script" in init_config:
-            try:
-                self.cursor.execute(init_config["script"])
-                self.connection.commit()
-            except Exception as e:
-                return e
+    def _insert_csv_to_db(self, csv_file: str, table_name: str):
+        """
+        Helper method to read a CSV file and insert its data into an SQLite table.
 
-        return None
+        :param csv_file: Path to the CSV file.
+        :param table_name: Name of the table to insert data into.
+        """
+        try:
+            # Read CSV file using pandas
+            df = pd.read_csv(csv_file)
+            logger.info(f"Read CSV file: {csv_file} with {len(df)} rows.")
+
+            # Write to the SQLite database
+            df.to_sql(table_name, self.connection, if_exists='replace', index=False)
+            logger.info(f"Data from {csv_file} inserted into table: {table_name}")
+        except Exception as e:
+            logger.exception(f"Failed to insert data from {csv_file} into table {table_name}: {str(e)}")
+
+    def configure_datasource(self, init_config):
+        pass
 
     def fetch_data(self, query, params=None):
         try:
@@ -108,10 +142,7 @@ class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
                 }
 
                 fields= []
-
-
                 table_ddl = f"\n\nCREATE TABLE {table} ("
-                # logger.info(f"columns:{columns}")
                 for column in columns:
                     fields.append({
                         "column_id" : str(uuid.uuid4()),
@@ -136,7 +167,7 @@ class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
                 tmp = f"{tmp} {field.get('column_name','')} \n"
             schema_ddl.append(tmp)
         return schema_ddl
-
+    
     def _fetch_table_schema(self):
         # Execute query to get all table names 
         self.cursor.execute("SELECT name FROM sqlite_master")
@@ -146,17 +177,15 @@ class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
         table_schemas = {}
 
         for table in table_names:
-
-            # logger.info(f"table_name:{table['name']}")
             self.cursor.execute(f"SELECT name, type FROM pragma_table_info('{table['name']}')")
             columns = self.cursor.fetchall()
-
 
             table_schemas[table['name']] = columns
         return table_schemas
 
     def fetch_feedback(self):
         pass
+
 
     def validate(self,formated_sql):
         #validate sql using SQLParser
@@ -174,10 +203,12 @@ class Sqlite(Formatter, BasePlugin, QueryPlugin, PluginMetadataMixin):
             return "Sorry, I am not designed for data manipulation operations"
 
         sql_query = sqlvalidator.parse(formated_sql)
-        if not sql_query.is_valid():
-            logger.info(sql_query.is_valid())
-            return "I didn't get you, Please reframe your question"
-
+        try:
+            if not sql_query.is_valid():
+                logger.info(sql_query.is_valid())
+                return "I didn't get you, Please reframe your question"
+        except Exception as error:
+            logger.critical(f"error:{error}")
         return  None
 
     def close_conection(self):
