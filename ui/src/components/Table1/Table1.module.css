@@ -1,21 +1,14 @@
-.tableContainer {
-    width: auto;
-  }
 
-  .table {
+  .tableContainer {
     width: 100%;
     max-width: 100%;
     border-collapse: collapse;
-    background-color: #F9F9F9;;
+    background-color: #F9F9F9;
     border-radius: 8px;
     overflow: hidden;
   }
 
-  .table thead {
-    background-color: #f9fafb; /* Light gray */
-  }
-
-  .table th {
+  .tableHeader {
     padding: 12px 21px;
     text-align: left;
     color: #888787;
@@ -26,22 +19,19 @@
     line-height: 16px; 
   }
 
-  .table tbody {
+  .rowTitle {
     border-top: 1px solid #EFEFEF; /* divide-gray-200 equivalent */
   }
 
-  .table tbody tr {
-    border-top: 1px solid #EFEFEF; /* divide-y equivalent */
-  }
-
-  .table td {
+  .rowTitle {
     padding: 0 25px;
     height: 58px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background-color: #F9F9F9;
   }
-  .table td div {
+  .rowTitle div {
     color: #323232;
     font-family: Inter;
     font-size: 14px;
@@ -53,11 +43,11 @@
     gap: 6px;
   }
 
-  .table td:hover {
+  .rowTitle:hover {
     background: #F1F1F1;
   }
 
-  .table .tdOnfocus {
+  .tdOnfocus {
     background-color: #F1F1F1;
   }
 
@@ -67,11 +57,15 @@
 
   .dbColumnTd {
     height: 39px !important;
-    border-top: 1px solid #EFEFEF;
+    border-top: 1px solid #E6E6E6 ;
     background-color: #F1F1F1;
   }
 
   .dbColumnTd:hover {
+    background-color: #EAEAEA !important;
+  }
+
+  .colOnfocus {
     background-color: #EAEAEA !important;
   }
 
@@ -83,6 +77,11 @@
     padding: 0 54px 0 70px;
     background-color: #F1F1F1;
   }
+  
+  .coldescription {
+    background-color: #EAEAEA ;
+  }
+
   .descriptionContainer span{
     font-family: Inter;
     font-size: 11px;
