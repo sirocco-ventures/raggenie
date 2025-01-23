@@ -61,10 +61,17 @@ function SchemaTable({data, itemsPerPage = 8}) {
         }
     };
 
-    const handleDescriptionChange = (event, id) => {
+    const handleDescriptionChange = (event, id, colId) => {
         const newDescription = event.target.value;
         const dbSchema = JSON.parse(localStorage.getItem('dbschema') || '{}');
-        if (dbSchema[id]) {
+        if (colId) {
+            if(dbSchema[id]) {
+                console.log(newDescription)
+                dbSchema[id].columns[colId].description = newDescription
+                localStorage.setItem('dbschema', JSON.stringify(dbSchema));
+            }
+        }
+        else if (dbSchema[id] ) {
             dbSchema[id].description = newDescription;
             localStorage.setItem('dbschema', JSON.stringify(dbSchema));
         }
@@ -119,6 +126,7 @@ function SchemaTable({data, itemsPerPage = 8}) {
                                     <textarea
                                         ref={(el) => (colTextAreaRefs.current[colIndex] = el)}
                                         className={style.descriptionTextarea}
+                                        onChange={(event) => handleDescriptionChange(event, item.table_id, column.column_id)}
                                     />
                                 </div>
                             </div>
