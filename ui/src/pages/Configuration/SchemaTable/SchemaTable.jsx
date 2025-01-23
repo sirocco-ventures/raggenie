@@ -72,10 +72,8 @@ function SchemaTable({data, itemsPerPage = 8}) {
 
     const handlePageChange = (newPage) => {
         setCurrentPage(newPage);
-        // Reset expanded states when changing page
         setExpandedRows({});
         setExpandedColRows({});
-        // Hide all expanded items
         const rowItems = document.querySelectorAll(`[data-key]`);
         const colItems = document.querySelectorAll(`[data-col-key]`);
         [...rowItems, ...colItems].forEach(item => {
