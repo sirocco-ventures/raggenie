@@ -5,6 +5,7 @@ import expandIcon from "./assets/tableExpandIcon.svg"
 import collapseIcon from "./assets/tableCollapseIcon.svg"
 import style from "./Table.module.css"
 import "./DatatableCustomTheme.css"
+
 const Table = ({
     columns = [],
     data= [],

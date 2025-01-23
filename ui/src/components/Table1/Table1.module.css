@@ -1,0 +1,123 @@
+.tableContainer {
+    width: auto;
+  }
+
+  .table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    background-color: #F9F9F9;;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .table thead {
+    background-color: #f9fafb; /* Light gray */
+  }
+
+  .table th {
+    padding: 12px 21px;
+    text-align: left;
+    color: #888787;
+    font-family: Inter;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px; 
+  }
+
+  .table tbody {
+    border-top: 1px solid #EFEFEF; /* divide-gray-200 equivalent */
+  }
+
+  .table tbody tr {
+    border-top: 1px solid #EFEFEF; /* divide-y equivalent */
+  }
+
+  .table td {
+    padding: 0 25px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .table td div {
+    color: #323232;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .table td:hover {
+    background: #F1F1F1;
+  }
+
+  .table .tdOnfocus {
+    background-color: #F1F1F1;
+  }
+
+  .dbColumnContainer {
+    display: block;
+  }
+
+  .dbColumnTd {
+    height: 39px !important;
+    border-top: 1px solid #EFEFEF;
+    background-color: #F1F1F1;
+  }
+
+  .dbColumnTd:hover {
+    background-color: #EAEAEA !important;
+  }
+
+  .expandedRow {
+    display: block;
+  }
+
+  .descriptionContainer {
+    padding: 0 54px 0 70px;
+    background-color: #F1F1F1;
+  }
+  .descriptionContainer span{
+    font-family: Inter;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    color: #888787;
+  }
+
+  .descriptionTextarea {
+    color: #323232;
+    box-sizing: border-box;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 6px;
+    margin-bottom: 18px;
+    resize: none; 
+    overflow-y: auto;
+    padding: 14px 10px;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    height: 50px;
+    background-color: #D8D8D8;
+  }
+  .descriptionTextarea:hover {
+    border: 1px solid #C6E0FF;
+    background: #FFF;
+    box-shadow: 0px 1px 2px 0px rgba(10, 13, 18, 0.05);
+  }
+  .descriptionTextarea:focus {
+    outline: none;
+    border: 1px solid #3893FF;
+    background: #FFF;
+    box-shadow: 0px 1px 2px 0px rgba(10, 13, 18, 0.05);
+  }
