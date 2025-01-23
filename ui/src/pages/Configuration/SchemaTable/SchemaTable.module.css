@@ -7,6 +7,8 @@
     background-color: #F9F9F9;
     border-radius: 8px;
     overflow: hidden;
+    min-height: 567px;
+    position: relative;
   }
 
   .tableHeader {
@@ -128,6 +130,10 @@
     align-items: center;
     margin: 10px 0;
     gap: 0px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .paginationContainer button {
