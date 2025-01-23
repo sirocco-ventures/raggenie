@@ -126,6 +126,7 @@ function SchemaTable({data, itemsPerPage = 8}) {
                                     <textarea
                                         ref={(el) => (colTextAreaRefs.current[colIndex] = el)}
                                         className={style.descriptionTextarea}
+                                        defaultValue={column.description} 
                                         onChange={(event) => handleDescriptionChange(event, item.table_id, column.column_id)}
                                     />
                                 </div>
