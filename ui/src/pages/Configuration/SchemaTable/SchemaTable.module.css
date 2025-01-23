@@ -1,6 +1,7 @@
 
   .tableContainer {
     width: 100%;
+    height: auto;
     max-width: 100%;
     border-collapse: collapse;
     background-color: #F9F9F9;
@@ -120,3 +121,43 @@
     background: #FFF;
     box-shadow: 0px 1px 2px 0px rgba(10, 13, 18, 0.05);
   }
+
+  .paginationContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    gap: 0px;
+}
+
+.paginationContainer button {
+    cursor: pointer;
+    border: none;
+    background-color: #F9F9F9;
+    height: 32px;
+    width: 32px;
+    padding: 0px;
+    color: #151414;
+    text-align: center;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+
+}
+
+.paginationContainer button img {
+    height: 10px;
+    width: 10px;
+}
+
+.paginationContainer button:disabled {
+    cursor: not-allowed;
+}
+
+.activePage {
+  background-color: #FFFFFF !important;
+  color: #3893FF;
+  box-shadow: 0px 1px 4px 0px rgba(26, 26, 67, 0.10);
+  border-radius: 4px;
+}

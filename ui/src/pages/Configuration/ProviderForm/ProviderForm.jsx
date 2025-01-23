@@ -5,8 +5,7 @@ import style from "./ProviderForm.module.css"
 import Input from "src/components/Input/Input"
 import Textarea from "src/components/Textarea/Textarea"
 import Button from "src/components/Button/Button"
-import Table from "src/components/Table/Table"
-import Table1 from "src/components/Table1/Table1"
+import Table from "../SchemaTable/SchemaTable"
 import { useForm } from "react-hook-form"
 import { FaArrowLeft, FaPen } from "react-icons/fa6";
 import { RiPlugLine } from "react-icons/ri";
@@ -63,129 +62,6 @@ const ProviderForm = ()=>{
     const navigate = useNavigate()
 
     const maxFiles = 5; 
-
-//     let tableColumns = [
-        
-//         {
-//             name: 'Name',
-//             selector: row =><div className="inline-flex-align-center"> <FiTable color="#BEBEBE" size={16} style={{marginTop: "1px"}}/><span className="">{row.table_name}</span></div>,
-//             // sortable: true,
-//             width: "200px"
-
-//         },
-//         {
-//             name: 'Description',
-//             grow:1,
-//             selector: row => {
-//                 return(
-//                         <div className="textarea-container" style={{position: "relative", zIndex: "10000"}}>
-//                             <div style={{display: "flex", alignItems: "center"}}> 
-//                                 <div style={{flexGrow : "1"}}>
-//                                     <textarea key={`textarea-${row.table_id}`} className="textarea" data-type="table" data={`${JSON.stringify(row)}`} data-table-name={`${row.table_name}`} data-table-id={`${row.table_id}`}  style={{display:"none", width: "100%", height: "48px",}} defaultValue={row.description}>{}</textarea>
-//                                     <span key={`span-${row.table_id}`} className="span" style={{pointerEvents:"none", height: "32px", overflow: "hidden"}}>{row.description}</span>
-//                                 </div>
-//                                 <div className="col-edit">
-//                                     <FaPen color="#7298ff" style={{pointerEvents: "none"}} />
-//                                 </div>
-//                             </div>
-//                         </div>
-//                 )
-//             }
-//             // sortable: true,
-//         }
-    
-// ]
-
-
-    // const updateTableDetails = (elem)=>{
-    //     let tempTableDetails =  JSON.parse(window.localStorage.getItem("dbschema")) 
-
-    //     if(elem){
-    //         if(elem.dataset.type == "table"){
-    //            tempTableDetails[elem.dataset.tableId].description = elem.value
-
-    //         }else{
-    //             tempTableDetails[elem.dataset.tableId].columns[elem.dataset.columnId].description = elem.value
-                
-    //         }
-    //     }
-       
-    //     window.localStorage.setItem("dbschema", JSON.stringify(tempTableDetails))
-    
-    // }
-    
-     
-
-    // const rowExpandComponent = (row)=>{
-    //     let tempTableDetails =  JSON.parse(window.localStorage.getItem("dbschema")) 
-    //     return(<>
-    //             <div className={style.ExpandRowContainer}>
-    //                 {row?.data?.columns?.map((column, index)=>{
-    //                     return(
-    //                         <div key={index} className={style.ExpandRowDiv}>
-    //                             <div className={`inline-flex-align-center ${ style.ExpandRowCol}`}> <FiTable color="#BEBEBE"/> <span style={{fontSize: "13px"}}>{column.column_name}</span> </div> 
-    //                             <div style={{cursor: "pointer", zIndex: "10000", flexGrow: 1}}>
-    //                                 <div className="child-textarea-container" style={{width: "100%", height: "22px"}}>
-    //                                     <div style={{display: "flex", alignItems: "center"}}>
-    //                                         <div style={{flexGrow: 1}}>
-    //                                             <textarea className="textarea" data-type="column" data={`${JSON.stringify(row.data)}`} data-table-id={`${row.data.table_id}`} data-table-name={`${row.data.table_name}`} data-column-id={`${column.column_id}`} data-column-name={`${column.column_name}`} style={{display:"none", width: "100%", height: "33px", marginTop: "-8px"}} defaultValue={column.description }>{}</textarea>
-    //                                             <span className="span" style={{pointerEvents:"none", height: "24px", overflow: "hidden", fontSize: "13px"}}>{ tempTableDetails[row.data.table_id].columns[column.column_id].description != "" ? tempTableDetails[row.data.table_id].columns[column.column_id].description : column.description}</span>
-    //                                         </div>
-    //                                         <div className="field-edit" style={{paddingRight: "48px"}}>
-    //                                             <FaPen color="#7298ff" size={12} style={{pointerEvents: "none"}}/>
-    //                                         </div>
-    //                                     </div>
-                                      
-    //                                 </div>    
-    //                             </div> 
-    //                         </div>
-                            
-    //                     )
-    //                 })}
-    //             </div>
-    //     </>)
-    // }
-
-    // const onRowExpand = (expandState)=>{
-       
-    //     if(expandState == true){
-    //         setTimeout(()=>{
-    //             let elem = document.querySelectorAll(".field-edit");
-                
-    //             for (let index = 0; index < elem.length; index++) {
-                    
-    //                 let targetElem = elem[index].parentElement.parentElement
-
-    //                 targetElem.addEventListener("click",()=>{
-    //                     targetElem.querySelector(".textarea").addEventListener("focusout", (event) => {
-    //                         targetElem.querySelector(".textarea").style.display = "none"
-    //                         targetElem.querySelector(".span").style.display = "block"
-    //                         targetElem.querySelector(".span").innerText = targetElem.querySelector(".textarea").value
-                            
-    //                         let txtElem = targetElem.querySelector(".textarea")
-    //                         let tempTableDetails =  JSON.parse(window.localStorage.getItem("dbschema")) 
-    //                         tempTableDetails[txtElem.dataset.tableId].columns[txtElem.dataset.columnId].description = txtElem.value
-                            
-    //                         window.localStorage.setItem("dbschema", JSON.stringify(tempTableDetails))
-                        
-    //                 });
-
-    //                 if(targetElem.querySelector(".textarea").style.display == "none"){
-    //                         targetElem.querySelector(".textarea").style.display = "block"
-    //                         targetElem.querySelector(".textarea").focus()
-    //                         targetElem.querySelector(".span").style.display = "none"
-    //                     }else{
-    //                         targetElem.querySelector(".textarea").style.display = "none"
-    //                         targetElem.querySelector(".span").style.display = "block"
-    //                     }
-
-    //                 })
-
-    //             }
-    //         },1000)
-            
-    //     }
-    // }
 
 
     const getProviderDetails = ()=>{
@@ -574,48 +450,6 @@ const onRemoveFile = (fileId) => {
         }
     }
 
-
-    // useEffect(()=>{
-    //     setTimeout(()=>{
-    //         let elem = document.querySelectorAll(".col-edit");
-    //         for (let index = 0; index < elem.length; index++) {
-    //         elem[index].addEventListener("click",(event)=>{
-                
-    //             event.stopPropagation()
-    //             const target = event.target.parentElement.parentElement
-                
-    //             target.querySelector(".textarea").addEventListener("focusout", () => {
-    //                 target.querySelector(".textarea").style.display = "none"
-    //                 target.querySelector(".span").style.display = "block"
-    //                 target.querySelector(".span").innerText = target.querySelector(".textarea").value
-    //                 updateTableDetails(target.querySelector(".textarea"))
-    //             });
-                
-    //             if(target.querySelector(".textarea").style.display == "none"){
-    //                 target.querySelector(".textarea").style.display = "block"
-    //                 target.querySelector(".textarea").focus()
-    //                 target.querySelector(".span").style.display = "none"
-    //             }else{
-    //                 target.querySelector(".textarea").style.display = "none"
-    //                 target.querySelector(".span").style.display = "block"
-    //             }
-                
-    //         });
-    //         }
-    //    }, 1000)
-
-
-    //    return()=>{
-    //     let elem = document.querySelectorAll(".textarea-container");
-    //     for (let index = 0; index < elem.length; index++) {
-    //       elem[index].removeEventListener("click",()=>{});
-    //       elem[index].querySelector(".textarea").removeEventListener("focusout", () => {});
-    //     }
-    //    };
-
-    // }, [])
-
-
     useEffect(()=>{
         getProviderDetails()
         if(searchParams.get("activeTab")){
@@ -649,8 +483,7 @@ const onRemoveFile = (fileId) => {
                      <Tab title="Database Schema" tabKey="database-table" key={"database-table"} disabled={connectorId ? false : true} hide={![2,5].includes(providerDetails.category_id)}>
                         <TitleDescription title="Schema Details" description="Here are the tables and their columns for the plugin. Please describe the tables and it's column details to improve understanding of the plugin schema structure." />
                         <div style={{marginBottom: "30px"}}>
-                            {/* <Table columns={tableColumns} data={providerSchema} expandableRows={true} expandableRowsComponent={rowExpandComponent} onRowExpandToggled={onRowExpand} /> */}
-                            <Table1 data={providerSchema}></Table1>
+                            <Table data={providerSchema} ></Table>
                         </div>
                         <div className={style.ActionDiv}>
                             <div style={{flexGrow: 1}}>
