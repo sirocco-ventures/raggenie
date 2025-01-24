@@ -4,6 +4,7 @@ import Modal from "src/components/Modal/Modal"
 import { useEffect, useState } from "react"
 import SampleForm from "./SampleForm"
 import { getSamples } from "src/services/Sample"
+import { deleteSamples } from "src/services/Sample"
 import SampleList from "./SampleList"
 
 
@@ -23,6 +24,16 @@ const Samples = ()=>{
         setSampleModal(true)
         setEditSample(sampleData)
     }
+    
+    const onDelete = (sampleData)=>{
+        deleteSamples(sampleData.id)
+        setTimeout(() => {
+            getAllSamples()
+        },10)
+
+    }
+
+     
 
     const onCreateNew = ()=>{
         setSampleModal(true)
@@ -38,7 +49,7 @@ const Samples = ()=>{
        <DashboardBody title="Samples">
 
         { sampleList?.length == 0 && <EmptySample onCreateClick={()=>setSampleModal(true)} /> }
-        { sampleList?.length > 0 && <SampleList data={sampleList} onCreate={onCreateNew} onEdit={onEdit} /> }
+        { sampleList?.length > 0 && <SampleList data={sampleList} onCreate={onCreateNew} onEdit={onEdit} onDelete={onDelete}/> }
 
         <Modal title="Create Sample" show={showSampleModal} onClose={()=>setSampleModal(false)} >
             <SampleForm sample={editSample} afterCreate={getAllSamples} onCancel={()=>setSampleModal(false)} />
