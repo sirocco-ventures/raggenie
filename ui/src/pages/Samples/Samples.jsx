@@ -49,6 +49,7 @@ const Samples = ()=>{
     const onCreateNew = ()=>{
         setSampleModal(true)
         setEditSample({})
+        
     }
 
 
@@ -62,7 +63,7 @@ const Samples = ()=>{
         { sampleList?.length == 0 && <EmptySample onCreateClick={()=>setSampleModal(true)} /> }
         { sampleList?.length > 0 && <SampleList data={sampleList} onCreate={onCreateNew} onEdit={onEdit} onDelete={onDelete}/> }
 
-        <Modal title="Create Sample" show={showSampleModal} onClose={()=>setSampleModal(false)} >
+        <Modal title={Object.keys(editSample).length > 0 ? "Edit Sample" : "Create Sample"} show={showSampleModal} onClose={()=>setSampleModal(false)} >
             <SampleForm sample={editSample} afterCreate={getAllSamples} onCancel={()=>setSampleModal(false)} />
         </Modal>
         
