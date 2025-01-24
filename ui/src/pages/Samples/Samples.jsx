@@ -6,6 +6,8 @@ import SampleForm from "./SampleForm"
 import { getSamples } from "src/services/Sample"
 import { deleteSamples } from "src/services/Sample"
 import SampleList from "./SampleList"
+import { BsInfoCircle } from "react-icons/bs"
+import confirmDialog from "src/utils/ConfirmDialog"
 
 
 const Samples = ()=>{
@@ -26,10 +28,19 @@ const Samples = ()=>{
     }
     
     const onDelete = (sampleData)=>{
-        deleteSamples(sampleData.id)
-        setTimeout(() => {
-            getAllSamples()
-        },10)
+        confirmDialog(
+            "Confirmation",
+            "Are you sure you want to delete this?",
+            undefined,
+            undefined,
+            "Delete",
+            () => {
+                deleteSamples(sampleData.id);
+                setTimeout(() => {
+                    getAllSamples()
+                },10)
+            }
+          );
 
     }
 
@@ -54,6 +65,7 @@ const Samples = ()=>{
         <Modal title="Create Sample" show={showSampleModal} onClose={()=>setSampleModal(false)} >
             <SampleForm sample={editSample} afterCreate={getAllSamples} onCancel={()=>setSampleModal(false)} />
         </Modal>
+        
        </DashboardBody>
     )
 }
