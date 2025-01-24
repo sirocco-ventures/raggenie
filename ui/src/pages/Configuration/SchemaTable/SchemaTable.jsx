@@ -93,9 +93,9 @@ function SchemaTable({data, itemsPerPage = 8}) {
             <div className={style.tableHeader}>NAME</div>
             {paginatedData.map((item, index) => (
                 <div key={item.table_id}>
-                    <div className={`${style.rowTitle} ${expandedRows[item.table_id] ? style.tdOnfocus : ""}`}>
+                    <div className={`${style.rowTitle} ${expandedRows[item.table_id] ? style.tdOnfocus : ""}`} onClick={() => toggleRow(item.table_id)}>
                         <div>
-                            <img src={expandedRows[item.table_id] ? collapseIcon : expandIcon} onClick={() => toggleRow(item.table_id)}/>
+                            <img src={expandedRows[item.table_id] ? collapseIcon : expandIcon}/>
                             <img src={tableIcon}/>
                             {item.table_name}
                         </div>
@@ -113,9 +113,9 @@ function SchemaTable({data, itemsPerPage = 8}) {
                         </div>
                         {item.columns.map((column, colIndex) => (
                             <div className={style.dbColumnContainer} key={colIndex} data-key={item.table_id} style={{display: "none"}}>
-                                <div className={`${style.dbColumnTd} ${style.rowTitle} ${expandedColRows[column.column_id] ? style.colOnfocus : ""}`} >
+                                <div className={`${style.dbColumnTd} ${style.rowTitle} ${expandedColRows[column.column_id] ? style.colOnfocus : ""}`} onClick={() => toggleColRow(column.column_id)} >
                                     <div>
-                                        <img src={expandedColRows[column.column_id] ? collapseIcon : expandIcon} onClick={() => toggleColRow(column.column_id)}/>
+                                        <img src={expandedColRows[column.column_id] ? collapseIcon : expandIcon} />
                                         <img src={tableIcon}/> 
                                         {column.column_name} 
                                     </div>
