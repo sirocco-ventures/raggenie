@@ -31,15 +31,14 @@ const Samples = ()=>{
         confirmDialog(
             "Confirmation",
             "Are you sure you want to delete this?",
-            undefined,
-            undefined,
-            "Delete",
-            () => {
-                deleteSamples(sampleData.id);
-                setTimeout(() => {
-                    getAllSamples()
-                },10)
-            }
+            {
+                onConfirm: () => {
+                    deleteSamples(sampleData.id);
+                    setTimeout(() => {
+                        getAllSamples()
+                    },100) }
+            },
+            
           );
 
     }
