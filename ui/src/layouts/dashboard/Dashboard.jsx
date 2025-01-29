@@ -12,35 +12,46 @@ const DashboardLayout = () => {
 
   const navigate = useNavigate()
 
-  const fetchUserInfo = () => {
-    GetUserDetails().then((response) => {
-      const userData = response.data;
-      setUsername(userData.data.username);
+  
+  const fetchUserInfo = async() => {
+   try{
+    const response = await GetUserDetails()
+    const userData = response?.data?.data
+    console.log(response)
+    console.log(userData)
+    if(userData){
+      const user= userData.username
+      setUsername(user.email)
+      setAuthEnabled(userData.auth_enabled)
       setIsAuthenticated(true)
-      setAuthEnabled(userData.data.auth_enabled)
-    })
-      .catch((error) => {
-        if (error.response.status == 401) {
-          navigate("/login")
-        }
-      });
-  };
-
+    } else {
+      throw new Error("Invalid User data")
+    }
+   }catch(e){
+      console.error('Error fetching details',error)
+      if(error?.response?.status===401){
+        navigate('/login')
+      }else {
+        console.log('fine')
+      }
+   }
+  }
 
   useEffect(() => {
     fetchUserInfo()
   }, []);
 
-  return (
-    isAuthenticated && <div className={style.DashboardLayout}>
+  return isAuthenticated ? (
+    <div className={style.DashboardLayout}>
       <div className={style.SideMenuContainer}>
-        <SideMenu username={username} authEnabled={authEnabled} />
+        <SideMenu username={username || "Guest"} authEnabled={authEnabled} />
       </div>
       <div className={style.DashboardBodyContainer}>
         <Outlet />
       </div>
     </div>
-  );
+  ) : null; 
 };
+
 
 export default DashboardLayout;

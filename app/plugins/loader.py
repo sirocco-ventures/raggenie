@@ -1,6 +1,6 @@
 from app.plugins.postgresql.handler import Postresql
 from app.plugins.mysql.handler import Mysql
-from app.plugins.mssql.handler import Mssql
+# from app.plugins.mssql.handler import Mssql
 from app.plugins.bigquery.handler import Bigquery
 from app.plugins.airtable.handler import Airtable
 from app.plugins.website.handler import Website
@@ -16,7 +16,7 @@ class DSLoader:
         db_classes = {
             "postgres": Postresql,
             "mysql": Mysql,
-            "mssql": Mssql,
+            # "mssql": Mssql,
             "bigquery": Bigquery,
             "airtable": Airtable,
             "website": Website,

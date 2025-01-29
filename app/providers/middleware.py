@@ -1,34 +1,42 @@
-from app.utils.jwt import JWTUtils
 from app.providers.config import configs
-from fastapi import Request, status, HTTPException
+from fastapi import HTTPException
+from fastapi import HTTPException
+from fastapi import HTTPException
+from fastapi.security import HTTPBearer
+from fastapi import HTTPException, Security
+from app.providers.config import configs
+import httpx
+http_bearer = HTTPBearer()
 
 
-from fastapi import Request, HTTPException, status
-from typing import Optional
 
-async def verify_token(request: Request) -> Optional[str]:
-    jwt_utils = JWTUtils(configs.secret_key)
+async def introspect_token(token:str):
+    url = configs.cintrospection_url
+    client_id = configs.cclient_id
+    client_secret = configs.cclient_secret
 
-    if configs.auth_enabled:
-        auth_header = request.headers.get("Authorization")
-        token = None
+    async with httpx.AsyncClient() as client :
+        resposne = await client.post(
+            url,
+            data={"token":token},
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            auth=(client_id, client_secret),
+        )
+        
+        if resposne.status_code !=200 :
+            raise HTTPException(status_code=resposne.status_code,detail='Token Introspection Fail')
+        data = resposne.json()
+        if not data.get('active'):
+            raise HTTPException(status_code=401,detail="Inactive Token")
+        return resposne.json()
 
-        if auth_header and auth_header.startswith("Bearer "):
-            token = auth_header[len("Bearer "):]
 
-        if not token:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Authentication required"
-            )
 
-        payload = jwt_utils.decode_jwt_token(token)
-        if payload is None or "sub" not in payload:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token"
-            )
+async def verify_token(auth:str =Security(http_bearer)):
+    token = auth.credentials
+    user_data = await introspect_token(token)
+    return user_data
+    
 
-        return payload["sub"]
-    else:
-        return configs.default_username
+
+    
