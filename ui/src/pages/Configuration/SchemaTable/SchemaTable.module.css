@@ -58,6 +58,9 @@
     display: block;
   }
 
+  .columnIndent {
+    margin-left: 22px;
+  }
   .dbColumnTd {
     height: 39px !important;
     border-top: 1px solid #E6E6E6 ;

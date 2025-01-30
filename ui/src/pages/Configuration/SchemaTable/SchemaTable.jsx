@@ -3,6 +3,7 @@ import style from "./SchemaTable.module.css";
 import expandIcon from "./assets/tableExpandIcon.svg";
 import collapseIcon from "./assets/tableCollapseIcon.svg";
 import tableIcon from "./assets/table.svg";
+import columnIcon from "./assets/rows.svg"
 import pencilIcon from "./assets/pencil.svg";
 import leftIcon from "./assets/ChevronLeft.svg"
 import rightIcon from "./assets/ChevronRight.svg"
@@ -116,9 +117,9 @@ function SchemaTable({data, itemsPerPage = 8}) {
                         {item.columns.map((column, colIndex) => (
                             <div className={style.dbColumnContainer} key={colIndex} data-key={item.table_id} style={{display: "none"}}>
                                 <div className={`${style.dbColumnTd} ${style.rowTitle} ${expandedColRows[column.column_id] ? style.colOnfocus : ""}`} onClick={() => toggleColRow(column.column_id)} >
-                                    <div>
+                                    <div className={style.columnIndent}>
                                         <img src={expandedColRows[column.column_id] ? collapseIcon : expandIcon} />
-                                        <img src={tableIcon}/> 
+                                        <img src={columnIcon}/> 
                                         {column.column_name} 
                                     </div>
                                     <img src={pencilIcon} onClick={(event) => toggleColRow(column.column_id, event)}/>
