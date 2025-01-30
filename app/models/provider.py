@@ -54,6 +54,19 @@ class ProviderConfig(Base):
 
     provider = relationship('Provider', back_populates='providerconfig')
 
+class VectorDBConfig(Base):
+    __tablename__ = "vectordbconfig"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False, index=True)
+    description = Column(String, nullable=False)
+    key = Column(String, unique=True, nullable=False, index=True)
+    icon = Column(String, nullable=False)
+    config = Column(JSON)
+    enable = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 class SampleSQL(Base):
     __tablename__ = "sample_sql"
@@ -67,3 +80,59 @@ class SampleSQL(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     connectors = relationship('Connector', back_populates='sample_sql')
+
+class VectorDB(Base):
+    __tablename__ = "vectordb"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vectordb = Column(String, nullable=False)
+    vectordb_config = Column(JSON, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    vectordb_config_mapping = relationship('VectorDBConfigMapping', back_populates='vector_db',cascade="all,delete")
+    vector_embedding_mapping = relationship('VectorEmbeddingMapping', back_populates='vector_db', cascade="all,delete")
+
+
+
+class VectorDBConfigMapping(Base):
+    __tablename__ = "vectordb_config_mapping"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vector_db_id = Column(Integer, ForeignKey('vectordb.id'), nullable=False)
+    config_id = Column(Integer, ForeignKey('configurations.id'), nullable=False)
+    enable = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    vector_db = relationship('VectorDB', back_populates='vectordb_config_mapping')
+    configuration = relationship('Configuration', back_populates='vectordb_config_mapping')
+
+class Embeddings(Base):
+    __tablename__ = "embeddings_configs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    provider = Column(String, nullable=False)
+    config = Column(JSON, nullable=False)
+    enable = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    vector_embedding_mapping = relationship("VectorEmbeddingMapping", back_populates= "embeddings_config")
+
+class VectorEmbeddingMapping(Base):
+    __tablename__ = "vector_embedding_mapping"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vector_db_id = Column(Integer, ForeignKey('vectordb.id'), nullable=False)
+    embedding_id = Column(Integer, ForeignKey('embeddings_configs.id'), nullable=False)
+    enable = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    vector_db = relationship('VectorDB', back_populates='vector_embedding_mapping', cascade="all,delete")
+    embeddings_config = relationship('Embeddings', back_populates='vector_embedding_mapping', cascade="all,delete")

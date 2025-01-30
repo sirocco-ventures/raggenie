@@ -12,6 +12,7 @@ from app.providers.middleware import verify_token
 
 router = APIRouter()
 sample = APIRouter()
+vectordb = APIRouter()
 
 
 @router.get("/list", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
@@ -107,7 +108,66 @@ def test_connections(provider_id: int, config: schemas.TestCredentials, db: Sess
         error=None,
     )
 
-@router.get("/llmproviders", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+@vectordb.post("/test_credentials", response_model=resp_schemas.CommonResponse)
+def test_vectordb_credentials(config: schemas.TestVectorDBCredentials, db: Session = Depends(get_db)):
+    """
+    Tests the credentials for a VectorDB provider.
+
+    Args:
+        config (TestVectorDBCredentials): The credentials to test.
+        db (Session): Database session dependency.
+
+    Returns:
+        CommonResponse: A response indicating the success or failure of the credential test.
+    """
+    message, is_error = svc.test_vectordb_credentials(config, db)
+
+    if is_error:
+        return resp_schemas.CommonResponse(
+            status=False,
+            status_code=422,
+            message="Test credentials Failed",
+            error=message,
+        )
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message=message,
+        error=None,
+    )
+
+
+@vectordb.get("/list/all",response_model= resp_schemas.CommonResponse)
+def getvectordbs(db: Session = Depends(get_db)):
+    """
+    Retrieves a list of available VectorDB providers.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        CommonResponse: A response containing either the list of VectorDB providers or an error message.
+    """
+
+    result, is_error = svc.getvectordbs(db)
+
+
+    if is_error:
+        return commons.is_error_response("DB error", result, {"vectordbs": []})
+
+    if not result:
+        return commons.is_none_reponse("Sample SQL Not Found", {"vectordbs": []})
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message="VectorDB providers found",
+        data={"vectordbs":result},
+        error=None,
+    )
+
+@router.get("/llmproviders", response_model=resp_schemas.CommonResponse)
 def getllmproviders(request: Request):
 
     """
@@ -296,7 +356,7 @@ def update_sql(id: int, request: Request, sql: schemas.SampleSQLUpdate, db: Sess
         data={"sql": result}
     )
 
-@sample.delete("delete/{id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+@sample.post("delete/{id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_sql(id: int, db: Session = Depends(get_db)):
 
     """
@@ -321,4 +381,138 @@ def delete_sql(id: int, db: Session = Depends(get_db)):
         status_code=200,
         message="Sample SQL Deleted Successfully",
         error=None,
+    )
+
+
+@vectordb.post("/create", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+def create_vectordb_instance(vectordb: schemas.VectorDBBase, db: Session = Depends(get_db)):
+
+    """
+    Creates a new VectorDB instance in the database.
+
+    Args:
+        request (Request): The HTTP request object.
+        sql (VectorDBBase): The data for the new VectorDB instance.
+        db (Session): Database session dependency.
+
+    Returns:
+        CommonResponse: A response indicating the success or failure of the VectorDB instance creation process.
+    """
+
+    result, error = svc.create_vectordb_and_embedding("create",0,vectordb, db)
+
+    if error:
+        return commons.is_error_response("DB error", result, {"vectordb": {}})
+
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=201,
+        message="VectorDB Instance Created Successfully",
+        error=None,
+        data={"VectorDB": result}
+    )
+
+@vectordb.post("/update/{id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+def update_vectordb_instance(id:int,vectordb: schemas.VectorDBUpdateBase, db: Session = Depends(get_db)):
+
+    """
+    Updates VectorDB instance in the database.
+
+    Args:
+        request (Request): The HTTP request object.
+        sql (VectorDBBase): The data for the new VectorDB instance.
+        db (Session): Database session dependency.
+
+    Returns:
+        CommonResponse: A response indicating the success or failure of the VectorDB instance creation process.
+    """
+
+    result, error = svc.create_vectordb_and_embedding(key="update",id=id,vectordb=vectordb, db=db)
+
+    if error:
+        return commons.is_error_response("DB error", result, {"vectordb": {}})
+
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=201,
+        message="VectorDB Instance Updated Successfully",
+        error=None,
+        data={"VectorDB": result}
+    )
+
+@vectordb.get("/get/{config_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+def get_vectordb_instance(id: int, db: Session = Depends(get_db)):
+    """
+    Retrieves a VectorDB instance by its ID.
+
+    Args:
+        id (int): The ID of the VectorDB instance.
+        db (Session): Database session dependency.
+
+    Returns:
+        CommonResponse: A response containing the VectorDB instance or an error message.
+    """
+
+    result, error = svc.get_vectordb_instance(id, db)
+
+    if error:
+        return commons.is_error_response("DB error", result, {"vectordb": {}})
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message="VectorDB Instance Retrieved Successfully",
+        error=None,
+        data={"VectorDB": result}
+    )
+
+@vectordb.delete("/delete/{id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+def delete_vectordb_instance(id: int, db: Session = Depends(get_db)):
+    """
+    Deletes a VectorDB instance by its ID, along with its associated config mapping.
+
+    Args:
+        id (int): The ID of the VectorDB instance to delete.
+        db (Session): Database session dependency.
+
+    Returns:
+        CommonResponse: A response indicating the success or failure of the deletion process.
+    """
+
+    result, error = svc.delete_vectordb_instance(id, db)
+
+    if error:
+        return commons.is_error_response("DB error or VectorDB not found", result, {"vectordb": {}})
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message="VectorDB Instance Deleted Successfully",
+        error=None,
+        data={"VectorDB": result}
+    )
+
+@vectordb.get("/embedding/all", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+def get_all_embeddings():
+
+    """
+    Retrieves all embeddings from module.
+
+    Returns:
+        CommonResponse: A response containing the embeddings or an error message.
+    """
+
+    result, error = svc.get_all_embeddings()
+
+    if error:
+        return commons.is_error_response("Fetching Error", result, {"embeddings": []})
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message="Embeddings Retrieved Successfully",
+        error=None,
+        data={"embeddings": result}
     )

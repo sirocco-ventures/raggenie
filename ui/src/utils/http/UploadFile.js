@@ -1,11 +1,12 @@
 import axios from "axios";
+import { useTokenStore } from "src/store/authStore";
 
 const UploadFile = (url, formData, onProgress) => {
   return new Promise((resolve, reject) => {
     const startTime = new Date().getTime(); // Record the start time
-
+    const token = useTokenStore.getState().token;
     axios.post(url, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` },
       onUploadProgress: (event) => {
         const { loaded, total } = event;
         const percentage = Math.floor((loaded / total) * 100);

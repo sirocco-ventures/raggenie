@@ -83,6 +83,11 @@ class ProviderConfigList(BaseModel):
 
 class TestCredentials(BaseModel):
     provider_config: Dict[str, Any]
+    connector_name: str
+
+class TestVectorDBCredentials(BaseModel):
+    vectordb_config: Dict[str, Any]
+    embedding_config: Optional[Dict[str, Any]] = None
 
 class SampleSQLBase(BaseModel):
     description: str
@@ -99,3 +104,30 @@ class SampleSQLResponse(SampleSQLBase):
 
 class CredentialsHelper(BaseModel):
     provider_config: Dict[str, Any]
+
+
+class VectorDBConfigBase(BaseModel):
+    name: str
+    description: str
+    key: str
+    icon: str
+    config: List[Dict[str,Any]]
+
+class VectorDBConfigResponse(VectorDBConfigBase):
+    id: int
+
+class VectorDBUpdateBase(BaseModel):
+    vectordb: Optional[str] = None
+    vectordb_config : Optional[Dict[str,Any]] = None
+    config_id: Optional[int] = None
+    embedding_config: Optional[Dict[str,Any]] = None
+
+class VectorDBBase(BaseModel):
+    vectordb: Optional[str] = None
+    vectordb_config : Optional[Dict[str,Any]] = None
+    config_id: int
+    embedding_config: Optional[Dict[str,Any]] = None
+
+
+class VectorDBResponse(VectorDBBase):
+    id: int

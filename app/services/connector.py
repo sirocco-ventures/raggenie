@@ -3,6 +3,7 @@ import app.repository.connector as repo
 import app.repository.provider as config_repo
 import app.schemas.connector as schemas
 from app.services import provider as provider_svc
+from app.schemas.provider import VectorDBResponse
 import requests
 import os
 import uuid
@@ -51,7 +52,7 @@ def list_connectors(db: Session):
 
     return connectors_response, None
 
-def list_connectors_by_provider_category(category_id: int, db: Session):
+def list_connectors_by_provider_category(category_ids: int, db: Session):
     """
     Retrieves all connector records from the database filtered by provider category.
 
@@ -67,7 +68,9 @@ def list_connectors_by_provider_category(category_id: int, db: Session):
     if error:
         return [], error
 
-    filtered_connectors = [connector for connector in connectors if connector.provider_id == category_id]
+    filtered_connectors = []
+    for category_id in category_ids:
+        filtered_connectors.extend([connector for connector in connectors if connector.provider_id == category_id])
 
     return filtered_connectors, None
 
@@ -145,7 +148,7 @@ async def fileValidation(file):
         Tuple[str, int]: An error message if validation fails, or the size of the file if it passes.
     """
 
-    if not file.filename.endswith((".pdf", ".txt", ".yaml", ".docx")):
+    if not file.filename.endswith((".pdf", ".txt", ".yaml", ".docx",".csv")):
         return "Invalid file format", None
 
     content = await file.read()
@@ -153,7 +156,7 @@ async def fileValidation(file):
 
     await file.seek(0)
 
-    max_file_size_bytes = 10 * 1024 * 1024
+    max_file_size_bytes = 100 * 1024 * 1024
     if file_size > max_file_size_bytes:
         return "File size exceeds the limit", None
 
@@ -207,9 +210,9 @@ def create_connector(connector: schemas.ConnectorBase, db: Session):
         return None, "DB Error"
 
     match provider.category_id:
-        case 2:
+        case 2 | 5:
             logger.info("creating plugin with category database")
-            schema_details, is_error = get_plugin_metadata(provider_configs, connector.connector_config, provider.key)
+            schema_details, is_error = get_plugin_metadata(provider_configs, connector.connector_config, connector.connector_name, provider.key)
             if is_error is None:
                 connector.schema_config = schema_details
             else:
@@ -290,7 +293,6 @@ def delete_connector(connector_id: int, db: Session):
 
     """
 
-
     deleted_connector, is_error = repo.delete_connector_by_id(connector_id, db)
 
     if is_error:
@@ -342,6 +344,36 @@ def updateschemas(connector_id: int, connector: schemas.SchemaUpdate, db: Sessio
     return connector_response, None
 
 
+def get_inference_by_config_id(config_id:int , db:Session):
+    """
+    Retrieves the inference configuration based on the configuration ID.
+
+    Args:
+        config_id (int): The ID of the configuration.
+        db (Session): Database session dependency.
+
+    Returns:
+        Tuple: Inference configuration response and error message (if any).
+    """
+
+    inference_mapping, is_error = repo.get_inference_by_config(config_id, db)
+
+    if is_error:
+        return inference_mapping, "DB Error"
+
+    if inference_mapping is None:
+        return schemas.InferenceResponse(), None
+
+    return schemas.InferenceResponse(
+        id=inference_mapping.inference.id,
+        name=inference_mapping.inference.name,
+        apikey=inference_mapping.inference.apikey,
+        config_id=inference_mapping.inference.config_id,
+        llm_provider=inference_mapping.inference.llm_provider,
+        model=inference_mapping.inference.model,
+        endpoint=inference_mapping.inference.endpoint,
+    ), None
+
 
 def list_configurations(db: Session):
 
@@ -384,7 +416,13 @@ def list_configurations(db: Session):
             model=inference_mapping.inference.model,
             endpoint=inference_mapping.inference.endpoint,
             config_id=inference_mapping.config_id
-        ) for inference_mapping in config.inference_mapping]
+        ) for inference_mapping in config.inference_mapping],
+        vectordb=[VectorDBResponse(
+            id= vector_db.vector_db.id,
+            vectordb=vector_db.vector_db.vectordb,
+            vectordb_config=vector_db.vector_db.vectordb_config,
+            config_id=config.id,
+        ) for vector_db in config.vectordb_config_mapping if vector_db.vector_db]
     ) for config in configurations]
 
     return config_list, None
@@ -648,7 +686,7 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
                 case 1:
                     documentations = datasource.fetch_data()
                     sd = SourceDocuments([], [], documentations)
-                case 2:
+                case 2 | 5:
                     schema_config = connector_details.get("schema_config",[])
                     schema_details, metadata = datasource.fetch_schema_details()
                     sd = SourceDocuments(schema_details, schema_config, [])
@@ -833,7 +871,7 @@ def formatting_datasource(connector, provider):
             'params': connector.connector_config,
             'documentations': [{'type': 'text', 'value': connector.connector_docs}]
         }
-    elif provider.category_id == 2:
+    elif provider.category_id == 2 or provider.category_id == 5:
         return {
             'type': provider.key,
             'params': connector.connector_config,

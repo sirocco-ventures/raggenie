@@ -25,6 +25,7 @@ import { getProviderInfo } from "src/services/Plugins"
 import FileUpload from "src/components/FileUpload/FileUpload"
 import { API_URL } from "src/config/const"
 import UploadFile from "src/utils/http/UploadFile"
+import GenerateConfigs from "src/utils/form/GenerateConfigs"
 
 
 const ProviderForm = ()=>{
@@ -60,7 +61,6 @@ const ProviderForm = ()=>{
     const {providerId, connectorId} = useParams()
     const navigate = useNavigate()
 
-    const maxFileSizeMB = 10;
     const maxFiles = 5; 
 
     let tableColumns = [
@@ -286,7 +286,7 @@ const ProviderForm = ()=>{
                 }
             ]);
     
-            setDisableConnectorSave(false);
+            setDisableConnectorSave(true);
             setShowProgressBar(false);
         })
         .catch(error => {
@@ -300,13 +300,20 @@ const ProviderForm = ()=>{
     };
     
 
-
-
+    const getMaxFileSize = (extension) => {
+        if (extension === "text/csv") {
+            return 100
+        } else {
+            return 10
+        }
+    }
+ 
 
     const onFileChange = (event) => {
         const selectedFile = event.target.files[0];
         if (!selectedFile) return;
-    
+        const maxFileSizeMB = getMaxFileSize(selectedFile.type)
+        
         const fileSizeMB = selectedFile.size / (1024 * 1024); 
     
         if (files.length >= maxFiles) {
@@ -319,13 +326,21 @@ const ProviderForm = ()=>{
             return;
         }
     
-        onSaveFiles(selectedFile)
+        if (providerDetails.category_id === 5 && selectedFile.type === "text/csv"){
+            onSaveFiles(selectedFile)
+        } else if (providerDetails.category_id === 4 && selectedFile.type != "text/csv") {
+            onSaveFiles(selectedFile)
+        }
+        else {
+            toast.error("Invalid file type")
+        }
     };
     
     const onAddFileOnDrag = (event) => {
         event.preventDefault();
         const draggedFile = event.dataTransfer.files[0];
-    
+        const maxFileSizeMB = getMaxFileSize(draggedFile.type)
+
         if (!draggedFile) return;
     
         const fileSizeMB = draggedFile.size / (1024 * 1024); 
@@ -339,8 +354,14 @@ const ProviderForm = ()=>{
             toast.error(`File size should not exceed ${maxFileSizeMB} MB. The selected file is ${fileSizeMB.toFixed(2)} MB.`)
             return;
         }
-    
-        onSaveFiles(draggedFile)
+        if (providerDetails.category_id === 5 && draggedFile.type === "text/csv"){
+            onSaveFiles(draggedFile)
+        } else if (providerDetails.category_id === 4 && draggedFile.type != "text/csv") {
+            onSaveFiles(draggedFile)
+        }
+        else {
+            toast.error("Invalid file type")
+        }
     };
 
 
@@ -350,6 +371,10 @@ const onRemoveFile = (fileId) => {
 
     const updatedFilePaths = filePaths.filter(filePath => filePath.file_id !== fileId);
     setFilePaths(updatedFilePaths);
+
+    if (updatedFiles.length === 0) {
+        setDisableConnectorSave(true);
+    }
 };
 
 
@@ -367,70 +392,52 @@ const onRemoveFile = (fileId) => {
         return {formValues, formFilled}
     }
     
-    const generateConfig = ()=>{
+    
+    const generateConfig = () => {
 
-        providerConfig.sort((firstItem, secondItem)=>{
+        providerConfig.sort((firstItem, secondItem) => {
             return firstItem.order > secondItem.order ? -1 : 1
         })
+        
+        const fileConfig = {
+            onRemoveFile:onRemoveFile,
+            onAddFileOnDrag:onAddFileOnDrag,
+            pdfUploadRef:pdfUploadRef,
+            title:"Upload your files",
+            description:`You can upload up to 5 files, with each file having a maximum size of ${providerDetails.category_id === 5 ? 100 : 10} MB.`,
+            accept:providerDetails.category_id === 5 ? ".csv" : ".pdf,.yaml,.txt,.docx",
+            dragMessage:"Drag your files to start uploading",
+            progressPrecentage:progressPrecentage,
+            showProgressBar:showProgressBar,
+            progressTime:progressTime,
+            onAddFileOnDrag:onAddFileOnDrag,
+            onFileChange:onFileChange,
+            onRemoveFile:onRemoveFile,
+            files:files,
+            supportedFileMessage:`${providerConfig[0]?.description}`,
+            multipleFileSupport:false
+        }
 
 
-
-        return(
+        return (
             <>
-                {providerConfig.map((item, index)=>{
-                
-                    switch(item.config_type){
-                        case 1: return <Input key={index} type="text" label={item.name} placeholder={item.description}  required={item.required}   hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ? "This is required": false})}  onChange={onChangesOption}/>     
-                        case 2: return <Input key={index} type="password" label={item.name} placeholder={item.description}  required={item.required}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message}  {...register(item.slug, {required: item.required ? "This is required": false})} onChange={onChangesOption}/>  
-                        case 3: return <Input key={index} type="number" label={item.name} placeholder={item.description}  required={item.required}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ? "This is required": false})}  onChange={onChangesOption}/>  
-                        case 4: return <Input key={index} type="url" label={ <> {item.name} <span style={{color: "#C8C8C8"}}>(Include http or https in the url)</span> </>} required={item.required} placeholder="https://www.raggenie.com" hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})}  onChange={onChangesOption}/>
-                        case 5: return <Input key={index} type="email" label={`${item.name}  `}  required={item.required}  placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})}  onChange={onChangesOption}/> 
-                        case 6: return (
-                            <div className={style.SelectDropDown}>
-                                <label className={style.SelectDropDownLabel}>{item.name} {item.required && <span className="span-important"></span>} </label>
-                                <select name="selectOption"  key={index}  className={`${errors[item.slug]?.message ? style.SelectHasError : ""}`}  {...register(item.slug, { required: "This is required" })}  onChange={(e) => onChangesOption(e)}>
-                                    {item.value?.map((val, valIndex) => {
-                                        return (
-                                            <option key={valIndex} value={val.value}>
-                                                {val.label}
-                                            </option>
-                                        );
-                                    })}
-                                </select>
+                <GenerateConfigs
+                    configs={providerConfig}
+                    errors={errors}
+                    register={register}
+                    fileConfig={fileConfig}
+                    restForm={onChangesOption}
 
-                                {errors[item.slug]?.message != "" && <label className={style.SelectErrorMessage}>{errors[item.slug]?.message}</label>}
-                            </div>
-                        )
-                        case 7: return <Textarea key={index} rows="5" label={item.name}  required={item.required} placeholder={item.description} hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required: item.required ?  "This is required" : false})}  onChange={onChangesOption}/>  
-                        case 8: return(
-                            <FileUpload
-                            pdfUploadRef={pdfUploadRef}
-                            title="Upload your files"
-                            description="You can upload up to 5 files, with each file having a maximum size of 10 MB."
-                            accept=".pdf,.yaml,.txt,.docx"
-                            dragMessage="Drag your files to start uploading"
-                            progressPrecentage={progressPrecentage}
-                            showProgressBar={showProgressBar}
-                            progressTime={progressTime}
-                            onAddFileOnDrag={onAddFileOnDrag}
-                            onFileChange={onFileChange}
-                            onRemoveFile={onRemoveFile}
-                            files={files}
-                            supportedFileMessage={providerConfig[0]?.description}
-                            multipleFileSupport={false}
-                          />
-                        )
-                        default : return <Input key={index} type="text" label={item.name} required={item.required} placeholder={item.description}  hasError={errors[item.slug]?.message ? true : false} errorMessage={errors[item.slug]?.message} {...register(item.slug, {required:  item.required ? "This is required": false})}  onChange={onChangesOption}/>     
-                    }
-                
-                })}
-                
+                />
+
             </>
         )
     }
 
     const onChangesOption=()=>{
-        setDisableConnectorSave(true)
+        if (files.length === 0) {
+            setDisableConnectorSave(true);
+        }
     }
 
 
@@ -455,21 +462,20 @@ const onRemoveFile = (fileId) => {
     const onSaveConnector = async (data) => {
 
         let { formValues } = await getConfigFormData();
-        if(providerDetails.category_id == 4){
+        if(providerDetails.category_id == 4 || providerDetails.category_id == 5){
             formValues.document_files = files; 
         }
-            
         saveConnector(connectorId, providerId, data.pluginName, data.pluginDescription, formValues).then(response => {
             toast.success("Successfuly plugin added")
             if (connectorId == undefined) {
                 let url = window.location.href.split('/');
-                if(providerDetails.category_id == 2){
+                if(providerDetails.category_id == 2 || providerDetails.category_id == 5){
                     window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=database-table`
                 }else{
                     window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=documentation`
                 }
             } else {
-                if(providerDetails.category_id == 2){
+                if(providerDetails.category_id == 2 || providerDetails.category_id == 5){
                     setCurrentActiveTab("database-table")
                 }else{
                     setCurrentActiveTab("documentation")
@@ -485,7 +491,10 @@ const onRemoveFile = (fileId) => {
      const onTestConnection = async ()=>{
         let {formValues, formFilled} = await getConfigFormData()
         if(formFilled){
-            healthCheck(providerId, { provider_config: formValues }).then(response=>{
+            if(providerDetails.category_id == 4 || providerDetails.category_id == 5){
+                formValues.document_files = files; 
+            }
+            healthCheck(providerId, { provider_config: formValues, connector_name: getValues("pluginName") }).then(response=>{
                 if(response.data.status == false){
                     toast.error("Connection check failed")
                 }else {
@@ -636,7 +645,7 @@ const onRemoveFile = (fileId) => {
                         </form>
                     </Tab>
                    
-                     <Tab title="Database Schema" tabKey="database-table" key={"database-table"} disabled={connectorId ? false : true} hide={![2].includes(providerDetails.category_id)}>
+                     <Tab title="Database Schema" tabKey="database-table" key={"database-table"} disabled={connectorId ? false : true} hide={![2,5].includes(providerDetails.category_id)}>
                         <TitleDescription title="Schema Details" description="Here are the tables and their columns for the plugin. Please describe the tables and it's column details to improve understanding of the plugin schema structure." />
                         <div style={{marginBottom: "30px"}}>
                             <Table columns={tableColumns} data={providerSchema} expandableRows={true} expandableRowsComponent={rowExpandComponent} onRowExpandToggled={onRowExpand} />
