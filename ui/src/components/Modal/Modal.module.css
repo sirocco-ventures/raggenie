@@ -10,10 +10,13 @@
     padding: 27px 29px;
     box-shadow: -2px 2px 20px 2px #e9e5e5;
     display: none;
+    flex-direction: column;
+    justify-content: center;
+    overflow: auto;
 }
 
 .ModalShow {
-    display: block;
+    display: flex;
 }
 
 
@@ -30,9 +33,11 @@
     font-style: normal;
     font-weight: 500;
     line-height: 20px;
-    margin-top: 158px;
 }
 
 .CloseIconContainer{ 
     cursor: pointer;
+    position: fixed;
+    top: 35px;
+    right: 35px;
 }
