@@ -7,8 +7,9 @@
     background-color: #F9F9F9;
     border-radius: 8px;
     overflow: hidden;
-    min-height: 567px;
+    min-height: 512px;
     position: relative;
+    padding-bottom: 52px;
   }
 
   .tableHeader {

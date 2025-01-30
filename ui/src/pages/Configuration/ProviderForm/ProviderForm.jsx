@@ -391,7 +391,7 @@ const onRemoveFile = (fileId) => {
        
         let tempTableDetails = []
         let localTableDetails =  JSON.parse(window.localStorage.getItem("dbschema")) 
-        let fullFill = true
+        let fullFill = false
         Object.keys(localTableDetails).map(table_id=>{
             let tempCols = [];
             Object.keys(localTableDetails[table_id].columns).map(col_id=>{
@@ -403,8 +403,8 @@ const onRemoveFile = (fileId) => {
             })
 
 
-            if(localTableDetails[table_id].description == ""){
-                fullFill = false
+            if(localTableDetails[table_id].description.trim() !== ""){
+                fullFill = true
             }
 
             tempTableDetails.push({
