@@ -39,6 +39,7 @@ function SchemaTable({data, itemsPerPage = 8}) {
         });
         if (event) {
             event.target.parentNode.nextElementSibling.firstChild.lastChild.focus();
+            event.stopPropagation();
         }
     };
 
@@ -58,6 +59,7 @@ function SchemaTable({data, itemsPerPage = 8}) {
         });
         if (event) {
             event.target.parentNode.nextElementSibling.lastChild.focus();
+            event.stopPropagation();
         }
     };
 
