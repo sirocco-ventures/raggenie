@@ -34,6 +34,7 @@
     align-items: center;
     justify-content: space-between;
     background-color: #F9F9F9;
+    cursor: pointer;
   }
   .rowTitle div {
     color: #323232;
