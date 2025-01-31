@@ -40,6 +40,7 @@ class Configs(BaseSettings):
     cclient_id_test_api:str=os.getenv('TEST_API','302875443080538159')
     cintrospection_url:str = os.getenv('OINTROSPECTION','https://flask-auth-pogve2.us1.zitadel.cloud/oauth/v2/introspect')
     cfrontend_uri:str  = os.getenv('FRONTEND_CALLBACK_URI','http://localhost:5000')
+    cendsession_uri:str = os.getenv('END_SESSION_URI','https://flask-auth-pogve2.us1.zitadel.cloud/oidc/v1/end_session')
 
 
 

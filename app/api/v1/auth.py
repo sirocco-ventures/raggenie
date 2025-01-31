@@ -4,15 +4,20 @@ from fastapi import APIRouter, Response, Depends, Request, Response, HTTPExcepti
 from app.providers.config import configs
 from app.schemas.common import CommonResponse
 from app.providers.middleware import verify_token
+from fastapi.responses import JSONResponse
 from app.providers.config import configs
 from oauthlib.oauth2 import WebApplicationClient
 from fastapi.security import HTTPBearer
 from fastapi import HTTPException,status
+from pydantic import BaseModel
+import json
+import requests
 login = APIRouter()
 http_bearer = HTTPBearer()
 
+CUSTOM_DOMAIN = "https://flask-auth-pogve2.us1.zitadel.cloud"  
+POST_LOGOUT_REDIRECT_URI = "http://localhost:5000/login"  
 
- 
 
 
 
@@ -23,7 +28,7 @@ def login_user(response: Response,response_class=RedirectResponse):
     url = client.prepare_request_uri(
         authorization_url,
         redirect_uri = configs.credirect_url ,
-        scope = ['openid','email'],
+        scope = ['openid','email','profile'],
         # state = 'D8VAo311AAl_49LAtM51HA'
     )
     print(url)
@@ -59,11 +64,15 @@ def callback_route(request: Request, response_class=RedirectResponse):
         token_data = response.json()
         access_token = token_data.get('access_token')
         refresh_token = token_data.get('refresh_token')
+        client_id = token_data.get('client_id',configs.cclient_id)
         
-        print(access_token)
-        response = RedirectResponse(url=f"http://localhost:5000/auth?access_token={access_token}")
-        response.set_cookie("access_token", access_token, httponly=True, secure=True)
-        response.set_cookie("refresh_token", refresh_token, httponly=True, secure=True)
+        print(access_token,client_id)
+       
+
+        response = RedirectResponse(url=f"http://localhost:5000/auth?access_token={access_token}&client_id={client_id}")
+        response.set_cookie("access_token", access_token, httponly=True, secure=False)
+        response.set_cookie("refresh_token", refresh_token, httponly=True, secure=False)
+        response.set_cookie('client_id',client_id,httponly=True,secure=False)
         return response
     else:
         raise HTTPException(
@@ -80,7 +89,6 @@ async def userinfo(user_data:dict=Depends(verify_token)):
 
 
 
-
 @login.post("/logout",dependencies=[Depends(verify_token)])
 def logout_user(response: Response):
     return CommonResponse(
@@ -90,19 +98,30 @@ def logout_user(response: Response):
         data=None,
         error=None
     )
+ 
+
+
 
 @login.get("/user_info", dependencies=[Depends(verify_token)])
-def get_user_info(request: Request, sub:str = Depends(verify_token)):
-    if sub is None:
+def get_user_info(request: Request, user_data: dict = Depends(verify_token)):
+    if not user_data:
         raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="User not authenticated"
-    )
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not authenticated"
+        )
+
+    username = user_data.get("username")  
+    print(username)
+    if not username:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid token structure"
+        )
 
     return CommonResponse(
         status=True,
         status_code=200,
         message="User info retrieved successfully",
-        data={ "username": sub, "auth_enabled": configs.auth_enabled },
+        data={"username": username, "auth_enabled": configs.auth_enabled},
         error=None
     )

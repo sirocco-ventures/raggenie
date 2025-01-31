@@ -6,6 +6,8 @@ const ProtectedRoute = () => {
 
     if (!token) {
         console.log("No token found, redirecting to login...");
+        console.log("Current token in Zustand store:", token);
+
         return <Navigate to="/login" />;
     }
 

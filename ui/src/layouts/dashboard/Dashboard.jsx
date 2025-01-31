@@ -4,7 +4,7 @@ import useAppSettings from "src/store/authStore";
 import style from "./Dashboard.module.css";
 import SideMenu from "./SideMenu";
 import { GetUserDetails } from "src/services/Auth";
-import axios from "axios";
+
 
 const DashboardLayout = () => {
 
