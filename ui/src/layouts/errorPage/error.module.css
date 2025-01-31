@@ -1,0 +1,44 @@
+.error {
+    border-radius: 8px;
+    background: #F5FAFF;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 88vh; /* Or any desired height */
+    text-align: center;
+}
+
+.errorText{
+    
+    position: absolute;
+    top: 47%;
+    z-index: 1; /* Ensures text is above the SVG */
+
+}
+
+.errorText h3 {
+    color: var(--Light-mode-Neutral800, #32324D);
+    font-family: Inter;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+    margin: 0;
+}
+
+.errorText p {
+    color: var(--Light-mode-Neutral800, #32324D);
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+}
+
+.iconButton {
+    margin-top: 90px; /* Adjust space between text and button */
+    z-index: 1; /* Same z-index to stay above SVG */
+}

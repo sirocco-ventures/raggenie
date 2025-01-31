@@ -6,12 +6,12 @@ import SampleForm from "./SampleForm"
 import { getSamples } from "src/services/Sample"
 import { deleteSamples } from "src/services/Sample"
 import SampleList from "./SampleList"
-import { BsInfoCircle } from "react-icons/bs"
+import { useNavigate } from "react-router-dom"
 import confirmDialog from "src/utils/ConfirmDialog"
 
 
 const Samples = ()=>{
-
+    const navigate = useNavigate()
     const [sampleList, setSampleList] = useState([])
     const [showSampleModal, setSampleModal] = useState(false)
     const [editSample, setEditSample] = useState({})
@@ -19,6 +19,8 @@ const Samples = ()=>{
     const  getAllSamples = ()=>{
         getSamples().then(response=>{
             setSampleList(response.data?.data?.sql ?? [])
+        }).catch(() => {
+            navigate('/error')
         })
     }
 

@@ -1,5 +1,7 @@
 .CodeBlockContainer{
-    width: 91%;
+    width: 100%;
+    max-width: 426px;
+    box-sizing: border-box;
 }
 
 .LightButton{
@@ -10,4 +12,8 @@
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
+}
+
+.LightButton span:nth-child(2) {
+    margin-top: 5px;
 }

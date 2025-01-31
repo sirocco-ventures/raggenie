@@ -7,7 +7,8 @@ import ChatConfiguration from "src/pages/ChatConfiguration/ChatConfiguration";
 import ProviderForm from "src/pages/Configuration/ProviderForm/ProviderForm";
 import BotConfiguration from "src/pages/ChatConfiguration/ChatConfiguration";
 import Chat from "src/pages/Chat/Chat";
-
+import NotFound from "src/layouts/errorPage/404";
+import ServerError from 'src/layouts/errorPage/500';
 
 const  routes = [
 
@@ -78,6 +79,20 @@ const  routes = [
         icon: "",
         page: <BotConfiguration/>,
         isPrivate: true
+    },
+    {
+        title: "Not Found",
+        path: "*",  
+        icon: "",
+        page: <NotFound />, 
+        isPrivate: false
+    },
+    {
+        title: "Server Error",
+        path: "/error",  
+        icon: "",
+        page: <ServerError />, 
+        isPrivate: false
     },
   ]
 

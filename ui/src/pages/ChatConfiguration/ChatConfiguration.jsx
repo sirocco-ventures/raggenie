@@ -223,6 +223,8 @@ const BotConfiguration = () => {
           
             });
 
+        }).catch(() => {
+            navigate('/error')
         })
     }
 

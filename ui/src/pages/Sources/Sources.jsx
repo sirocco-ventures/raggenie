@@ -4,10 +4,12 @@ import SearchInput from "src/components/SearchInput/SearchInput"
 import Connector from "./Connetor"
 import { useEffect, useState } from "react"
 import { getProviders } from "src/services/Plugins"
+import { useNavigate } from "react-router-dom";
 
 const Sources = ()=>{
 
 
+    const navigate = useNavigate()
     const [sources, setSource] = useState([])
     const [searchedSource, setSearchSource] = useState([])
 
@@ -15,7 +17,9 @@ const Sources = ()=>{
         getProviders().then(response=>{
             setSource(response.data.data.providers ?? [])
             setSearchSource(response.data.data.providers ?? [])
-        })   
+        }).catch(() => {
+            navigate('/error')
+        })
     }
 
     const onSearchSource = (e)=>{

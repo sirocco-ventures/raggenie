@@ -116,6 +116,8 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
                 tempChat.push({isBot: true, message: chat.chat_answer.content, error:  isEmptyJSON(chat.chat_answer.error) ? "" : chat.chat_answer.error, entity: chat.chat_answer.main_entity, format: chat.chat_answer.main_format, kind: chat.chat_answer.kind, data: chatData })
             })
             setConversation(tempChat)
+        }).catch(() => {
+            navigate('/error')
         })
     }
 
