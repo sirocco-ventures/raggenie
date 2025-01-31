@@ -1,13 +1,13 @@
 import Button from "src/components/Button/Button"
 import { HiOutlinePlusCircle } from "react-icons/hi";
-import { FaPen } from "react-icons/fa6"
+import { FaPen, FaTrashCan } from "react-icons/fa6"
 import { BsQuestionSquare } from "react-icons/bs";
 import Table from "src/components/Table/Table"
 import style from "./Samples.module.css"
 import TitleDescription from "src/components/TitleDescription/TitleDescription";
 
 
-const SampleList = ({data, onCreate=()=>{}, onEdit = ()=>{}})=>{
+const SampleList = ({data, onCreate=()=>{}, onEdit = ()=>{},onDelete = ()=>{}})=>{
 
 
     const tableColums = [
@@ -19,8 +19,14 @@ const SampleList = ({data, onCreate=()=>{}, onEdit = ()=>{}})=>{
         {
             name: '',
             selector: row => <><span onClick={()=>onEdit(row)}> <FaPen color="#84BCFF" size={16}/> </span></> ,
+            width: "50px"
+        },
+        {
+            name: '',
+            selector: row => <><span onClick={()=>onDelete(row)}> <FaTrashCan color="#FF7F6D" size={16}/> </span></> ,
             width: "80px"
         },
+
     ]
 
     const rowExpandComponent = (row)=>{
