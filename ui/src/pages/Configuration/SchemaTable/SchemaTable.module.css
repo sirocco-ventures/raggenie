@@ -1,0 +1,174 @@
+
+  .tableContainer {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    border-collapse: collapse;
+    background-color: #F9F9F9;
+    border-radius: 8px;
+    overflow: hidden;
+    min-height: 512px;
+    position: relative;
+    padding-bottom: 52px;
+  }
+
+  .tableHeader {
+    padding: 12px 21px;
+    text-align: left;
+    color: #888787;
+    font-family: Inter;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px; 
+  }
+
+  .rowTitle {
+    border-top: 1px solid #EFEFEF; /* divide-gray-200 equivalent */
+  }
+
+  .rowTitle {
+    padding: 0 25px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #F9F9F9;
+    cursor: pointer;
+  }
+  .rowTitle div {
+    color: #323232;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .rowTitle:hover {
+    background: #F1F1F1;
+  }
+
+  .tdOnfocus {
+    background-color: #F1F1F1;
+  }
+
+  .dbColumnContainer {
+    display: block;
+  }
+
+  .columnIndent {
+    margin-left: 22px;
+  }
+  .dbColumnTd {
+    height: 39px !important;
+    border-top: 1px solid #E6E6E6 ;
+    background-color: #F1F1F1;
+  }
+
+  .dbColumnTd:hover {
+    background-color: #EAEAEA !important;
+  }
+
+  .colOnfocus {
+    background-color: #EAEAEA !important;
+  }
+
+  .expandedRow {
+    display: block;
+  }
+
+  .descriptionContainer {
+    padding: 0 54px 0 70px;
+    background-color: #F1F1F1;
+  }
+  
+  .coldescription {
+    background-color: #EAEAEA ;
+  }
+
+  .descriptionContainer span{
+    font-family: Inter;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    color: #888787;
+  }
+
+  .descriptionTextarea {
+    color: #323232;
+    box-sizing: border-box;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 6px;
+    margin-bottom: 18px;
+    resize: none; 
+    overflow-y: auto;
+    padding: 14px 10px;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    height: 50px;
+    background-color: #D8D8D8;
+  }
+  .descriptionTextarea:hover {
+    border: 1px solid #C6E0FF;
+    background: #FFF;
+    box-shadow: 0px 1px 2px 0px rgba(10, 13, 18, 0.05);
+  }
+  .descriptionTextarea:focus {
+    outline: none;
+    border: 1px solid #3893FF;
+    background: #FFF;
+    box-shadow: 0px 1px 2px 0px rgba(10, 13, 18, 0.05);
+  }
+
+  .paginationContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    gap: 0px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.paginationContainer button {
+    cursor: pointer;
+    border: none;
+    background-color: #F9F9F9;
+    height: 32px;
+    width: 32px;
+    padding: 0px;
+    color: #151414;
+    text-align: center;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+
+}
+
+.paginationContainer button img {
+    height: 10px;
+    width: 10px;
+}
+
+.paginationContainer button:disabled {
+    cursor: not-allowed;
+}
+
+.activePage {
+  background-color: #FFFFFF !important;
+  color: #3893FF;
+  box-shadow: 0px 1px 4px 0px rgba(26, 26, 67, 0.10);
+  border-radius: 4px;
+}
