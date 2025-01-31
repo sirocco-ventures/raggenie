@@ -13,10 +13,12 @@ import GetService from 'src/utils/http/GetService';
 import { API_URL } from 'src/config/const';
 import PostService from 'src/utils/http/PostService';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+
 
 const Deploy = () => {
 
-
+  const navigate = useNavigate()
   const [currentConfigID, setCurrentConfigID] = useState(undefined)
   const [disabledGenerateYAMLButton, setDisabledGenerateYAMLButton] = useState(true)
 
@@ -36,7 +38,9 @@ const Deploy = () => {
           }else{
               setDisabledGenerateYAMLButton(true)
           }
-      })
+      }).catch(() => {
+        navigate('/error')
+    })
     }
 
   const generateYMAL = ()=>{

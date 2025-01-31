@@ -5,10 +5,11 @@ import { useEffect, useState } from "react"
 import SampleForm from "./SampleForm"
 import { getSamples } from "src/services/Sample"
 import SampleList from "./SampleList"
+import { useNavigate } from "react-router-dom";
 
 
 const Samples = ()=>{
-
+    const navigate = useNavigate()
     const [sampleList, setSampleList] = useState([])
     const [showSampleModal, setSampleModal] = useState(false)
     const [editSample, setEditSample] = useState({})
@@ -16,6 +17,8 @@ const Samples = ()=>{
     const  getAllSamples = ()=>{
         getSamples().then(response=>{
             setSampleList(response.data?.data?.sql ?? [])
+        }).catch(() => {
+            navigate('/error')
         })
     }
 
