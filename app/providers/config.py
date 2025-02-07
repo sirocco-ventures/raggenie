@@ -31,9 +31,12 @@ class Configs(BaseSettings):
     secret_key: str = os.getenv("SECRET_KEY","secret")
     auth_enabled: bool = os.getenv("AUTH_ENABLED",False)
     default_username: str = os.getenv("DEFAULT_USERNAME", "Admin")
-
+    
+    zitadel_cctoken: str = os.getenv("ZITADEL_CCTOKEN", "eyJhbGciOiJSUzI1NiIsImtpZCI6IjMwNjAyOTI2OTg0NTI3ODcyMyIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJzdWIiOiIzMDU4OTgyOTQ5MDE0NzMyODMiLCJhdWQiOlsiMzA0NDUyNDgwMzQ1OTY0NTQ3Il0sImV4cCI6MTczODk0Njg1OCwiaWF0IjoxNzM4OTAzNjU5LCJuYmYiOjE3Mzg5MDM2NTksImNsaWVudF9pZCI6InJhZ2dlbmllLWJhY2tlbmQiLCJqdGkiOiJWMl8zMDYwMjkyNjkyOTE2MzA1OTUtYXRfMzA2MDI5MjY5MjkxNjk2MTMxIn0.vK65bFc3eoPc0qp3zz9vj1Hi1LOctqWpMOanYXw4GQCoXjdfWCZSLZXjkfyARydyN0-zPnjV_KEb35Rh9UmmUpu0D1fRWHN8Owm1FtZ5ccJ9c_gD7VvMaH7c1PNi3dWQOQPyunl9jivpFvsXsWXhuA8Dyjeq9wnam982qQW7dSfdabuVTrMQK-YRDmHmLESroS71Zf4CdZv9P9wc9Phm082Hs-rwQanPcEV08vzgx40Q_DwlULBbiJ33qAhA76GktvKqhJM48t69ZzsnPOvzn8COzyu4MBqai2-8G0BVvbzP5kmRqmjl_RuwGmJkiSlyi0AaeXduB2wE0bT1S1BN9Q")
+    zitadel_domain: str = os.getenv("ZITADEL_DOMAIN", "http://localhost:8080")
     retry_limit:int = os.getenv("RETRY_LIMIT",0)
     application_port: int = os.getenv("APP_PORT", 8001)
+    
 
 
 configs = Configs()

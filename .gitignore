@@ -47,7 +47,8 @@ cover/
 
 
 # Environments
-
+myenv
+chromadb
 .env
 .venv
 env/
