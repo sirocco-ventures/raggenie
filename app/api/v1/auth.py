@@ -1,8 +1,9 @@
+import json
 import requests
 from app.schemas.common import LoginData
 import os
-from fastapi import APIRouter, Response, Depends, Request, Response, HTTPException, status
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Depends, Response, Request, HTTPException, status
+from fastapi.responses import RedirectResponse, JSONResponse
 from app.providers.config import configs
 from app.utils.jwt import JWTUtils
 from app.schemas.common import CommonResponse
@@ -122,7 +123,8 @@ def idp_success(request: Request):
     # print(query_params)
     idp_intent_id = query_params.get("id")
     token = query_params.get("token")
-    user_id = query_params.get("user","")
+    user_id = query_params.get("user")
+    # print(user_id)
     try:
         response = requests.post(
             f"{configs.zitadel_domain}/v2/idp_intents/{int(idp_intent_id)}",
@@ -137,40 +139,109 @@ def idp_success(request: Request):
         user_data = response.json()
         # print(user_data)
         if(user_id):
+            print("trigger")
             session_response = create_user_session(user_id, idp_intent_id, token)
-            return {
-                "login_response": session_response
-            }
         else:
-            create_user_response = create_user(user_data, idp_intent_id, token)
-            return create_user_response
-        
+            session_response = create_user(user_data, idp_intent_id, token)
+            
+        if session_response.status_code == 201:
+            redirect_response = RedirectResponse(url="/ui", status_code=303)
+
+            # Copy cookies from session_response to redirect_response
+            for cookie in session_response.headers.getlist("set-cookie"):
+                redirect_response.headers.append("set-cookie", cookie)
+
+            return redirect_response
+
+        return session_response
     except requests.exceptions.RequestException as e:
         return {"error": "Failed to create session", "details": str(e)}, 500
 
 
 #  Helper function to create a user session
-def create_user_session(user_id: str, idp_intent_id: str, token: str):
 
-    login_response = requests.post(
-        f"{configs.zitadel_domain}/v2/sessions",
-        json={
-            "checks": {
-                "user": {
-                    "userId": user_id
+def create_user_session(user_id: str, idp_intent_id: str, token: str) -> JSONResponse:
+    """
+    Creates a user session and sets the session cookie.
+    
+    Args:
+        user_id: The user's ID
+        idp_intent_id: The IDP intent ID
+        token: The authentication token
+    Returns:
+        JSONResponse with session data and cookies set
+    """
+    try:
+        print("trigger user session")
+        login_response = requests.post(
+            f"{configs.zitadel_domain}/v2/sessions",
+            json={
+                "checks": {
+                    "user": {
+                        "userId": user_id
+                    },
+                    "idpIntent": {
+                        "idpIntentId": idp_intent_id,
+                        "idpIntentToken": token
+                    }
                 },
-                "idpIntent": {
-                    "idpIntentId": idp_intent_id,
-                    "idpIntentToken": token
-                }
+                "lifetime": "1800.000000000s"
+            },
+            headers={
+                "Authorization": f"Bearer {configs.zitadel_cctoken}",
+                "Content-Type": "application/json",
             }
-        },
-        headers={
-            "Authorization": f"Bearer {configs.zitadel_cctoken}",
-            "Content-Type": "application/json",
-        }
-    )
-    return login_response.json()
+        )
+        
+        if login_response.status_code == 201:
+            session_data = login_response.json()
+            session_id = session_data.get("sessionId")
+            session_token = session_data.get("sessionToken")
+            
+            if not session_id or not session_token:
+                return JSONResponse(
+                    status_code=500,
+                    content={"error": "Session ID or token not found in response"}
+                )
+            
+            # Create response with cookie
+            response = JSONResponse(
+                status_code=201,
+                content={
+                    "message": "Session created successfully",
+                    "session_id": session_id
+                }
+            )
+            session_data = json.dumps({"session_id": session_id, "session_token": session_token})
+            # Set the cookie
+            response.set_cookie(
+                key="session_data",
+                value=session_data,
+                httponly=True,
+                secure=False,
+                samesite="Lax",
+                max_age=1800,
+                path="/"
+            )
+            
+            return response
+        else:
+            return JSONResponse(
+                status_code=login_response.status_code,
+                content={
+                    "error": "Failed to create session",
+                    "details": login_response.text
+                }
+            )
+            
+    except requests.RequestException as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": "Failed to create session",
+                "details": str(e)
+            }
+        )
 
 # Helper function to create a user and their session
 def create_user(user_data: dict, idp_intent_id: str, token: str):
@@ -187,7 +258,7 @@ def create_user(user_data: dict, idp_intent_id: str, token: str):
             "displayName": user_info.get("name", "")
         },
         "email": {
-            "email": "aanshaad09@gmail.com",
+            "email":  user_info.get("email", ""),
             "isVerified": user_info.get("email_verified", False),
         },
         "idpLinks": [
@@ -199,37 +270,41 @@ def create_user(user_data: dict, idp_intent_id: str, token: str):
         ],
     }
     
-    create_user_response = requests.post(
-        f"{configs.zitadel_domain}/v2/users/human",
-        json=payload,
-        headers={
-            "Authorization": f"Bearer {configs.zitadel_cctoken}",
-            "Content-Type": "application/json",
-        }
-    )
+    try:    
+        create_user_response = requests.post(
+            f"{configs.zitadel_domain}/v2/users/human",
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {configs.zitadel_cctoken}",
+                "Content-Type": "application/json",
+            }
+        )
+        
+        create_user_response.raise_for_status()
+        created_user_data = create_user_response.json()
+        user_id = created_user_data.get("userId")
+        if not user_id:
+            return JSONResponse(
+                    status_code=500,
+                    content={
+                        "status": "error",
+                        "message": "Error while creating user"
+                    }
+                )
+        
+        # need to add error handling when user created and failed to create session +++
+        # Create session for the newly created user
+        return create_user_session(user_id, idp_intent_id, token)
     
-    create_user_response.raise_for_status()
-    created_user_data = create_user_response.json()
-    user_id = created_user_data.get("userId")
-    if not user_id:
-        return {
-            "status": "error",
-            "message": "error while creating user",
-        }, 500
-    
-    # need to add error handling when user created and failed to create session +++
-    # Create session for the newly created user
-    session_response = create_user_session(
-        created_user_data.get("userId"),
-        idp_intent_id,
-        token
-    )
-    
-    return {
-        "status": "success", 
-        "user_data": created_user_data,
-        "session_data": session_response
-    }
+    except requests.exceptions.RequestException as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": "Failed to create user",
+                "details": str(e)
+            }
+        )
+
     
 # endpoint to retreive all the available idp providers that is setup in Zitadel
 @login.get("/idp/list")
@@ -293,17 +368,27 @@ def get_user(request: Request, response: Response, session_id : int):
 
 @login.get("/user_info", dependencies=[Depends(verify_token)])
 def get_user_info(request: Request, sub: Optional[str] = Depends(verify_token)):
-    if sub is None:
-        raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="User not authenticated"
-    )
-
+    # if sub is None:
+    #     raise HTTPException(
+    #     status_code=status.HTTP_401_UNAUTHORIZED,
+    #     detail="User not authenticated"
+    # )
+    session_id = sub
+    response = requests.get(
+                f"{configs.zitadel_domain}/v2/sessions/{session_id}",
+                headers={
+                "Authorization": f"Bearer {configs.zitadel_cctoken}",
+                "Content-Type": "application/json",
+                }
+            )
+    session_info = response.json()
+    username = session_info.get("session").get("factors").get("user").get("displayName")
+    
     return CommonResponse(
         status=True,
         status_code=200,
         message="User info retrieved successfully",
-        data={ "username": sub, "auth_enabled": configs.auth_enabled },
+        data={ "username": username, "auth_enabled": configs.auth_enabled },
         error=None
     )
     
