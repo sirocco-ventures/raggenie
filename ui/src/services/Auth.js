@@ -8,12 +8,16 @@ export const AuthLoginService = (authCredentials) => {
         showLoader: false,allowAuthHeaders:false},{});  
 };
 
-export const IdpLoginService = () => {
-    window.location.href = API_URL + "/auth/login/idp/305901299952517123";
+export const IdpLoginService = (idpId) => {
+    window.location.href = API_URL + `/auth/login/idp/${idpId}`;
 };
 
 export const GetUserDetails = () =>{
     return GetService(API_URL + `/auth/user_info`);
+}
+
+export const GetIdpList = () => {
+    return GetService(API_URL + "/auth/idp/list")
 }
 
 

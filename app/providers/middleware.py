@@ -1,4 +1,7 @@
+from datetime import datetime, timezone
 import json
+
+import requests
 from app.utils.jwt import JWTUtils
 from app.providers.config import configs
 from fastapi import Request, status, HTTPException, Cookie
@@ -16,41 +19,38 @@ async def verify_token(request: Request, session_data: Optional[str] = Cookie(No
             session_data = json.loads(session_data)  # This handles None and invalid JSON
             session_id = session_data.get("session_id")
             session_token = session_data.get("session_token")
-        except (TypeError, json.JSONDecodeError):
+            
+            if not session_id or not session_token:
+                raise ValueError("missing session data")
+            response = requests.get(
+                f"{configs.zitadel_domain}/v2/sessions/{session_id}",
+                headers={
+                "Authorization": f"Bearer {configs.zitadel_cctoken}",
+                "Content-Type": "application/json",
+                }
+            )
+            response.raise_for_status()
+            session_expiry = response.json().get("session").get("expirationDate")
+            session_expiry_utc = datetime.fromisoformat(session_expiry.rstrip("Z")).replace(tzinfo=timezone.utc)
+            if datetime.now(timezone.utc) > session_expiry_utc:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Authentication required"
+                )
+            
+        except (TypeError, json.JSONDecodeError, AttributeError, ValueError):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid or missing session data"
             )
-
-        # print(session_id, session_token)
-
-        if not session_id or not session_token:
-            print("trigger")
+        
+        except requests.exceptions.RequestException as e:  # Handles request errors (e.g., network issues, 404)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Authentication required"
+                detail=f"Session validation failed: {str(e)}",
             )
+        
         return session_id
     else:
         return configs.default_username
 
-
-        # if auth_header and auth_header.startswith("Bearer "):
-        #     token = auth_header[len("Bearer "):]
-
-        # if not token:
-        #     raise HTTPException(
-        #         status_code=status.HTTP_401_UNAUTHORIZED,
-        #         detail="Authentication required"
-        #     )
-
-        # payload = jwt_utils.decode_jwt_token(token)
-        # if payload is None or "sub" not in payload:
-        #     raise HTTPException(
-        #         status_code=status.HTTP_401_UNAUTHORIZED,
-        #         detail="Invalid token"
-        #     )
-
-        # return payload["sub"]
-    # else:
-    #     return configs.default_username

@@ -1,18 +1,43 @@
 import style from "./UserAuth.module.css"
 import logo from './assets/gennie-logo.svg';
-import googleLogo from "./assets/googleLogo.svg"
+import googleLogo from "./assets/googleLogo.svg";
+import githubLogo from "./assets/githubLogo.svg"
 import Input from 'src/components/Input/Input';
 import Button from 'src/components/Button/Button';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { AuthLoginService, IdpLoginService } from 'src/services/Auth';
+import { AuthLoginService, IdpLoginService, GetIdpList } from 'src/services/Auth';
 
 const UserLogin = () => {
     const { register: authRegister, setValue: authSetValue, handleSubmit: authHandleSubmit, formState: authFormState, setError: authSetError, clearErrors: authClearErrors, watch: authWatch } = useForm({ mode: 'all' });
     const { errors: authFormError } = authFormState;
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [idpList, setIdpList] = useState([]);
+
+    useEffect(() => {
+        GetIdpList().then(response => {
+            setIdpList(response.data.idp_list);
+        }).catch(error => {
+            console.error("failed to fetch idp list", error);
+        })
+    }, []);
+
     
+    /* fucntion to render idp buttons dynamically */
+
+    const renderIdpButtons = () => {
+        return idpList.map((idp) => {
+            let logo = idp.type === "PROVIDER_TYPE_GOOGLE" ? googleLogo : 
+                       idp.type === "PROVIDER_TYPE_GITHUB" ? githubLogo : null;
+            return (
+                <div key={idp.id} className={style.LoginGoogle} onClick={() => IdpLoginService(idp.id)}>
+                    {logo && <img src={logo} alt={idp.type} />}
+                    <span>Login with {idp.type.replace("PROVIDER_TYPE_", "")}</span>
+                </div>
+            );
+        });
+    };
 
     const onSubmit = (data) => {
             const authCredentials = {
@@ -72,10 +97,7 @@ const UserLogin = () => {
                         </form>
                         <div className={style.OAuthLogin}>
                             <span className={style.OrLogin}>Or Login with</span>
-                            <div className={style.LoginGoogle} onClick={IdpLoginService}>
-                                <img src={googleLogo} />
-                                <span>Login with Google</span>
-                            </div>
+                            {renderIdpButtons()}
 
                         </div>
                     </div>
