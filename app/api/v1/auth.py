@@ -77,34 +77,34 @@ def idp_login(response: Response, idp_id : int):
 @login.get("/idp/success")
 def idp_success(request: Request,db: Session = Depends(get_db)):
     query_params = request.query_params
-    # print(query_params)
     idp_intent_id = query_params.get("id")
     idp_token = query_params.get("token")
+    if not idp_intent_id or not idp_token:
+        return commons.is_error_response("Missing required parameters", {}, {"user": {}})
     user_id = query_params.get("user")
-    # print(user_id)
     try:
         response = zitadel.get_idp_intent_data(idp_intent_id, idp_token)
         user_data = response.json()
-        # print(user_data)
+        username = user_data.get("idpInformation", {}).get("rawInformation", {}).get("User", {}).get("name", "")
         if(user_id):
+            user, error = svc.get_or_create_user(schemas.UserCreate(id=int(user_id), username=username), db)
             session_response = zitadel.create_user_session(user_id, idp_intent_id, idp_token)
         else:
             session_response = zitadel.create_user(user_data, idp_intent_id, idp_token)
+            if session_response.status_code != 201:
+                return commons.is_error_response("Failed to create Zitadel user", session_response.body.decode("utf-8"), {"user": {}})
             response_data = json.loads(session_response.body.decode("utf-8"))
-            session_id = response_data.get("session_id")
-            user_info = zitadel.get_user_info(session_id)
-            username = user_info.get("session").get("factors").get("user").get("displayName")
-            zitadel_user_id = user_info.get("session").get("factors").get("user").get("id")
+            zitadel_user_id = response_data.get("user_id")
             new_user = schemas.UserCreate(
-                                    user_id=int(zitadel_user_id),
+                                    id=int(zitadel_user_id),
                                     username=username,
                                 )
-            result, error = svc.create_user(new_user, db)
+            result, error = svc.get_or_create_user(new_user, db)
             if error:
-                return commons.is_error_response("DB Error", result, {"user": {}})
+                return commons.is_error_response("DB Error", error, {"user": {}})
 
             if not result:
-                return commons.is_none_reponse("User Not Found", {"user": {}})
+                return commons.is_none_reponse("User Not Created", {"user": {}})
             
         if session_response.status_code == 201:
             redirect_response = RedirectResponse(url="/ui", status_code=303)
@@ -116,8 +116,9 @@ def idp_success(request: Request,db: Session = Depends(get_db)):
             return redirect_response
 
         return session_response
-    except requests.exceptions.RequestException as e:
+    except (requests.exceptions.RequestException, json.JSONDecodeError, AttributeError) as e:
         return {"error": "Failed to create session", "details": str(e)}, 500
+
 
 
 # endpoint to retreive all the available idp providers that is setup in Zitadel
