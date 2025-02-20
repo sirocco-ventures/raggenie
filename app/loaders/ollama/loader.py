@@ -14,11 +14,6 @@ class OllamaModelLoader(ModelLoader, LoaderMetadataMixin):
 
     def do_inference(self, prompt, previous_messages) -> dict:
         messages = self.messages_format(prompt, previous_messages)
-        url = self.model_config["endpoint"]
-        print(f"url:{url}")
-        model =  self.model_config["name"]
-        print(f"model:{model}")
-
         self.model = BaseLLM(
             url = self.model_config["endpoint"],
             body = {
@@ -91,22 +86,19 @@ class OllamaModelLoader(ModelLoader, LoaderMetadataMixin):
         return messages
 
     def get_models(self):
-        """
-        Retrieve models from the OpenAI API.
-        Returns:
-            List of OpenAI model names or an error message.
-        """
-        url = "https://api.openai.com/v1/models"
-        headers = {
-            "Authorization": f"Bearer {self.model_config.get('api_key', '')}",
-        }
-        try:
-            response = requests.get(url, headers=headers)
-            if response.status_code == 200:
-                data = response.json()
-                models = [{"display_name": model["id"], "id": model["id"]} for model in data.get("data", [])]
-                return models, False
-            else:
-                return f"Failed to retrieve OpenAI models: {response.status_code} {response.text}", True
-        except requests.RequestException as e:
-            return f"Error occurred: {str(e)}", True
+            """
+            Retrieve models from the Ollama API.
+            Returns:
+                List of Ollama model names or an error message.
+            """
+            url = "curl http://localhost:11434/api/tags"
+            try:
+                response = requests.get(url)
+                if response.status_code == 200:
+                    data = response.json()
+                    models = [{"display_name": model["id"], "id": model["id"]} for model in data.get("data", [])]
+                    return models, False
+                else:
+                    return f"Failed to retrieve Ollama models: {response.status_code} {response.text}", True
+            except requests.RequestException as e:
+                return f"Error occurred: {str(e)}", True
