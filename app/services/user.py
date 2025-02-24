@@ -23,8 +23,8 @@ def get_or_create_user(user: schemas.UserCreate, db: Session):
     if is_error:
         return None, "Failed to create user"
     
-    default_env = env_repo.get_or_create_default_environment(db)
-    assign_result, env_error = env_repo.assign_user_to_environment(new_user.id, default_env.id, db)
+    unique_env = env_repo.create_environment(f"{new_user.username} env", db)
+    assign_result, env_error = env_repo.assign_user_to_environment(new_user.id, unique_env.id, db)
     
     if env_error:
         return None, f"User created but failed to assign environment: {env_error}"

@@ -128,7 +128,8 @@ def list_idp(response: Response):
 
 
 @login.get("/user_info", dependencies=[Depends(verify_token)])
-def get_user_info(request: Request, session_id: Optional[str] = Depends(verify_token)):
+def get_user_info(request: Request, user_data: dict = Depends(verify_token)):
+    session_id = user_data["session_id"]
     user_info = zitadel.get_user_info(session_id)
     username = user_info.get("session").get("factors").get("user").get("displayName")
     return CommonResponse(
@@ -143,6 +144,7 @@ def get_user_info(request: Request, session_id: Optional[str] = Depends(verify_t
     
     
 @login.post("/logout",dependencies=[Depends(verify_token)])
-def logout_user(response: Response, session_id: Optional[str] = Depends(verify_token)):
+def logout_user(response: Response, user_data: dict = Depends(verify_token)):
+    session_id = user_data["session_id"]    
     return zitadel.logout_user(session_id)
 

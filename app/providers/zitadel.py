@@ -5,7 +5,10 @@ from app.schemas.common import CommonResponse
 from fastapi.responses import JSONResponse, RedirectResponse
 import app.schemas.user as schemas
 import app.repository.user as repo
+
+
 class Zitadel:
+    
     def __init__(self):
         self.base_url = configs.zitadel_domain
         self.token = configs.zitadel_cctoken
@@ -51,7 +54,7 @@ class Zitadel:
             )
             json_response.set_cookie(
                 key="session_data",
-                value=json.dumps({"session_id": session_id, "session_token": session_token}),
+                value=json.dumps({"session_id": session_id, "session_token": session_token, "user_id": user_id}),
                 httponly=True,
                 secure=False,
                 samesite="Lax",

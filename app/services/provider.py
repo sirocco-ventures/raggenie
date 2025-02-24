@@ -371,7 +371,7 @@ def getsqlbyconnector(id:int, db:Session):
     ]
 
     return sql_list, None
-def listsql(db:Session):
+def listsql(db:Session, user_id: str):
 
     """
     Retrieves a list of SQL samples from the database.
@@ -383,7 +383,7 @@ def listsql(db:Session):
         Tuple: List of SampleSQLResponse schemas and error message (if any).
     """
 
-    sqls, is_error = repo.list_sql(db)
+    sqls, is_error = repo.list_sql(db, user_id)
 
     if is_error:
         return sqls, "DB Error"
@@ -435,7 +435,7 @@ def getsql(id:int, db:Session):
 
     return sql_resp, None
 
-def create_sql(request: Request,sql:schemas.SampleSQLBase,db:Session):
+def create_sql(request: Request,sql:schemas.SampleSQLBase,db:Session, user_id: str):
 
     """
     Creates a new SQL sample in the database and updates the vector store.
@@ -449,7 +449,7 @@ def create_sql(request: Request,sql:schemas.SampleSQLBase,db:Session):
         Tuple: SampleSQLResponse schema and error message (if any).
     """
 
-    sql, is_error =  repo.create_sql(sql,db)
+    sql, is_error =  repo.create_sql(sql,db,user_id)
 
     if is_error:
         return sql, "DB Error"

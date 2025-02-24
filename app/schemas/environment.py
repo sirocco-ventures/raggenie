@@ -7,6 +7,7 @@ class EnvironmentBase(BaseModel):
 
 class EnvironmentResponse(EnvironmentBase):
     id: int
+    is_active: bool 
 
 class UserEnvironmentMappingBase(BaseModel):
     user_id: int

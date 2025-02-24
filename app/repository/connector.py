@@ -5,11 +5,42 @@ import app.schemas.connector as schemas
 from sqlalchemy.exc import SQLAlchemyError
 from typing import List
 
-def get_all_connectors(db: Session):
+from app.models.environment import UserEnvironmentMapping
+
+# def get_all_connectors(db: Session):
+#     try:
+#         return db.query(models.Connector).options(joinedload(models.Connector.provider)).all(), False
+#     except SQLAlchemyError as e:
+#         return str(e), True
+
+def get_connectors_by_configuration_id(configuration_id: int, db: Session):
     try:
-        return db.query(models.Connector).options(joinedload(models.Connector.provider)).all(), False
+        connectors = (
+            db.query(models.Connector)
+            .join(models.ConfigurationConnectorMapping, models.Connector.id == models.ConfigurationConnectorMapping.connector_id)
+            .filter(models.ConfigurationConnectorMapping.configuration_id == configuration_id)
+            .all()
+        )
+        return connectors, False
+    except Exception as e:
+        return None, str(e)    
+    
+
+def get_all_connectors(db: Session, user_id: str):
+    try:
+        active_env = (db.query(UserEnvironmentMapping)
+            .filter(UserEnvironmentMapping.user_id == user_id, UserEnvironmentMapping.is_active == True)
+            .first())
+        connectors = (
+            db.query(models.Connector)
+            .filter(models.Connector.environment_id == active_env.id)  
+            .options(joinedload(models.Connector.provider))  
+            .all()
+        )
+        return connectors, False
     except SQLAlchemyError as e:
         return str(e), True
+
 
 def get_connector_by_id(connector_id: int, db: Session):
     try:
@@ -17,9 +48,12 @@ def get_connector_by_id(connector_id: int, db: Session):
     except SQLAlchemyError as e:
         return str(e), True
 
-def create_new_connector(connector: schemas.ConnectorBase, db: Session):
+def create_new_connector(connector: schemas.ConnectorBase, db: Session, user_id: str):
     try:
-        db_connector = models.Connector(**connector.model_dump())
+        active_env = (db.query(UserEnvironmentMapping)
+            .filter(UserEnvironmentMapping.user_id == user_id, UserEnvironmentMapping.is_active == True)
+            .first())
+        db_connector = models.Connector(**connector.model_dump(),environment_id=active_env.id)
         db.add(db_connector)
         db.commit()
         db.refresh(db_connector)
@@ -67,20 +101,26 @@ def delete_connector_by_id(connector_id: int, db: Session):
         db.rollback()
         return str(e), True
 
-def get_all_configurations(db: Session):
+def get_all_configurations(db: Session, user_id: str):
     try:
+        active_env = (db.query(UserEnvironmentMapping)
+            .filter(UserEnvironmentMapping.user_id == user_id, UserEnvironmentMapping.is_active == True)
+            .first())
         return (
             db.query(models.Configuration)
+            .filter(models.Configuration.environment_id == active_env.id)
             .options(
                 joinedload(models.Configuration.capabilities),
                 joinedload(models.Configuration.inference_mapping).joinedload(models.Inferenceconfigmapping.inference),
                 joinedload(models.Configuration.vectordb_config_mapping).joinedload(prov_models.VectorDBConfigMapping.vector_db),
+                joinedload(models.Configuration.connectors).joinedload(models.ConfigurationConnectorMapping.connector)  
             )
             .all(),
             False
         )
     except SQLAlchemyError as e:
         return str(e), True
+
 
 def get_inference_by_config(config_id: int, db: Session):
     """
@@ -115,13 +155,17 @@ def getbotconfiguration(db:Session):
     except SQLAlchemyError as e:
         return str(e), True
 
-def create_new_configuration(configuration: schemas.ConfigurationCreation, db: Session):
+def create_new_configuration(configuration: schemas.ConfigurationCreation, db: Session, user_id: str):
     try:
+        active_env = (db.query(UserEnvironmentMapping)
+            .filter(UserEnvironmentMapping.user_id == user_id, UserEnvironmentMapping.is_active == True)
+            .first())
         db_configuration = models.Configuration(
             name=configuration.name,
             short_description=configuration.short_description,
             long_description=configuration.long_description,
-            status=configuration.status
+            status=configuration.status,
+            environment_id=active_env.id 
         )
         db.add(db_configuration)
         db.commit()
@@ -134,12 +178,36 @@ def create_new_configuration(configuration: schemas.ConfigurationCreation, db: S
                 db.add(db_capability)
 
         db.commit()
+        
+        if configuration.connectors:
+            link_configuration_to_connectors(db_configuration.id, configuration.connectors, db)
 
         return db_configuration, False
     except SQLAlchemyError as e:
         db.rollback()
         return str(e), True
 
+
+def link_configuration_to_connectors(config_id: int, connector_ids: list[int], db: Session):
+    """
+    Links a configuration with selected connectors.
+    """
+    try:
+        for connector_id in connector_ids:
+            existing_mapping = (
+                db.query(models.ConfigurationConnectorMapping)
+                .filter_by(configuration_id=config_id, connector_id=connector_id)
+                .first()
+            )
+            if not existing_mapping:
+                mapping = models.ConfigurationConnectorMapping(configuration_id=config_id, connector_id=connector_id)
+                db.add(mapping)
+
+        db.commit()
+        return True, None
+    except SQLAlchemyError as e:
+        db.rollback()
+        return False, str(e)
 
 def update_existing_configuration(config_id: int, configuration: schemas.ConfigurationUpdate, db: Session):
     try:
@@ -168,6 +236,10 @@ def update_existing_configuration(config_id: int, configuration: schemas.Configu
                     db.add(query)
                     db.commit()
                     db.refresh(query)
+                    
+        if configuration.connectors:
+            link_configuration_to_connectors(db_configuration.id, configuration.connectors, db)
+            
         return db_configuration, False
     except SQLAlchemyError as e:
         db.rollback()
@@ -175,8 +247,30 @@ def update_existing_configuration(config_id: int, configuration: schemas.Configu
 
 def get_configuration_by_id(config_id: int, db: Session):
     try:
-        return db.query(models.Configuration).filter(models.Configuration.id == config_id).first(), False
+        return (
+            db.query(models.Configuration)
+            .filter(models.Configuration.id == config_id)
+            .options(
+                joinedload(models.Configuration.capabilities),
+                joinedload(models.Configuration.inference_mapping).joinedload(models.Inferenceconfigmapping.inference),
+                joinedload(models.Configuration.vectordb_config_mapping).joinedload(prov_models.VectorDBConfigMapping.vector_db),
+                joinedload(models.Configuration.connectors).joinedload(models.ConfigurationConnectorMapping.connector)  # 🔹 Include connectors
+            )
+            .first(), 
+            False
+            )
     except SQLAlchemyError as e:
+        return str(e), True
+    
+def delete_configuration_by_id(configuration_id: int, db: Session):
+    try:
+        db_configuration = db.query(models.Configuration).filter(models.Configuration.id == configuration_id).options(joinedload(models.Configuration.capabilities)).first()
+        if db_configuration:
+            db.delete(db_configuration)
+            db.commit()
+        return db_configuration, False
+    except SQLAlchemyError as e:
+        db.rollback()
         return str(e), True
 
 def update_configuration_status(config_id: int, db: Session):
@@ -184,6 +278,10 @@ def update_configuration_status(config_id: int, db: Session):
         db_config, is_error = get_configuration_by_id(config_id, db)
 
         if db_config and not is_error:
+            db.query(models.Configuration).filter(
+            models.Configuration.environment_id == db_config.environment_id,
+            models.Configuration.status == 2
+            ).update({"status": 0})
             db_config.status = 2
 
             db.commit()

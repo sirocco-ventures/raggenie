@@ -80,32 +80,32 @@ def create_app(config):
     if err is not None:
         logger.critical(err)
 
-    err = commonservices.check_configurations_availability(session)
+    # err = commonservices.check_configurations_availability(session)
     datasources = []
 
-    if err is None:
-        logger.info("checking execution mode")
+    # if err is None:
+    #     logger.info("checking execution mode")
 
-        logger.info("getting existing models and plugins configurations")
-        configuration_yaml = svc.get_inference_and_plugin_configurations(session)
+    #     logger.info("getting existing models and plugins configurations")
+    #     configuration_yaml = svc.get_inference_and_plugin_configurations(session)
 
-        logger.info("initializing datasource using container")
-        container.config.from_dict(configuration_yaml)
-        datasources = container.datasources()
+    #     logger.info("initializing datasource using container")
+    #     container.config.from_dict(configuration_yaml)
+    #     datasources = container.datasources()
 
-        logger.info("setting datasources and inference details into configuration")
-        config['datasources'] = configuration_yaml.get("datasources", [])
-        config['models'] = configuration_yaml.get("models", [])
-        id_name_mappings = configuration_yaml.get("mappings", {})
-        config["use_case"] = svc.get_use_cases(session)
+    #     logger.info("setting datasources and inference details into configuration")
+    #     config['datasources'] = configuration_yaml.get("datasources", [])
+    #     config['models'] = configuration_yaml.get("models", [])
+    #     id_name_mappings = configuration_yaml.get("mappings", {})
+    #     config["use_case"] = svc.get_use_cases(session)
 
 
-        configs.inference_llm_model=config["models"][0]["unique_name"] if len(config["models"]) > 0 else None
+    #     configs.inference_llm_model=config["models"][0]["unique_name"] if len(config["models"]) > 0 else None
 
-        if len(config["datasources"]) >0:
-            datasources, err = svc.update_datasource_documentations(session, vectore_store, datasources, id_name_mappings)
-            if err is not None:
-                logger.error("Error loading data into vector store")
+    #     if len(config["datasources"]) >0:
+    #         datasources, err = svc.update_datasource_documentations(session, vectore_store, datasources, id_name_mappings)
+    #         if err is not None:
+    #             logger.error("Error loading data into vector store")
 
 
     logger.info("creating local context storage")
@@ -140,7 +140,7 @@ def create_app(config):
         CORSMiddleware,
         allow_origins=["*"],
         allow_credentials=True,
-        allow_methods=["OPTIONS", "GET", "POST"],
+        allow_methods=["OPTIONS", "GET", "POST", "DELETE"],
         allow_headers=["*"],
     )
 

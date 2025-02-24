@@ -19,6 +19,8 @@ async def verify_token(request: Request, session_data: Optional[str] = Cookie(No
             session_data = json.loads(session_data)  # This handles None and invalid JSON
             session_id = session_data.get("session_id")
             session_token = session_data.get("session_token")
+            user_id = session_data.get("user_id")
+
             
             if not session_id or not session_token:
                 raise ValueError("missing session data")
@@ -49,8 +51,7 @@ async def verify_token(request: Request, session_data: Optional[str] = Cookie(No
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=f"Session validation failed: {str(e)}",
             )
-        
-        return session_id
+        return {"session_id": session_id, "user_id": user_id}
     else:
         return configs.default_username
 
