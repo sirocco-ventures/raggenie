@@ -198,7 +198,7 @@ const BotConfiguration = () => {
             let llmList = []
             let vectorDbTempList = [];
             llmProviders.map(item => {
-                llmList.push({ value: item.unique_name, label: <div className={style.AlignDropdownOptions}><img src={`${BACKEND_SERVER_URL}${item.icon}`} alt={item.display_name} />{item.display_name}</div> },)
+                llmList.push({ value: item.unique_name, label: <div className={style.AlignDropdownOptions}><img src={`${BACKEND_SERVER_URL}${item.icon}`} className={style.LLMDropdownOptionImg} alt={item.display_name} />{item.display_name}</div> },)
             })
             setllmModels(llmList)
             setSelectedProvider(llmList[0])
@@ -553,8 +553,8 @@ const onInferanceSave = (data) => {
                                 {configFormError["inferenceProvider"]?.message && <span style={{ color: "#FF7F6D" }}>{configFormError["inferenceProvider"]?.message}</span>}
                             </div>
                             <Input label="Model Name" hasError={inferenceFormError["inferenceModelName"]?.message ? true : false} errorMessage={inferenceFormError["inferenceModelName"]?.message}  {...inferenceRegister("inferenceModelName", { required: "This field is required" })} onChange={resetTestInference} />
-                            <Input label="Endpoint" hasError={inferenceFormError["inferenceEndpoint"]?.message ? true : false} errorMessage={inferenceFormError["inferenceEndpoint"]?.message}  {...inferenceRegister("inferenceEndpoint", { required: "This field is required" })} onChange={resetTestInference} />
-                            <Input label="API Key" type="password" hasError={inferenceFormError["inferenceAPIKey"]?.message ? true : false} errorMessage={inferenceFormError["inferenceAPIKey"]?.message}  {...inferenceRegister("inferenceAPIKey", { required: "This field is required" })} onChange={resetTestInference} />
+                            <Input label="Endpoint" placeholder = "Enter chat completions endpoint here" hasError={inferenceFormError["inferenceEndpoint"]?.message ? true : false} errorMessage={inferenceFormError["inferenceEndpoint"]?.message}  {...inferenceRegister("inferenceEndpoint", { required: "This field is required" })} onChange={resetTestInference} />
+                           {selectedProvider?.value != "ollama" &&  <Input label="API Key" type="password" hasError={inferenceFormError["inferenceAPIKey"]?.message ? true : false} errorMessage={inferenceFormError["inferenceAPIKey"]?.message}  {...inferenceRegister("inferenceAPIKey", { required: "This field is required" })} onChange={resetTestInference} />} 
                         </div>
                         {showNotificationPanel && <NotificationPanel message={notificationMessage} containerStyle={{ marginBottom: "30px" }} />}
                         <div className={`${style.SaveConfigContainer} ${style.InferenceSaveContainer}`}>
