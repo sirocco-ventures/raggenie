@@ -13,8 +13,11 @@ const Preview = ()=>{
                 let configs = response.data?.data?.configurations
                 if(configs?.length > 0){
                     setSelect(true)
-                    let extractedOptions = configs.map(config => config.id);
-                    setOptions(extractedOptions);  
+                    let configList = []
+                    configs.map(item => {
+                        configList.push({ value: item.id, label: item.name})
+                    })
+                    setOptions(configList);  
                 }
             })
         }

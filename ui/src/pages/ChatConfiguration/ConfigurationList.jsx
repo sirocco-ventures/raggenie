@@ -23,7 +23,6 @@ const ConfigurationList = ({ configurations = [], onConfigDelete }) => {
       undefined,
       "Delete",
       () => {
-        console.log(config_id)
         onConfigDelete(config_id);
       }
     );
@@ -34,7 +33,7 @@ const ConfigurationList = ({ configurations = [], onConfigDelete }) => {
 
     {
         name: 'Name',
-        selector: row =><div className="inline-flex-align-center">  Configuration { row.id} </div>,
+        selector: row =><div className="inline-flex-align-center">{row.name}</div>,
         // width: "400px"
     },
     {

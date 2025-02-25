@@ -35,13 +35,13 @@ const  routes = [
         isPrivate: true
     },
    
-    {
-        title: "Deploy",
-        path: "/deploy",
-        icon: "",
-        page: <Deploy/>,
-        isPrivate: true
-    },
+    // {
+    //     title: "Deploy",
+    //     path: "/deploy",
+    //     icon: "",
+    //     page: <Deploy/>,
+    //     isPrivate: true
+    // },
     {
         title: "Sources",
         path: "/plugins/sources",

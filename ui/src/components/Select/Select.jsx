@@ -4,7 +4,7 @@ import style from './Select.module.css';
 
 
 
-const Select = ({label, disabled = false , placeholder, options, value, hasError = false, errorMessage = "", onChange, ...props}) => {
+const Select = ({label, disabled = false , placeholder, options, value, hasError = false, errorMessage = "", onChange, noMargin, ...props}) => {
     const [selectedOption, setSelectedOption] = useState(null);
 
     const handleChange = (option) => {
@@ -63,12 +63,42 @@ const Select = ({label, disabled = false , placeholder, options, value, hasError
         placeholder:(provided)=>({
             ...provided,
             color:"#888787"
-        })
+        }),
+        multiValue: (provided) => ({
+            ...provided,
+            backgroundColor: '#74B3FF',
+            borderRadius: '20px',
+            padding: '3px 4px',
+            gap: '4px',
+            border: 'none',
+            display: 'flex',
+            alignItems: 'center'
+
+        }),
+        multiValueLabel: (provided) => ({
+            ...provided,
+            color: '#FFFFFF',
+            fontSize: '14px',
+            padding: '2px',
+            fontFamily: 'Inter',
+        }),
+        multiValueRemove: (provided) => ({
+            ...provided,
+            color: '##84BCFF',
+            backgroundColor: '#fff',
+            cursor: 'pointer',
+            height: '18px',
+            width: '18px',
+            borderRadius: '100%',
+            ':hover': {
+                color: '#FF7F6D',
+            }
+        }),
     };
 
     return (
-        <div className={style.SelectContainer}>
-            <h4 className={style.SelectLabel}>{label}</h4>
+        <div className={`${noMargin ? '' : style.SelectContainer}`}>
+            {noMargin ? '' : <h4 className={style.SelectLabel}>{label}</h4>}
             <DropdownSelect
                 value={selectedOption}
                 onChange={handleChange}

@@ -32,6 +32,7 @@ import pencilIcon from "./assets/pencil02.svg"
 import TitleDescription from 'src/components/TitleDescription/TitleDescription';
 import GenerateConfigs from 'src/utils/form/GenerateConfigs';
 import { getConnectors } from "src/services/Connectors"
+import Deploy from '../Deploy/Deploy';
 
 
 const BotConfiguration = () => {
@@ -150,7 +151,6 @@ const BotConfiguration = () => {
         if(configId){
             getBotConfigurationById(configId).then(response => {
                 let configs = response.data?.data?.configuration
-                console.log(configs)
                 setActiveInferencepiontTab(false)
                 setCurrentConfigID(configs.id)
                 setCurrentInferenceID(configs.inference[0]?.id ?? undefined)
@@ -161,12 +161,10 @@ const BotConfiguration = () => {
                 configSetValue("botLongDescription", configs.long_description)
 
                 if (configs.connector?.length > 0) {
-                    console.log("trigger", configs.connector)
                     const selectedConnectors = configs.connector.map(connector => ({
                         label: connector.connector_name, // Get name from nested object
                         value: connector.connector_id // Get ID from nested object
                     }));
-                    console.log(selectedConnectors)
                     configSetValue("connectors", selectedConnectors);
                 }
 
@@ -535,9 +533,13 @@ const onInferanceSave = (data) => {
 
     const getConnectorsList = async () => {
         getConnectors().then(response => {
-            const connectorsList = response.data.data?.connectors || [];
-            console.log(connectorsList)
-            setConnectors(connectorsList);
+            const connectorResponse = response.data.data?.connectors || [];
+            let connectorList = []
+            connectorResponse.map(item => {
+                connectorList.push({ value: item.connector_id, label:  <div className={style.AlignDropdownOptions}>{item.connector_name}</div>})
+            })
+
+            setConnectors(connectorList);
         }).catch(() => {
             navigate('/error');
         });
@@ -580,12 +582,9 @@ const onInferanceSave = (data) => {
                             <Input label="Bot Short Description" placeholder="brief detail about the use case of the bot" minLength={20} maxLength={200} value={configWatch("botShortDescription")} hasError={configFormError["botShortDescription"]?.message ? true : false} errorMessage={configFormError["botShortDescription"]?.message}  {...configRegister("botShortDescription", { required: "This field is required", minLength: { value: 20, message: "minimun length is 20" }, maxLength: { value: 200, message: "maximum length is 200" } })} />
                             <Textarea label="Bot Long Description" placeholder="detailed information about the bot, including its full use case and functionalities" rows={10} minLength={50} maxLength={400} value={configWatch("botLongDescription")} hasError={configFormError["botLongDescription"]?.message ? true : false} errorMessage={configFormError["botLongDescription"]?.message}  {...configRegister("botLongDescription", { required: "This field is required", minLength: { value: 50, message: "minimun length is 50" }, maxLength: { value: 400, message: "maximum length is 400" } })} />
                             <Select
-                                label="Connectors"
+                                label="Select Source"
                                 isMulti
-                                options={connectors.map(connector => ({
-                                    label: connector.connector_name,
-                                    value: connector.connector_id
-                                }))}
+                                options={connectors}
                                 value={configWatch("connectors") || []}
                                 onChange={(selectedOptions) => {
                                     const selected = selectedOptions || [];
@@ -728,10 +727,14 @@ const onInferanceSave = (data) => {
                             <Button type="transparent" className="icon-button" onClick={() => setActiveTab("inferenceendpoint")}> <FaArrowLeft /> Back</Button>
                         </div>
                         <div>
-                            <Button className="icon-button" onClick={addConfiguration}>  Save & Continue <FaRegArrowAltCircleRight /></Button>
+                            <Button className="icon-button" onClick={() => setActiveTab('Deploy')}>  Save & Continue <FaRegArrowAltCircleRight /></Button>
                         </div>
 
                     </div>
+                </Tab>
+                <Tab title="Deploy" tabKey='Deploy'>
+                    <Deploy></Deploy>
+
                 </Tab>
             </Tabs>
 

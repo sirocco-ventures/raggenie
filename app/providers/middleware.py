@@ -1,12 +1,14 @@
 from datetime import datetime, timezone
 import json
-
+from app.providers.zitadel import Zitadel
 import requests
 from app.utils.jwt import JWTUtils
 from app.providers.config import configs
 from fastapi import Request, status, HTTPException, Cookie
 from fastapi import Request, HTTPException, status
 from typing import Optional
+
+zitadel = Zitadel()
 
 async def verify_token(request: Request, session_data: Optional[str] = Cookie(None)):
     # jwt_utils = JWTUtils(configs.secret_key)
@@ -21,18 +23,12 @@ async def verify_token(request: Request, session_data: Optional[str] = Cookie(No
             session_token = session_data.get("session_token")
             user_id = session_data.get("user_id")
 
+
             
             if not session_id or not session_token:
                 raise ValueError("missing session data")
-            response = requests.get(
-                f"{configs.zitadel_domain}/v2/sessions/{session_id}",
-                headers={
-                "Authorization": f"Bearer {configs.zitadel_cctoken}",
-                "Content-Type": "application/json",
-                }
-            )
-            response.raise_for_status()
-            session_expiry = response.json().get("session").get("expirationDate")
+            response = zitadel.get_user_info(session_id)
+            session_expiry = response.get("session").get("expirationDate")
             session_expiry_utc = datetime.fromisoformat(session_expiry.rstrip("Z")).replace(tzinfo=timezone.utc)
             if datetime.now(timezone.utc) > session_expiry_utc:
                 raise HTTPException(

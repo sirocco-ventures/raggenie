@@ -3,10 +3,13 @@ import help from "src/assets/icons/help.svg"
 import style from "./Dashboard.module.css"
 import { restartBot } from "src/services/BotConfifuration";
 import { toast } from "react-toastify";
+import Select from "src/components/Select/Select";
+import { useState } from "react";
 
 const DashboardBody = ({ title = "Dashboard",options=[], select, children, containerStyle = {}, containerClassName = ""}) => {
-    const handleRestart = (event) => {
-        const selectedId = event.target.value;
+    const [selectedOption, setSelectedOption] = useState()
+    const handleRestart = (value) => {
+        let selectedId = value.value
         restartBot(selectedId)
             .then(() => {
                 toast.success(`Configuration ${selectedId} loaded`);
@@ -22,12 +25,15 @@ const DashboardBody = ({ title = "Dashboard",options=[], select, children, conta
                 <div className={style.DashboardHeader}>
                     <div className={style.DashboardTitleContainer}>
                         {select ? (
-                            <select onChange={handleRestart} defaultValue="">
-                                <option value="" disabled>Select a Configuration</option>
-                                {options.map((id) => (
-                                    <option key={id} value={id}>Configuration {id}</option>
-                                ))}
-                            </select>
+                            <div style={{width: '183px'}}>
+                                <Select
+                                    options={options}
+                                    value={selectedOption}
+                                    onChange={(value) => { setSelectedOption(value); handleRestart(value)}}
+                                    noMargin={true}
+                                    placeholder={'Configuration'}
+                                />
+                            </div>
                         ) : ( 
                         <span className={style.DashboardTitle}>{title}</span> )}
                     </div>

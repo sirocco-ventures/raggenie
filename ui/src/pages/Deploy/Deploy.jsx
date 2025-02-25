@@ -58,7 +58,6 @@ const Deploy = () => {
 
   return (
     <div>
-      <DashboardBody title="Deploy URL">
       <div className={style.DeployURLContainer}>
       <TitleDescriptionContainer>
           <TitleDescription orderNumber={1} title='Restart your Chatbot' description='Deploy your chatbot to experience real-time updates based on your configuration changes.' />
@@ -83,7 +82,6 @@ const Deploy = () => {
           <RouteTab Deployroutes={deployTabroutes} />
         </div>
       </div>
-      </DashboardBody>
     </div>
   );
 };

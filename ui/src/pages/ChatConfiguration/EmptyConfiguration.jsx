@@ -12,11 +12,11 @@ const EmptyConfiguration = ()=>{
                     <img src={emptyPluginImg}/>
                 </div>
                 <div style={{marginTop: "19px"}}>
-                    <span className={style.EmptyDataTitleSpan}>You don't have any plugins added, to get started go and add a plugin</span>
+                    <span className={style.EmptyDataTitleSpan}>You don't have any configuration added, to get started go and add a configuration</span>
                 </div>
                 <div  style={{marginTop: "39px"}}>
                     <Link to={"/bot-configuration/sources"}>
-                        <Button className="icon-button">Add Plugin <HiOutlinePlusCircle size={22} /></Button>
+                        <Button className="icon-button">Create Configuration <HiOutlinePlusCircle size={22} /></Button>
                     </Link>
                 </div>
                 
