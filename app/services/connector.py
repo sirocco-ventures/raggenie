@@ -454,7 +454,7 @@ def get_configuration(db: Session, config_id: int):
         status=configuration.status,
         connector=[
             schemas.ConnectorResponse(
-                connector_id=connector.id,
+                connector_id=connector.connector.id,
                 connector_type=connector.connector.connector_type,
                 connector_name=connector.connector.connector_name,
                 connector_description=connector.connector.connector_description,

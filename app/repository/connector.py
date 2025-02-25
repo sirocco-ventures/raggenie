@@ -237,8 +237,28 @@ def update_existing_configuration(config_id: int, configuration: schemas.Configu
                     db.commit()
                     db.refresh(query)
                     
-        if configuration.connectors:
-            link_configuration_to_connectors(db_configuration.id, configuration.connectors, db)
+        if configuration.connectors is not None:
+            
+            """ fetch existing connector mapping """
+            existing_connector_ids = {
+                mapping.connector_id for mapping in db.query(models.ConfigurationConnectorMapping)
+                .filter(models.ConfigurationConnectorMapping.configuration_id == config_id)
+                .all()
+            }
+            
+            new_connector_ids = set(configuration.connectors)
+            connectors_to_remove = existing_connector_ids - new_connector_ids
+            if connectors_to_remove:
+                db.query(models.ConfigurationConnectorMapping).filter(
+                models.ConfigurationConnectorMapping.configuration_id == config_id,
+                models.ConfigurationConnectorMapping.connector_id.in_(connectors_to_remove)
+                ).delete(synchronize_session=False)
+                db.commit()
+            
+            connector_to_add = new_connector_ids - existing_connector_ids
+            if connector_to_add:
+                link_configuration_to_connectors(db_configuration.id, connector_to_add, db)
+            
             
         return db_configuration, False
     except SQLAlchemyError as e:
