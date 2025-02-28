@@ -35,5 +35,8 @@ class Configs(BaseSettings):
     retry_limit:int = os.getenv("RETRY_LIMIT",0)
     application_port: int = os.getenv("APP_PORT", 8001)
 
+    indexing_enabled: bool = os.getenv("INDEXING", False)
+
+
 
 configs = Configs()

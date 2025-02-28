@@ -1,6 +1,6 @@
 from app.readers.docs_reader import DocsReader
 from loguru import logger
-import textract
+# import textract
 
 class DocxReader(DocsReader):
     def load(self):
@@ -9,7 +9,9 @@ class DocxReader(DocsReader):
             paths = self.source["path"]
             for path in paths:
                 try:
-                    text = textract.process(path)
+                    # text = textract.process(path)
+                    text = ""
+
                     metadata = {
                         "path": path
                     }

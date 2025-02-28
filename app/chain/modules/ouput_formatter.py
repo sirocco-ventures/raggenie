@@ -70,6 +70,7 @@ class OutputFormatter(AbstractHandler):
 
         response["query"] = input_data.get("query", '')
         response["summary"] = request.get("summary", '')
+        logger.debug(f"content: {response.get("content")}")
 
 
         return super().handle(response)

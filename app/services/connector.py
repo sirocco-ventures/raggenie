@@ -12,6 +12,8 @@ from app.services.connector_details import get_plugin_metadata
 from fastapi import Request
 from app.providers.data_preperation import SourceDocuments
 from app.loaders.base_loader import BaseLoader
+from app.providers.config import configs
+
 
 
 
@@ -659,7 +661,7 @@ def delete_capability(cap_id: int, db: Session):
     return True, None
 
 
-def update_datasource_documentations(db: Session, vector_store, datasources, id_name_mappings):
+def update_datasource_documentations(db: Session, vector_store, datasources, id_name_mappings, index=False):
         logger.info("Updating datasource documentations")
         active_datsources = {}
         for key, datasource in datasources.items():
@@ -680,23 +682,25 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
 
             active_datsources[key] = datasource
             logger.info("Pushing plugin metadata to vector store")
-            sd = SourceDocuments([], [], [])
-            queries = []
-            match datasource.__category__:
-                case 1:
-                    documentations = datasource.fetch_data()
-                    sd = SourceDocuments([], [], documentations)
-                case 2 | 5:
-                    schema_config = connector_details.get("schema_config",[])
-                    schema_details, metadata = datasource.fetch_schema_details()
-                    sd = SourceDocuments(schema_details, schema_config, [])
-                    queries = get_all_connector_samples(connector_details.get("id"), db)
-                case 4:
-                    documentations = datasource.fetch_data()
-                    sd = SourceDocuments([], [], documentations)
+            if configs.indexing_enabled or index:
 
-            chunked_document, chunked_schema = sd.get_source_documents()
-            vector_store.prepare_data(key, chunked_document,chunked_schema, queries)
+                sd = SourceDocuments([], [], [])
+                queries = []
+                match datasource.__category__:
+                    case 1:
+                        documentations = datasource.fetch_data()
+                        sd = SourceDocuments([], [], documentations)
+                    case 2 | 5:
+                        schema_config = connector_details.get("schema_config",[])
+                        schema_details, metadata = datasource.fetch_schema_details()
+                        sd = SourceDocuments(schema_details, schema_config, [])
+                        queries = get_all_connector_samples(connector_details.get("id"), db)
+                    case 4:
+                        documentations = datasource.fetch_data()
+                        sd = SourceDocuments([], [], documentations)
+
+                chunked_document, chunked_schema = sd.get_source_documents()
+                vector_store.prepare_data(key, chunked_document,chunked_schema, queries)
 
 
         return active_datsources, None

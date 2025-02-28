@@ -6,6 +6,8 @@ import time
 import flatdict
 import ast
 from app.base.base_vectordb import BaseVectorDB
+from app.providers.config import configs
+
 
 
 
@@ -25,7 +27,8 @@ class ChromaDataBase(BaseVectorDB):
     def connect(self):
         try:
             self.client = chromadb.PersistentClient(**self.params)
-            self.client.reset()
+            if configs.indexing_enabled:
+                self.client.reset()
             self.embedding_function = self.load_embeddings_function()
 
             self.schema_store = self.client.get_or_create_collection(

@@ -23,7 +23,7 @@ class MetadataGenerator(AbstractHandler):
 
         contexts = ""
         for cont in dbcontexts:
-            datasource_name = cont['metadatas']['datasource'].replace("_"," ")
+            datasource_name = cont['metadata'].get('datasource','').replace("_"," ")
             contexts += "Plugin/Database Name: "+ datasource_name + "\n" + cont["document"] + "\n\n"
 
         prompt = """

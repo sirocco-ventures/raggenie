@@ -3,6 +3,8 @@ from loguru import logger
 from app.base.base_vectordb import BaseVectorDB
 import urllib.parse
 import certifi
+from app.providers.config import configs
+
 
 
 class AltasMongoDB(BaseVectorDB):
@@ -20,7 +22,8 @@ class AltasMongoDB(BaseVectorDB):
             self.schema_collection = self.db.get_collection('schema')
             self.doc_collection = self.db.get_collection('documents')
             self.cache_collection = self.db.get_collection('cache')
-            self.clear_collection()
+            if configs.indexing_enabled:
+                self.clear_collection()
             self.schema_index_name = "schema"
             self.doc_index_name = "doc"
             self.cache_index_name = "cache"
@@ -174,7 +177,7 @@ class AltasMongoDB(BaseVectorDB):
                 "_id" : 1,
                 "datasource" : 1,
                 "document": 1,
-                "metadatas": 1,
+                "metadata": 1,
                 "score": {"$meta": "vectorSearchScore"}
                 }
             }

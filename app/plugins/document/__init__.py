@@ -39,6 +39,7 @@ __prompt__ = Prompt(**{
         - Only use information provided in the context to answer questions.
         - Answer should not break the json format
         - If the answer cannot be found in the context, state that you don't have enough information to answer.
+        - Present the answer in a human-readable Markdown format
         
         """
         },
@@ -48,7 +49,7 @@ __prompt__ = Prompt(**{
             Generate a JSON response in the following format without any formatting:
             {
                 "explanation": "Explain how you determined the answer using the provided context",
-                "general_message": "Answer to user question based on the context",
+                "general_message": "Answer in Markdown format to user question based on the context with all the details",
             }
             """
         },
@@ -58,7 +59,7 @@ __prompt__ = Prompt(**{
             Generate a JSON response in the following format without any formatting:
             {
                 "explanation": "Explain how you determined the answer using the provided context",
-                "general_message": "Answer to user question based on the context",
+                "general_message": "Answer in Markdown format to user question based on the context",
             }
             """
         }
