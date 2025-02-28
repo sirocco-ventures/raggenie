@@ -11,7 +11,8 @@ class Environment(Base):
 
     configurations = relationship("Configuration", back_populates="environment") 
     connectors = relationship("Connector", back_populates="environment") 
-    sample_sql = relationship("SampleSQL", back_populates="environment") 
+    sample_sql = relationship("SampleSQL", back_populates="environment")
+    chat_histories = relationship("ChatHistory", back_populates="environment") 
 
 class UserEnvironmentMapping(Base):
     __tablename__ = "user_environment_mapping"

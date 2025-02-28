@@ -13,6 +13,7 @@ class ChatHistoryBase(BaseModel):
     feedback_json: Optional[dict] = None
     user_id: Optional[int]=None
     primary_chat: Optional[bool]=False
+    environment_id: Optional[int]=None
 
 class ChatHistoryCreate(ChatHistoryBase):
     pass

@@ -31,3 +31,15 @@ def assign_user_to_environment(user_id: int, environment_id: int, db: Session):
     except SQLAlchemyError as e:
         db.rollback()
         return None, str(e)
+
+
+
+def get_current_env_id(user_id: int, db: Session):
+    try:
+        active_env = (db.query(models.UserEnvironmentMapping)
+        .filter(models.UserEnvironmentMapping.user_id == user_id, models.UserEnvironmentMapping.is_active == True)
+        .first())
+        return active_env.id, None
+    
+    except SQLAlchemyError as e:
+        return None, str(e)

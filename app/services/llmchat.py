@@ -74,7 +74,7 @@ def create_feedback(feedback: schemas.FeedbackCreate, db: Session):
     return data, None
 
 
-def list_chats_by_context(db: Session):
+def list_chats_by_context(env_id: int, db: Session):
 
     """
     Retrieves the primary chat records from the database.
@@ -86,7 +86,7 @@ def list_chats_by_context(db: Session):
         Tuple: List of chat responses and error message (if any).
     """
 
-    result, is_error = repo.get_primary_chat(db)
+    result, is_error = repo.get_primary_chat(env_id, db)
 
     if is_error:
         return result, "DB Error"

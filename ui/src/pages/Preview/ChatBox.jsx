@@ -10,10 +10,12 @@ import { getConnectors } from "src/services/Connectors"
 import { getBotConfiguration, restartBot } from "src/services/BotConfifuration"
 import { toast } from "react-toastify"
 import { isEmptyJSON } from "src/utils/utils"
+import useAppSettings from "src/store/authStore";
 
 
-const PreviewChatBox = ({urlPrex = "/preview"})=>{ 
 
+const PreviewChatBox = ({urlPrex = "/preview",selectedOption})=>{ 
+    const { envID } = useAppSettings();
     const [feedbackStatus, setFeedbackStatus] = useState(false); // for dislike and like activation
     const [currentConfigID, setCurrentConfigID] = useState(0)
     const [conversations, setConversation] = useState([])
@@ -32,18 +34,15 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
     const navigate = useNavigate()
     const messageBoxRef = useRef(null)
 
-
     const chatQuery = (message)=>{
 
         setCurrentChat({isBot: false, message: message})
         
             let axiosConfig = {
-                headers: {
-                    "x-llm-context-id": contextId
-                }
+                headers: {}
             }
             setIsChatLoading(true)
-            PostService(API_URL + "/query/query",
+            PostService(API_URL + `/query/query?contextId=${contextId}&configId=${currentConfigID}&envId=${envID}`,
                     { "content": message, "role":"user" }, {showLoader: false,allowAuthHeaders:true}, axiosConfig).then(response=>{
                        
                 let res = response.data
@@ -123,7 +122,8 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
 
 // ===================CHAT HISTROY START==============================
     const getChatHistory = () => {
-        GetService(API_URL + "/chat/list/context/all",{},{allowAuthHeaders:false}).then(response => {  
+        console.log(API_URL + `/chat/list/context/all/${envID}`)
+        GetService(API_URL + `/chat/list/context/all/${envID}`,{},{allowAuthHeaders:false}).then(response => {  
             let chatHistory = []; 
             let chats = response.data.data.chats;
     
@@ -169,7 +169,6 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
         getBotConfiguration().then(response=>{
             let configs = response.data?.data?.configurations
             if(configs?.length > 0){
-                setCurrentConfigID(configs[0].id)
                 if(configs[0].inference[0]?.id){
                     if(configs[0].status == 1){
                         setCurrentState(3)
@@ -221,6 +220,12 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
     useEffect(()=>{
         getChatByContexts(contextId)
     }, [contextId])
+
+    useEffect(() => {
+        if (selectedOption?.value) {
+            setCurrentConfigID(selectedOption.value);
+        }
+    }, [selectedOption])
 
 
     useEffect(()=>{

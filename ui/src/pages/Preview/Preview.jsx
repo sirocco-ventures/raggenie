@@ -7,6 +7,8 @@ import { getBotConfiguration } from "src/services/BotConfifuration";
 const Preview = ()=>{ 
     const [select, setSelect] = useState(false);
     const [options, setOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+    
 
     const getConfig = ()=>{
             getBotConfiguration().then(response=>{
@@ -18,6 +20,7 @@ const Preview = ()=>{
                         configList.push({ value: item.id, label: item.name})
                     })
                     setOptions(configList);  
+                    setSelectedOption(configList[0])
                 }
             })
         }
@@ -27,8 +30,8 @@ const Preview = ()=>{
     }, []);
 
     return(
-        <DashboardBody title="Preview" options={options} select={select} containerStyle={{padding: "0px 0px", height: "calc(100vh - 68px)"}}>
-            <PreviewChatBox/>
+        <DashboardBody title="Preview" options={options} select={select} selectedOption={selectedOption} setSelectedOption={setSelectedOption} containerStyle={{padding: "0px 0px", height: "calc(100vh - 68px)"}}>
+            <PreviewChatBox selectedOption={selectedOption}/>
         </DashboardBody>
     )
 }

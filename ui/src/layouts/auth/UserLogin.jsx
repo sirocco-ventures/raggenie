@@ -23,17 +23,20 @@ const UserLogin = () => {
         })
     }, []);
 
+    function capitalizeFirstLetter(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
     
     /* fucntion to render idp buttons dynamically */
 
     const renderIdpButtons = () => {
-        return idpList.map((idp) => {
+        return idpList.slice(0,1).map((idp) => {
             let logo = idp.type === "PROVIDER_TYPE_GOOGLE" ? googleLogo : 
                        idp.type === "PROVIDER_TYPE_GITHUB" ? githubLogo : null;
             return (
                 <div key={idp.id} className={style.LoginGoogle} onClick={() => IdpLoginService(idp.id)}>
                     {logo && <img src={logo} alt={idp.type} />}
-                    <span>Login with {idp.type.replace("PROVIDER_TYPE_", "")}</span>
+                    <span>Login with {capitalizeFirstLetter(idp.type.replace("PROVIDER_TYPE_", ""))}</span>
                 </div>
             );
         });

@@ -6,8 +6,7 @@ import { toast } from "react-toastify";
 import Select from "src/components/Select/Select";
 import { useState } from "react";
 
-const DashboardBody = ({ title = "Dashboard",options=[], select, children, containerStyle = {}, containerClassName = ""}) => {
-    const [selectedOption, setSelectedOption] = useState()
+const DashboardBody = ({ title = "Dashboard",options=[], select, children, selectedOption, setSelectedOption, containerStyle = {}, containerClassName = ""}) => {
     const handleRestart = (value) => {
         let selectedId = value.value
         restartBot(selectedId)

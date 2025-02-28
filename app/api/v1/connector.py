@@ -1,4 +1,5 @@
 from typing import List, Optional
+from app.providers.cache_manager import cache_manager
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 import app.schemas.connector as schemas
@@ -590,7 +591,15 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     metedata_chain = MetadataChain(config, vector_store, datasources, context_storage)
 
     chain = IntentChain(config, vector_store, datasources, context_storage, query_chain, general_chain, capability_chain, metedata_chain)
-
+    print(type(config_id), "set")
+    cache_manager.set(config_id, {
+        "chain": chain,
+        "config": config,
+        "vector_store": vector_store,
+        "datasources": datasources,
+        "context_storage": context_storage
+    })
+    
     request.app.chain = chain
 
     return {

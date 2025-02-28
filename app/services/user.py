@@ -35,3 +35,13 @@ def get_or_create_user(user: schemas.UserCreate, db: Session):
     )
 
     return user_response, None
+
+
+def get_users_active_env(user_id: int, db: Session):
+    
+    env_id, error = env_repo.get_current_env_id(user_id, db)
+    
+    if error:
+        return None, "Failed to get user's current active env_id"
+    
+    return env_id, None

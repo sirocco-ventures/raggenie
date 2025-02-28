@@ -40,7 +40,7 @@ def login_user(response: Response, user: LoginData):
                 "Content-Type": "application/json",
             },
         )
-        
+
         response.raise_for_status()
         session_data = response.json()
         session_id = session_data.get("sessionId")
@@ -54,18 +54,18 @@ def login_user(response: Response, user: LoginData):
                 "Content-Type": "application/json",
             },
         )
-        
+
         validate_response.raise_for_status()
         validated_session_data = validate_response.json()
-        
+
         return {
             "session_data" : validated_session_data,
             "session_id" : session_id
         }
-        
+
     except requests.exceptions.RequestException as e:
         return {"error": "Failed to create session", "details": str(e)}, 500
-    
+
 # will redirect to idp when called with ipdId
 # need to set successurl and failureUrl dynamically *****
 @login.get("/login/idp/{idp_id}")
@@ -105,7 +105,7 @@ def idp_success(request: Request,db: Session = Depends(get_db)):
 
             if not result:
                 return commons.is_none_reponse("User Not Created", {"user": {}})
-            
+
         if session_response.status_code == 201:
             redirect_response = RedirectResponse(url="/ui", status_code=303)
 
@@ -128,23 +128,27 @@ def list_idp(response: Response):
 
 
 @login.get("/user_info", dependencies=[Depends(verify_token)])
-def get_user_info(request: Request, user_data: dict = Depends(verify_token)):
+def get_user_info(request: Request, db: Session = Depends(get_db), user_data: dict = Depends(verify_token)):
     session_id = user_data["session_id"]
     user_info = zitadel.get_user_info(session_id)
     username = user_info.get("session").get("factors").get("user").get("displayName")
+    user_id = user_info.get("session").get("factors").get("user").get("id")
+    env_id, error = svc.get_users_active_env(user_id, db)
+    if error:
+        return commons.is_error_response("DB Error", error, {"env": {}})
     return CommonResponse(
         status=True,
         status_code=200,
         message="User info retrieved successfully",
-        data={ "username": username, "auth_enabled": configs.auth_enabled },
+        data={ "username": username, "auth_enabled": configs.auth_enabled, "env_id": env_id },
         error=None
     )
-        
+
 # get userinfo from database
-    
-    
+
+
 @login.post("/logout",dependencies=[Depends(verify_token)])
 def logout_user(response: Response, user_data: dict = Depends(verify_token)):
-    session_id = user_data["session_id"]    
+    session_id = user_data["session_id"]
     return zitadel.logout_user(session_id)
 
