@@ -27,8 +27,8 @@ __connection_args__ = OrderedDict(
         generic_name= 'Headers to be used',
         description= 'Provide required headers',
         order= 2,
-        required = True,
-        value = None,
+        required = False,
+        value = {},
         slug = "headers"
     ),
     depth=ConnectionArgument(
@@ -37,7 +37,7 @@ __connection_args__ = OrderedDict(
         description= 'Choose the depth of scanning for child URLs. Set to 0 to scan all',
         order= 3,
         required = True,
-        value=None,
+        value=1,
         slug = "depth"
     )
 )
