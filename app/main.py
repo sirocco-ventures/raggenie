@@ -59,11 +59,11 @@ def create_app(config):
     Base.metadata.create_all(bind=engine)
 
 
-    logger.info("initializing vector store")
-    vectore_store, is_error = provider_svc.create_vectorstore_instance(session)
-    if is_error is not None:
-        logger.critical(is_error)
-    err = vectore_store.connect()
+    # logger.info("initializing vector store")
+    # vectore_store, is_error = provider_svc.create_vectorstore_instance(session)
+    # if is_error is not None:
+    #     logger.critical(is_error)
+    # err = vectore_store.connect()
 
     logger.info("initializing plugin providers")
     err = provider_svc.initialize_plugin_providers(session)
@@ -111,12 +111,12 @@ def create_app(config):
     logger.info("creating local context storage")
     context_storage = ContextStorage(session)
 
-    logger.info("initializing chain")
-    query_chain = QueryChain(config, vectore_store, datasources, context_storage)
-    general_chain = GeneralChain(config, vectore_store, datasources, context_storage)
-    capability_chain = CapabilityChain(config, context_storage, query_chain)
-    metadata_chain = MetadataChain(config, vectore_store, datasources, context_storage)
-    intent_chain = IntentChain(config, vectore_store, datasources, context_storage, query_chain, general_chain, capability_chain, metadata_chain)
+    # logger.info("initializing chain")
+    # query_chain = QueryChain(config, vectore_store, datasources, context_storage)
+    # general_chain = GeneralChain(config, vectore_store, datasources, context_storage)
+    # capability_chain = CapabilityChain(config, context_storage, query_chain)
+    # metadata_chain = MetadataChain(config, vectore_store, datasources, context_storage)
+    # intent_chain = IntentChain(config, vectore_store, datasources, context_storage, query_chain, general_chain, capability_chain, metadata_chain)
 
 
 
@@ -147,10 +147,10 @@ def create_app(config):
     logger.info("setting chain, vector store into app context")
     app.config = config
     app.container = container
-    app.vector_store = vectore_store
+    # app.vector_store = vectore_store
 
-    app.metadata_chain = metadata_chain
-    app.chain = intent_chain
+    # app.metadata_chain = metadata_chain
+    # app.chain = intent_chain
     app.context_storage = context_storage
 
     app.include_router(MainRouter,prefix="/api/v1/query")

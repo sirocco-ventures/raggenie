@@ -7,14 +7,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from "react-router-dom"
 import EmptyPreview from "./EmptyPreview"
 import { getConnectors } from "src/services/Connectors"
-import { getBotConfiguration, restartBot } from "src/services/BotConfifuration"
+import { getBotConfiguration, getBotConfigurationById, restartBot } from "src/services/BotConfifuration"
 import { toast } from "react-toastify"
 import { isEmptyJSON } from "src/utils/utils"
 import useAppSettings from "src/store/authStore";
 
 
 
-const PreviewChatBox = ({urlPrex = "/preview",selectedOption})=>{ 
+const PreviewChatBox = ({urlPrex = "/preview", selectedOption, setSelectedOption})=>{ 
     const { envID } = useAppSettings();
     const [feedbackStatus, setFeedbackStatus] = useState(false); // for dislike and like activation
     const [currentConfigID, setCurrentConfigID] = useState(0)
@@ -122,17 +122,17 @@ const PreviewChatBox = ({urlPrex = "/preview",selectedOption})=>{
 
 // ===================CHAT HISTROY START==============================
     const getChatHistory = () => {
-        console.log(API_URL + `/chat/list/context/all/${envID}`)
         GetService(API_URL + `/chat/list/context/all/${envID}`,{},{allowAuthHeaders:false}).then(response => {  
             let chatHistory = []; 
             let chats = response.data.data.chats;
-    
+            
             chats?.map((item) => {
                 chatHistory.push({
                     chatId: item.chat_id,
                     chatContextId: item.chat_context_id,
                     chatQuery: item.chat_query,
                     chatSummary: item.chat_summary,
+                    chatConfigurationId: item.configuration_id,
                     date: new Date(item.created_at), // Convert date string to Date object
                 });
             });     
@@ -149,7 +149,12 @@ const PreviewChatBox = ({urlPrex = "/preview",selectedOption})=>{
         navigate(`${urlPrex}/${generateContextUUID()}/chat`)
       }
 
-    const handleNavigateChatContext=(e, contextId)=>{
+    const handleNavigateChatContext=(e, contextId, configId)=>{
+        getBotConfigurationById(configId).then((response) => { 
+            const option = { value: configId, label: response.data?.data?.configuration?.name }
+            setSelectedOption(option)
+        })
+        setCurrentConfigID(configId)
         navigate(`${urlPrex}/${contextId}/chat`)    
     }
 

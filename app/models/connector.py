@@ -47,6 +47,8 @@ class Configuration(Base):
     capabilities = relationship('Capabilities', back_populates='configuration', cascade="all,delete")
     inference_mapping = relationship('Inferenceconfigmapping', back_populates='configuration')
     vectordb_config_mapping = relationship('VectorDBConfigMapping', back_populates='configuration')
+    chat_histories = relationship("ChatHistory", back_populates="configuration", cascade="all,delete") 
+
     
     connectors = relationship('ConfigurationConnectorMapping', back_populates='configuration', cascade="all, delete",lazy="joined")
     

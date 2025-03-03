@@ -46,6 +46,7 @@ def qna(
     logger.info(f"{context_id} - {config_id} - query: {query.content}")
     cached_data = cache_manager.get(int(config_id))
     if not cached_data:
+        logger.info("configuration was not found in the cache")
         return {
             "response": None,
             "query": query.content,
@@ -65,6 +66,7 @@ def qna(
             chat_query=query.content,
             chat_answer= jsonable_encoder(out),
             chat_summary=out.get("summary", query.content),
+            configuration_id=config_id,
             environment_id=env_id
         ),
         db

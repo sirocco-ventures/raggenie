@@ -19,5 +19,8 @@ class ChatHistory(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
+    configuration_id = Column(Integer, ForeignKey("configurations.id"), nullable=False)
     environment_id = Column(Integer, ForeignKey("environments.id"), nullable=False)
+    
+    configuration = relationship("Configuration", back_populates="chat_histories")
     environment = relationship("Environment", back_populates="chat_histories")

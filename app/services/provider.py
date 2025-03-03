@@ -685,7 +685,7 @@ def delete_vectordb_instance(id: int, db: Session):
 
     return success, None
 
-def create_vectorstore_instance(db:Session):
+def create_vectorstore_instance(db:Session, config_id: int):
     """
     Creates a new vector store instance.
 
@@ -695,7 +695,7 @@ def create_vectorstore_instance(db:Session):
     Returns:
         Tuple: VectorStoreConfigResponse schema and error message (if any).
     """
-    configs, is_error = conn_repo.getbotconfiguration(db)
+    configs, is_error = conn_repo.get_configuration_by_id(config_id, db)
     vector_store_formatting=None
     vectore_store = None
 

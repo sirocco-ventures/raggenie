@@ -129,6 +129,15 @@ def list_idp(response: Response):
 
 @login.get("/user_info", dependencies=[Depends(verify_token)])
 def get_user_info(request: Request, db: Session = Depends(get_db), user_data: dict = Depends(verify_token)):
+    if user_data == 'Admin':
+        return CommonResponse(
+        status=True,
+        status_code=200,
+        message="User info retrieved successfully",
+        data={ "username": user_data, "auth_enabled": configs.auth_enabled, "env_id": 0 },
+        error=None
+    )
+         
     session_id = user_data["session_id"]
     user_info = zitadel.get_user_info(session_id)
     username = user_info.get("session").get("factors").get("user").get("displayName")

@@ -299,7 +299,6 @@ def update_configuration_status(config_id: int, db: Session):
 
         if db_config and not is_error:
             db.query(models.Configuration).filter(
-            models.Configuration.environment_id == db_config.environment_id,
             models.Configuration.status == 2
             ).update({"status": 0})
             db_config.status = 2

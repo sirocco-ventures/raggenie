@@ -563,9 +563,10 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     configs.inference_llm_model=inference_config[0]["unique_name"]
 
     config = request.app.config
-    vector_store, is_error = provider_svc.create_vectorstore_instance(db)
+    vector_store, is_error = provider_svc.create_vectorstore_instance(db, config_id)
     if vector_store:
         vector_store.connect()
+        vector_store.clear_collection(config_id)
     context_storage = request.app.context_storage
 
     data_sources = combined_yaml_content["datasources"]
@@ -580,7 +581,7 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     datasources = request.app.container.datasources()
 
     mappings = confyaml.get("mappings",{})
-    datasources, err = svc.update_datasource_documentations(db, vector_store, datasources, mappings)
+    datasources, err = svc.update_datasource_documentations(db, vector_store, datasources, mappings, config_id)
     if err:
         logger.error("Error updating")
 
@@ -591,7 +592,7 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     metedata_chain = MetadataChain(config, vector_store, datasources, context_storage)
 
     chain = IntentChain(config, vector_store, datasources, context_storage, query_chain, general_chain, capability_chain, metedata_chain)
-    print(type(config_id), "set")
+
     cache_manager.set(config_id, {
         "chain": chain,
         "config": config,
@@ -601,6 +602,7 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     })
     
     request.app.chain = chain
+    request.app.vector_store = vector_store
 
     return {
         "success": True,

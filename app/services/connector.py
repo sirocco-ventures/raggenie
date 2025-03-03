@@ -767,7 +767,7 @@ def delete_capability(cap_id: int, db: Session):
     return True, None
 
 
-def update_datasource_documentations(db: Session, vector_store, datasources, id_name_mappings):
+def update_datasource_documentations(db: Session, vector_store, datasources, id_name_mappings, config_id):
         logger.info("Updating datasource documentations")
         active_datsources = {}
         for key, datasource in datasources.items():
@@ -804,7 +804,7 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
                     sd = SourceDocuments([], [], documentations)
 
             chunked_document, chunked_schema = sd.get_source_documents()
-            vector_store.prepare_data(key, chunked_document,chunked_schema, queries)
+            vector_store.prepare_data(key, chunked_document,chunked_schema, queries, config_id)
 
 
         return active_datsources, None
@@ -825,7 +825,7 @@ def get_inference_and_plugin_configurations(db: Session, config_id: int):
     connectors, status = repo.get_connectors_by_configuration_id(config_id, db)
     if status:
         return configuration
-    configs, is_error = repo.getbotconfiguration(db)
+    configs, is_error = repo.get_configuration_by_id(config_id, db)
     if configs is None:
         configuration["models"]=[]
     else:

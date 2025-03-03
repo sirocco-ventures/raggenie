@@ -31,7 +31,7 @@ const Preview = ()=>{
 
     return(
         <DashboardBody title="Preview" options={options} select={select} selectedOption={selectedOption} setSelectedOption={setSelectedOption} containerStyle={{padding: "0px 0px", height: "calc(100vh - 68px)"}}>
-            <PreviewChatBox selectedOption={selectedOption}/>
+            <PreviewChatBox selectedOption={selectedOption} setSelectedOption={setSelectedOption}/>
         </DashboardBody>
     )
 }

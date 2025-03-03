@@ -106,6 +106,7 @@ def list_chats_by_context(env_id: int, db: Session):
             feedback_json=chat.feedback_json,
             feedback_status=chat.feedback_status,
             user_id=chat.user_id,
+            configuration_id=chat.configuration_id,
             created_at=chat.created_at,
             updated_at=chat.updated_at
         ) for chat in result
