@@ -1,11 +1,12 @@
 from app.providers.cache_manager import cache_manager
-from fastapi import APIRouter, Depends, status, BackgroundTasks, Query
+from fastapi import APIRouter, Depends, status, Query
 from fastapi.encoders import jsonable_encoder
 from app.models.request import Chat, FeedbackCorrectionRequest
 from starlette.requests import Request
 from loguru import logger
 from app.schemas import llmchat as schemas
 from app.api.v1 import llmchat
+from app.api.v1 import connector
 from sqlalchemy.orm import Session
 from app.utils.database import get_db
 
@@ -17,7 +18,6 @@ MainRouter = APIRouter()
 def qna(
     query: Chat,
     request: Request,
-    background_tasks: BackgroundTasks,
     context_id: str = Query(..., alias="contextId"),
     config_id: str = Query(..., alias="configId"),
     env_id: str = Query(..., alias="envId"),
@@ -47,11 +47,13 @@ def qna(
     cached_data = cache_manager.get(int(config_id))
     if not cached_data:
         logger.info("configuration was not found in the cache")
-        return {
-            "response": None,
-            "query": query.content,
-            "error": f"No configuration found for config_id {config_id}. Please initialize it first."
-        }
+        response = connector.create_yaml(request, int(config_id), db)
+        print(response['success'])
+        if response['success'] == True:
+            cached_data = cache_manager.get(int(config_id))
+        else:
+            return
+        
 
     chain = cached_data["chain"]
     

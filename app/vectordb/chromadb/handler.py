@@ -166,7 +166,7 @@ class ChromaDataBase(BaseVectorDB):
             res = store.query(
                 query_texts=[query],
                 n_results=sample_count,
-                where={ "$and": [
+                where={"$and": [
                     {"datasource": datasource},
                     {"config_id": int(self.config_id)}
                 ]}  # Filter by the datasource in the metadata

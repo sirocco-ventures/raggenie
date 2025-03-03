@@ -804,7 +804,7 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
                     sd = SourceDocuments([], [], documentations)
 
             chunked_document, chunked_schema = sd.get_source_documents()
-            vector_store.prepare_data(key, chunked_document,chunked_schema, queries, config_id)
+            vector_store.prepare_data(key, chunked_document,chunked_schema, queries, int(config_id))
 
 
         return active_datsources, None
