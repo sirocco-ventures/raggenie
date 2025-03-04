@@ -109,6 +109,46 @@ Comprehensive documentation is available to help you get the most out of RAGGENI
     poetry install
     ```
 
+* Running Zitadel Container and Initial Setup
+
+     * **Prerequisities**
+          * **Docker** installed on your system.
+          * **Docker Compose** installed on your system.
+
+    1. Start the Zitadel container using Docker Compose:
+    
+    ```bash
+    docker-compose -f zitadel-docker-compose.yaml up -d
+    ```
+    
+    2. Once the container is running, open your browser and go to: http://localhost:8080
+    
+    
+    3. Log in using the default credentials:
+    
+        - **Username:** `zitadel-admin@zitadel.localhost`
+        - **Password:** `Password1!`
+        
+    4. Creating a Service User and downloading key file
+    
+        1. Navigate to the **Users** tab.
+        2. Select **Service Users** and create a new service user.
+        3. Provide a username and name of your choice.
+        4. Set the **Access Token Type** to **JWT**.
+        5. Go to the **Keys** section and create a new key:
+            - Click **New**, then **Add**, and finally **Download** the key file.
+            
+     * #### Configuring Environment Variables
+     
+        After downloading the key file, create an `.env` file and set the following variables:
+
+        ```env
+        CLIENT_PRIVATE_KEY_PATH="./path/to/downloaded/key.json"
+        ZITADEL_TOKEN_URL="http://localhost:8080/oauth/v2/token"
+        ZITADEL_DOMAIN="http://localhost:8080"
+        ```
+
+
 
 * Running RAGGENIE backend
 
