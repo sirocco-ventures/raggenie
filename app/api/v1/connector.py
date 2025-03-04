@@ -585,7 +585,6 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     if err:
         logger.error("Error updating")
 
-
     query_chain = QueryChain(config, vector_store, datasources, context_storage)
     general_chain = GeneralChain(config, vector_store, datasources, context_storage)
     capability_chain = CapabilityChain(config, context_storage, query_chain)
@@ -601,8 +600,7 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
         "context_storage": context_storage
     })
     
-    request.app.chain = chain
-    request.app.vector_store = vector_store
+    
 
     return {
         "success": True,

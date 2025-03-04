@@ -1,22 +1,24 @@
-
 import help from "src/assets/icons/help.svg"
 import style from "./Dashboard.module.css"
+import { v4 as uuidv4 } from 'uuid';
 import { restartBot } from "src/services/BotConfifuration";
 import { toast } from "react-toastify";
 import Select from "src/components/Select/Select";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const DashboardBody = ({ title = "Dashboard",options=[], select, children, selectedOption, setSelectedOption, containerStyle = {}, containerClassName = ""}) => {
-    const handleRestart = (value) => {
-        let selectedId = value.value
-        restartBot(selectedId)
-            .then(() => {
-                toast.success(`Configuration ${selectedId} loaded`);
-            })
-            .catch(() => {
-                toast.error("Failed to load configuration");
-            });
-    };
+const DashboardBody = ({urlPrex = "/preview", title = "Dashboard",options=[], select, children, selectedOption, setSelectedOption, containerStyle = {}, containerClassName = ""}) => {
+    
+    const navigate = useNavigate()
+    
+
+    const onCreateNewChat=()=>{
+        navigate(`${urlPrex}/${generateContextUUID()}/chat`)
+    }
+
+    function generateContextUUID() {
+            return uuidv4();
+    }
+
     return (
         <>
             <div className={`${style.DashboardBody} ${containerClassName}`} >
@@ -28,7 +30,7 @@ const DashboardBody = ({ title = "Dashboard",options=[], select, children, selec
                                 <Select
                                     options={options}
                                     value={selectedOption}
-                                    onChange={(value) => { setSelectedOption(value); handleRestart(value)}}
+                                    onChange={(value) => { setSelectedOption(value); onCreateNewChat()}}
                                     noMargin={true}
                                     placeholder={'Configuration'}
                                 />

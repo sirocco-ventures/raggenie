@@ -151,7 +151,6 @@ class AltasMongoDB(BaseVectorDB):
         logger.info(f"datasources:{datasources}")
         logger.info(f"collection:{collection}")
         logger.info(f"index_name:{index_name}")
-        print(self.config_id, "configID")
 
         for datasource in datasources:
             res = collection.aggregate([

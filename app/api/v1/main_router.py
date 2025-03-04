@@ -48,14 +48,15 @@ def qna(
     if not cached_data:
         logger.info("configuration was not found in the cache")
         response = connector.create_yaml(request, int(config_id), db)
-        print(response['success'])
         if response['success'] == True:
             cached_data = cache_manager.get(int(config_id))
         else:
             return
         
-
     chain = cached_data["chain"]
+    vector_store = cached_data['vector_store']
+    request.app.chain = chain
+    request.app.vector_store = vector_store
     
     out = chain.invoke({
         "question": query.content,
