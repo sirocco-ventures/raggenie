@@ -20,51 +20,51 @@ import app.api.v1.commons as commons
 login = APIRouter()
 zitadel = Zitadel()
 
-@login.post("/login")
-def login_user(response: Response, user: LoginData):
-    if not user.username or not user.password:
-        return {
-            "status": False,
-            "status_code": 401,
-            "message": "Invalid credentials",
-            "data": None,
-            "error": None,
-        }
+# @login.post("/login")
+# def login_user(response: Response, user: LoginData):
+#     if not user.username or not user.password:
+#         return {
+#             "status": False,
+#             "status_code": 401,
+#             "message": "Invalid credentials",
+#             "data": None,
+#             "error": None,
+#         }
 
-    try:
-        response = requests.post(
-            f"{configs.zitadel_domain}/v2/sessions",
-            json={"checks": {"user": {"loginName": user.username}}},
-            headers={
-                "Authorization": f"Bearer {configs.zitadel_cctoken}",
-                "Content-Type": "application/json",
-            },
-        )
+#     try:
+#         response = requests.post(
+#             f"{configs.zitadel_domain}/v2/sessions",
+#             json={"checks": {"user": {"loginName": user.username}}},
+#             headers={
+#                 "Authorization": f"Bearer {configs.zitadel_cctoken}",
+#                 "Content-Type": "application/json",
+#             },
+#         )
 
-        response.raise_for_status()
-        session_data = response.json()
-        session_id = session_data.get("sessionId")
-        #add condition to check sessionId
-        sessionToken = session_data.get("sessionToken")
-        validate_response = requests.patch(
-            f"{configs.zitadel_domain}/v2/sessions/{session_id}",
-            json={"checks": {"password": {"password": user.password}}},
-            headers={
-                "Authorization": f"Bearer {configs.zitadel_cctoken}",
-                "Content-Type": "application/json",
-            },
-        )
+#         response.raise_for_status()
+#         session_data = response.json()
+#         session_id = session_data.get("sessionId")
+#         #add condition to check sessionId
+#         sessionToken = session_data.get("sessionToken")
+#         validate_response = requests.patch(
+#             f"{configs.zitadel_domain}/v2/sessions/{session_id}",
+#             json={"checks": {"password": {"password": user.password}}},
+#             headers={
+#                 "Authorization": f"Bearer {configs.zitadel_cctoken}",
+#                 "Content-Type": "application/json",
+#             },
+#         )
 
-        validate_response.raise_for_status()
-        validated_session_data = validate_response.json()
+#         validate_response.raise_for_status()
+#         validated_session_data = validate_response.json()
 
-        return {
-            "session_data" : validated_session_data,
-            "session_id" : session_id
-        }
+#         return {
+#             "session_data" : validated_session_data,
+#             "session_id" : session_id
+#         }
 
-    except requests.exceptions.RequestException as e:
-        return {"error": "Failed to create session", "details": str(e)}, 500
+#     except requests.exceptions.RequestException as e:
+#         return {"error": "Failed to create session", "details": str(e)}, 500
 
 # will redirect to idp when called with ipdId
 # need to set successurl and failureUrl dynamically *****
@@ -73,7 +73,7 @@ def idp_login(response: Response, idp_id : int):
     return zitadel.redirect_to_idp(idp_id)
 
 # if idp login is success then is redirected to this endpoint with which we get the user
-# details from the idp (currently only tested with google) need to send the userdata to front-end
+# details from the idp (currently only tested with google)
 @login.get("/idp/success")
 def idp_success(request: Request,db: Session = Depends(get_db)):
     query_params = request.query_params
@@ -153,9 +153,8 @@ def get_user_info(request: Request, db: Session = Depends(get_db), user_data: di
         error=None
     )
 
-# get userinfo from database
 
-
+# change to get user info from raggenie.db
 @login.post("/logout",dependencies=[Depends(verify_token)])
 def logout_user(response: Response, user_data: dict = Depends(verify_token)):
     session_id = user_data["session_id"]
