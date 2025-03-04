@@ -49,7 +49,7 @@ const UserLogin = () => {
             };
             AuthLoginService(authCredentials).then((response) => {
                 const authResponse = response.data
-                console.log(authResponse)
+                // console.log(authResponse)
                 // const token = authResponse.data.token
                 // storeToken(token)
                 // setIsAuthenticated(true)
@@ -65,7 +65,7 @@ const UserLogin = () => {
         <>
         {/* add div to display error */}
         <div className={style.AuthBackground}>
-            <span style={{marginTop: "15px",color: "#3893FF",fontFamily: "Inter",fontSize: "14px"}}>Forgot password?</span>
+            {/* <span style={{marginTop: "15px",color: "#3893FF",fontFamily: "Inter",fontSize: "14px"}}>Forgot password?</span> */}
             <div className={style.FieldContainer}>
                 <img src={logo} alt="Genie Logo" />
                 <h2 className={style.Welcome}>Welcome Back</h2>
