@@ -71,7 +71,7 @@ const UserLogin = () => {
                 <h2 className={style.Welcome}>Welcome Back</h2>
                 <p>Login to your Ragggenie account</p>
                 <div style={{ width: "100%", backgroundColor: "#FFF"}}>
-                        <form onSubmit={authHandleSubmit(onSubmit)}>
+                        {/* <form onSubmit={authHandleSubmit(onSubmit)}>
                             <Input
                                 label="Email"
                                 placeholder="Enter your email address"
@@ -97,9 +97,9 @@ const UserLogin = () => {
                             <Button buttonType="submit" className={style.SubmitButton}>
                                 Login
                             </Button>
-                        </form>
+                        </form> */}
                         <div className={style.OAuthLogin}>
-                            <span className={style.OrLogin}>Or Login with</span>
+                            {/* <span className={style.OrLogin}>Or Login with</span> */}
                             {renderIdpButtons()}
 
                         </div>
