@@ -137,13 +137,14 @@ Comprehensive documentation is available to help you get the most out of RAGGENI
         4. Set the **Access Token Type** to **JWT**.
         5. Go to the **Keys** section and create a new key:
             - Click **New**, then **Add**, and finally **Download** the key file.
+        6. Go to the Organization tab, click **Add a Manager** (top right), select the service user you just created, set **Org Owner** permission, and click **Add**.
             
      * #### Configuring Environment Variables
      
         After downloading the key file, create an `.env` file and set the following variables:
 
         ```env
-        CLIENT_PRIVATE_KEY_PATH="./path/to/downloaded/key.json"
+        CLIENT_PRIVATE_KEY_FILE_PATH="./path/to/downloaded/key.json"
         ZITADEL_TOKEN_URL="http://localhost:8080/oauth/v2/token"
         ZITADEL_DOMAIN="http://localhost:8080"
         ```
