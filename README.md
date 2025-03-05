@@ -137,8 +137,11 @@ Comprehensive documentation is available to help you get the most out of RAGGENI
         4. Set the **Access Token Type** to **JWT**.
         5. Go to the **Keys** section and create a new key:
             - Click **New**, then **Add**, and finally **Download** the key file.
-        6. Go to the Organization tab, click **Add a Manager** (top right), select the service user you just created, set **Org Owner** permission, and click **Add**.
-            
+
+    5. Go to the Organization tab, click **Add a Manager** (top right), select the service user you just created, set **Org Owner** permission, and click **Add**.
+
+    6. Follow this [guide](https://zitadel.com/docs/guides/integrate/identity-providers/google) to add Google as an identity provider. Use http://localhost:8080/idps/callback as the redirect URI.
+        
      * #### Configuring Environment Variables
      
         After downloading the key file, create an `.env` file and set the following variables:
