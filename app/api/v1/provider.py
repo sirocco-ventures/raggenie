@@ -232,7 +232,7 @@ def test_inference_connections(inference: conn_schemas.InferenceBase):
     )
 
 @sample.get("/list", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
-def list_sql(db: Session = Depends(get_db)):
+def list_sql(db: Session = Depends(get_db), user_data: dict = Depends(verify_token)):
 
     """
     Retrieves a list of sample SQL records from the database.
@@ -243,8 +243,9 @@ def list_sql(db: Session = Depends(get_db)):
     Returns:
         CommonResponse: A response containing either the list of sample SQL records or an error message.
     """
-
-    result, error = svc.listsql(db)
+    
+    user_id = user_data["user_id"]
+    result, error = svc.listsql(db, user_id)
 
     if error:
         return commons.is_error_response("DB error", result, {"sql": []})
@@ -295,7 +296,7 @@ def get_sql(id: int, db: Session = Depends(get_db)):
 
 
 @sample.post("/create", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
-def create_sql(request:Request,sql: schemas.SampleSQLBase, db: Session = Depends(get_db)):
+def create_sql(request:Request,sql: schemas.SampleSQLBase, db: Session = Depends(get_db), user_data: dict = Depends(verify_token)):
 
     """
     Creates a new sample SQL record in the database.
@@ -308,8 +309,9 @@ def create_sql(request:Request,sql: schemas.SampleSQLBase, db: Session = Depends
     Returns:
         CommonResponse: A response indicating the success or failure of the SQL creation process.
     """
+    user_id = user_data["user_id"]
 
-    result, error = svc.create_sql(request, sql, db)
+    result, error = svc.create_sql(request, sql, db, user_id)
 
     if error:
         return commons.is_error_response("DB error", result, {"sql": {}})

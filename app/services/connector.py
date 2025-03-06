@@ -16,7 +16,7 @@ from app.loaders.base_loader import BaseLoader
 
 
 
-def list_connectors(db: Session):
+def list_connectors(db: Session, user_id: str):
 
     """
     Retrieves all connector records from the database.
@@ -28,7 +28,7 @@ def list_connectors(db: Session):
         Tuple: List of connector responses and error message (if any).
     """
 
-    connectors, is_error = repo.get_all_connectors(db)
+    connectors, is_error = repo.get_all_connectors(db, user_id)
 
     if is_error:
         return connectors, "DB Error"
@@ -52,7 +52,7 @@ def list_connectors(db: Session):
 
     return connectors_response, None
 
-def list_connectors_by_provider_category(category_ids: int, db: Session):
+def list_connectors_by_provider_category(category_ids: int, db: Session, user_id: str):
     """
     Retrieves all connector records from the database filtered by provider category.
 
@@ -63,7 +63,7 @@ def list_connectors_by_provider_category(category_ids: int, db: Session):
     Returns:
         Tuple: List of connector responses and error message (if any).
     """
-    connectors, error = list_connectors(db)
+    connectors, error = list_connectors(db, user_id)
 
     if error:
         return [], error
@@ -187,7 +187,7 @@ async def upload_pdf(file):
         return None, f"Failed to write file: {str(e)}"
 
 
-def create_connector(connector: schemas.ConnectorBase, db: Session):
+def create_connector(connector: schemas.ConnectorBase, db: Session, user_id: str):
 
     """
     Creates a new connector record in the database.
@@ -224,7 +224,7 @@ def create_connector(connector: schemas.ConnectorBase, db: Session):
         case _:
             return None, "Invalid Connector Type."
 
-    new_connector, is_error = repo.create_new_connector(connector, db)
+    new_connector, is_error = repo.create_new_connector(connector, db, user_id)
     if is_error:
         return None, "Failed to create connector"
 
@@ -375,7 +375,7 @@ def get_inference_by_config_id(config_id:int , db:Session):
     ), None
 
 
-def list_configurations(db: Session):
+def list_configurations(db: Session, user_id: str):
 
     """
     Retrieves all configurations from the database.
@@ -387,7 +387,7 @@ def list_configurations(db: Session):
         Tuple: List of configuration responses and error message (if any).
     """
 
-    configurations, is_error = repo.get_all_configurations(db)
+    configurations, is_error = repo.get_all_configurations(db, user_id)
 
     if is_error:
         return configurations, "DB Error"
@@ -427,7 +427,115 @@ def list_configurations(db: Session):
 
     return config_list, None
 
-def create_configuration(configuration: schemas.ConfigurationCreation, db: Session):
+def get_configuration(db: Session, config_id: int):
+    """
+    Retrieves a configuration by its ID.
+
+    Args:
+        db (Session): Database session dependency.
+        config_id (int): ID of the configuration to retrieve.
+
+    Returns:
+        Tuple: Configuration response and error message (if any).
+    """
+    configuration, is_error = repo.get_configuration_by_id(config_id, db)
+
+    if is_error:
+        return configuration, "DB Error"
+
+    if not configuration:
+        return None, "Configuration not found"
+
+    config_response = schemas.ConfigurationResponse(
+        id=configuration.id,
+        name=configuration.name,
+        short_description=configuration.short_description,
+        long_description=configuration.long_description,
+        status=configuration.status,
+        connector=[
+            schemas.ConnectorResponse(
+                connector_id=connector.connector.id,
+                connector_type=connector.connector.connector_type,
+                connector_name=connector.connector.connector_name,
+                connector_description=connector.connector.connector_description,
+                connector_config=connector.connector.connector_config,
+                schema_config=connector.connector.schema_config,
+                connector_docs=connector.connector.connector_docs,
+                enable=connector.connector.enable
+            ) for connector in configuration.connectors
+        ],
+        capabilities=[
+            schemas.CapabilitiesBase(
+                id=capabilities.id,
+                name=capabilities.name,
+                requirements=capabilities.requirements,
+                description=capabilities.description,
+                config_id=capabilities.config_id,
+            ) for capabilities in configuration.capabilities
+        ],
+        inference=[
+            schemas.InferenceResponse(
+                id=inference_mapping.inference.id,
+                name=inference_mapping.inference.name,
+                apikey=inference_mapping.inference.apikey,
+                llm_provider=inference_mapping.inference.llm_provider,
+                model=inference_mapping.inference.model,
+                endpoint=inference_mapping.inference.endpoint,
+                config_id=inference_mapping.config_id
+            ) for inference_mapping in configuration.inference_mapping
+        ],
+        vectordb=[
+            VectorDBResponse(
+                id=vector_db.vector_db.id,
+                vectordb=vector_db.vector_db.vectordb,
+                vectordb_config=vector_db.vector_db.vectordb_config,
+                config_id=configuration.id,
+            ) for vector_db in configuration.vectordb_config_mapping if vector_db.vector_db
+        ]
+    )
+
+    return config_response, None
+
+def delete_configuration(db: Session, config_id: int):
+    """
+    Deletes a configuration by its ID.
+
+    Args:
+        db (Session): Database session dependency.
+        config_id (int): ID of the configuration to retrieve.
+
+    Returns:
+        Tuple: Configuration response and error message (if any).
+    """
+    configuration, is_error = repo.delete_configuration_by_id(config_id, db)
+
+    if is_error:
+        return configuration, "DB Error"
+
+    if not configuration:
+        return None, "Configuration not found"
+
+    config_response = schemas.ConfigurationResponse(
+        id=configuration.id,
+        name=configuration.name,
+        short_description=configuration.short_description,
+        long_description=configuration.long_description,
+        status=configuration.status,
+        capabilities=[
+            schemas.CapabilitiesBase(
+                id=capabilities.id,
+                name=capabilities.name,
+                requirements=capabilities.requirements,
+                description=capabilities.description,
+                config_id=capabilities.config_id,
+            ) for capabilities in configuration.capabilities
+        ],
+    )
+
+    return config_response, None
+
+
+def create_configuration(configuration: schemas.ConfigurationCreation, db: Session, user_id: str):
 
     """
     Creates a new configuration in the database.
@@ -440,7 +548,7 @@ def create_configuration(configuration: schemas.ConfigurationCreation, db: Sessi
         Tuple: Configuration response and error message (if any).
     """
 
-    new_config, is_error = repo.create_new_configuration(configuration, db)
+    new_config, is_error = repo.create_new_configuration(configuration, db, user_id)
     if is_error:
         return new_config, "DB Error"
 
@@ -659,7 +767,7 @@ def delete_capability(cap_id: int, db: Session):
     return True, None
 
 
-def update_datasource_documentations(db: Session, vector_store, datasources, id_name_mappings):
+def update_datasource_documentations(db: Session, vector_store, datasources, id_name_mappings, config_id):
         logger.info("Updating datasource documentations")
         active_datsources = {}
         for key, datasource in datasources.items():
@@ -696,12 +804,12 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
                     sd = SourceDocuments([], [], documentations)
 
             chunked_document, chunked_schema = sd.get_source_documents()
-            vector_store.prepare_data(key, chunked_document,chunked_schema, queries)
+            vector_store.prepare_data(key, chunked_document,chunked_schema, queries, int(config_id))
 
 
         return active_datsources, None
 
-def get_inference_and_plugin_configurations(db: Session):
+def get_inference_and_plugin_configurations(db: Session, config_id: int):
 
     """
     Retrieves all inference and plugin configurations from the database.
@@ -714,10 +822,10 @@ def get_inference_and_plugin_configurations(db: Session):
     """
 
     configuration={}
-    connectors, status = repo.get_all_connectors(db)
+    connectors, status = repo.get_connectors_by_configuration_id(config_id, db)
     if status:
         return configuration
-    configs, is_error = repo.getbotconfiguration(db)
+    configs, is_error = repo.get_configuration_by_id(config_id, db)
     if configs is None:
         configuration["models"]=[]
     else:
@@ -815,7 +923,7 @@ def create_yaml_file(request:Request, config_id: int, db: Session):
     if (inferences == [] or inferences==None) or is_error:
         return None, None, "Inference configuration not found"
 
-    connectors, is_error = repo.get_all_connectors(db)
+    connectors, is_error = repo.get_connectors_by_configuration_id(config_id, db)
     if (connectors == [] or connectors==None) or is_error:
         return None, None, "Connector not found"
 

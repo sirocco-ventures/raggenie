@@ -63,7 +63,7 @@ export default function ChatDropdownMenu({ handleNavigateChatContext = () => {},
                         <ul>
                             {item.chatQuery.slice(0, showUpto).map((chat, chatIndex) => (
                                 <span key={chatIndex} className={style.ListOptions}>
-                                    <li onClick={(e) => handleNavigateChatContext(e, chat.contextId)}>
+                                    <li onClick={(e) => handleNavigateChatContext(e, chat.contextId, chat.configId)}>
                                         {chat?.message}
                                     </li>
                                 </span>

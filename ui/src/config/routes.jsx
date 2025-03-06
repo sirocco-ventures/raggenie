@@ -3,12 +3,13 @@ import Configuration from "src/pages/Configuration/Configuration"
 import Deploy from "src/pages/Deploy/Deploy";
 import Preview from "src/pages/Preview/Preview";
 import Samples from "src/pages/Samples/Samples";
-import ChatConfiguration from "src/pages/ChatConfiguration/ChatConfiguration";
+import ChatConfiguration from "src/pages/ChatConfiguration/ChatConfigurationForm";
 import ProviderForm from "src/pages/Configuration/ProviderForm/ProviderForm";
-import BotConfiguration from "src/pages/ChatConfiguration/ChatConfiguration";
+import BotConfiguration from "src/pages/ChatConfiguration/ChatConfigurationForm";
 import Chat from "src/pages/Chat/Chat";
 import NotFound from "src/layouts/errorPage/404";
 import ServerError from 'src/layouts/errorPage/500';
+import ChatConfigurationMain from "src/pages/ChatConfiguration/ChatConfiguration";
 
 const  routes = [
 
@@ -34,13 +35,13 @@ const  routes = [
         isPrivate: true
     },
    
-    {
-        title: "Deploy",
-        path: "/deploy",
-        icon: "",
-        page: <Deploy/>,
-        isPrivate: true
-    },
+    // {
+    //     title: "Deploy",
+    //     path: "/deploy",
+    //     icon: "",
+    //     page: <Deploy/>,
+    //     isPrivate: true
+    // },
     {
         title: "Sources",
         path: "/plugins/sources",
@@ -76,6 +77,20 @@ const  routes = [
     {
         title: "Bot Configuration",
         path: "/bot-configuration",
+        icon: "",
+        page: <ChatConfigurationMain/>,
+        isPrivate: true
+    },
+    {
+        title: "Bot Configuration",
+        path: "/bot-configuration/sources",
+        icon: "",
+        page: <BotConfiguration/>,
+        isPrivate: true
+    },
+    {
+        title: "Bot Configuration",
+        path: "/bot-configuration/:configId",
         icon: "",
         page: <BotConfiguration/>,
         isPrivate: true

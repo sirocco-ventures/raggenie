@@ -70,8 +70,8 @@ def create_feedback(feedback: schemas.FeedbackCreate, db: Session = Depends(get_
     )
 
 # List the primary chat based on context
-@chat_router.get("/list/context/all", response_model=resp_schemas.CommonResponse)
-def list_chat_by_context(db: Session = Depends(get_db)):
+@chat_router.get("/list/context/all/{env_id}", response_model=resp_schemas.CommonResponse)
+def list_chat_by_context(env_id: int, db: Session = Depends(get_db)):
 
     """
     Retrieves all the primary chats based on context from the database.
@@ -83,7 +83,7 @@ def list_chat_by_context(db: Session = Depends(get_db)):
         CommonResponse: A response containing either the list of primary chats or an error message.
     """
 
-    result, error = svc.list_chats_by_context(db)
+    result, error = svc.list_chats_by_context(env_id, db)
 
     if error:
         return commons.is_error_response("DB Error", error, {"chats": []})

@@ -43,7 +43,6 @@ class DocumentRetriever(AbstractHandler):
         out = self.store.find_similar_documentation(datasources, request["question"], document_count)
 
 
-
         logger.info("sorting retrieved documents")
         if out and len(out) > 0 and out[0]['distances'] < self.context_relevance_threshold:
 
