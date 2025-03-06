@@ -20,51 +20,6 @@ import app.api.v1.commons as commons
 login = APIRouter()
 zitadel = Zitadel()
 
-# @login.post("/login")
-# def login_user(response: Response, user: LoginData):
-#     if not user.username or not user.password:
-#         return {
-#             "status": False,
-#             "status_code": 401,
-#             "message": "Invalid credentials",
-#             "data": None,
-#             "error": None,
-#         }
-
-#     try:
-#         response = requests.post(
-#             f"{configs.zitadel_domain}/v2/sessions",
-#             json={"checks": {"user": {"loginName": user.username}}},
-#             headers={
-#                 "Authorization": f"Bearer {configs.zitadel_cctoken}",
-#                 "Content-Type": "application/json",
-#             },
-#         )
-
-#         response.raise_for_status()
-#         session_data = response.json()
-#         session_id = session_data.get("sessionId")
-#         #add condition to check sessionId
-#         sessionToken = session_data.get("sessionToken")
-#         validate_response = requests.patch(
-#             f"{configs.zitadel_domain}/v2/sessions/{session_id}",
-#             json={"checks": {"password": {"password": user.password}}},
-#             headers={
-#                 "Authorization": f"Bearer {configs.zitadel_cctoken}",
-#                 "Content-Type": "application/json",
-#             },
-#         )
-
-#         validate_response.raise_for_status()
-#         validated_session_data = validate_response.json()
-
-#         return {
-#             "session_data" : validated_session_data,
-#             "session_id" : session_id
-#         }
-
-#     except requests.exceptions.RequestException as e:
-#         return {"error": "Failed to create session", "details": str(e)}, 500
 
 # will redirect to idp when called with ipdId
 # need to set successurl and failureUrl dynamically *****

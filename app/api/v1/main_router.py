@@ -36,13 +36,7 @@ def qna(
     Returns:
         dict: Response containing the answer to the user's query and the original query text.
     """
-
-    # context_id = request.headers.get('x-llm-context-id')
-    # user_id = request.headers.get('x-llm-user-id')
-    # config_id = request.headers.get('x-llm-config-id')
-    # env_id = request.headers.get('x-llm-env-id')
     
-
     logger.info(f"{context_id} - {config_id} - query: {query.content}")
     cached_data = cache_manager.get(int(config_id))
     if not cached_data:

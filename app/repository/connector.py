@@ -7,11 +7,6 @@ from typing import List
 
 from app.models.environment import UserEnvironmentMapping
 
-# def get_all_connectors(db: Session):
-#     try:
-#         return db.query(models.Connector).options(joinedload(models.Connector.provider)).all(), False
-#     except SQLAlchemyError as e:
-#         return str(e), True
 
 def get_connectors_by_configuration_id(configuration_id: int, db: Session):
     try:

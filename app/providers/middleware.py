@@ -11,10 +11,7 @@ from typing import Optional
 zitadel = Zitadel()
 
 async def verify_token(request: Request, session_data: Optional[str] = Cookie(None)):
-    # jwt_utils = JWTUtils(configs.secret_key)
 
-        # auth_header = request.headers.get("Authorization")
-        # token = None
     if configs.auth_enabled:
 
         try:
@@ -30,11 +27,9 @@ async def verify_token(request: Request, session_data: Optional[str] = Cookie(No
             response = zitadel.get_user_info(session_id)
             session_expiry = response.get("session").get("expirationDate")
             session_expiry_utc = datetime.fromisoformat(session_expiry.rstrip("Z")).replace(tzinfo=timezone.utc)
-            if datetime.now(timezone.utc) > session_expiry_utc:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Authentication required"
-                )
+            now_utc = datetime.now(timezone.utc)
+            if (session_expiry_utc - now_utc).total_seconds() < 300:
+                zitadel.refresh_session(session_id)
             
         except (TypeError, json.JSONDecodeError, AttributeError, ValueError):
             raise HTTPException(

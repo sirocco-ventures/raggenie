@@ -63,9 +63,6 @@ const Deploy = () => {
           <TitleDescription orderNumber={1} title='Restart your Chatbot' description='Deploy your chatbot to experience real-time updates based on your configuration changes.' />
         </TitleDescriptionContainer>
       <div className={`${style.DeployPageButton}`}>
-        <Link to={"/bot-configuration"}>
-          <Button type="soild" className={`${style.LightButton}`}> Go to Bot Configuration<img src={rightArraow} alt="right-arrow"/></Button>
-        </Link>
         <Button onClick={generateYMAL} disabled={disabledGenerateYAMLButton} > 
           Restart Chatbot  <RiRestartLine/>
         </Button>

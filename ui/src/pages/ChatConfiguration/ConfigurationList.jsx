@@ -41,11 +41,6 @@ const ConfigurationList = ({ configurations = [], onConfigDelete }) => {
         // selector: row => row.connector_description?.slice(0,60) + "...",
         selector: row => <div style={{overflow: "hidden", width: "calc(50vh)"}}>{row.short_description}</div>
     },
-    // {
-    //     name: 'Status',
-    //     selector: row => <Tag type="success">{row.enable ==  true ? "Completed" : "Documention Pending"}</Tag>,
-    //     width: "200px"
-    // },
     {
         name: '',
         selector: row => <>
