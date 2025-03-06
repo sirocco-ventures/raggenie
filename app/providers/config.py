@@ -38,6 +38,9 @@ class Configs(BaseSettings):
     retry_limit:int = os.getenv("RETRY_LIMIT",0)
     application_port: int = os.getenv("APP_PORT", 8001)
     
+    # Cache
+    config_cache_limit: int = os.getenv("CONFIG_CACHE_LIMIT", 10)
+    
 
 
 configs = Configs()

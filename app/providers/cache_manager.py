@@ -1,6 +1,10 @@
+from collections import OrderedDict
+from app.providers.config import configs
+
 class CacheManager(object):
     _instance = None
-    _cache_store = {}
+    _cache_store = OrderedDict()
+    _cache_limit = configs.config_cache_limit
  
     def __init__(self):
         raise RuntimeError("Call get_instance() instead")
@@ -12,6 +16,11 @@ class CacheManager(object):
         return cls._instance
  
     def set(self, key, value):
+        if key in self._cache_store:
+            self._cache_store.move_to_end(key)
+        elif len(self._cache_store) >= self._cache_limit:
+            self._cache_store.popitem(last=False)
+            
         self._cache_store[key] = value
  
     def get(self, key):
@@ -22,5 +31,3 @@ class CacheManager(object):
             del self._cache_store[key]
  
 cache_manager = CacheManager.get_instance()
-
- 
