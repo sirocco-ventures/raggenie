@@ -158,5 +158,8 @@ def get_user_info(request: Request, db: Session = Depends(get_db), user_data: di
 @login.post("/logout",dependencies=[Depends(verify_token)])
 def logout_user(response: Response, user_data: dict = Depends(verify_token)):
     session_id = user_data["session_id"]
-    return zitadel.logout_user(session_id)
+    res = zitadel.logout_user(session_id)
+    if res.status_code == 200:
+        response.delete_cookie("session_data")
+    return res
 
