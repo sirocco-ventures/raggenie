@@ -13,7 +13,7 @@ MainRouter = APIRouter()
 
 
 @MainRouter.post("/query", status_code=status.HTTP_201_CREATED)
-def qna(query: Chat, request: Request, background_tasks: BackgroundTasks, db:Session = Depends(get_db)):
+async def qna(query: Chat, request: Request, background_tasks: BackgroundTasks, db:Session = Depends(get_db)):
 
     """
     Handles user queries and invokes the chain to get an answer from the LLM.
@@ -34,7 +34,7 @@ def qna(query: Chat, request: Request, background_tasks: BackgroundTasks, db:Ses
     logger.info(f"{context_id} - {user_id} - query: {query.content}")
 
 
-    out = request.app.chain.invoke({
+    out = await request.app.chain.invoke({
         "question": query.content,
         "context_id": context_id,
     })

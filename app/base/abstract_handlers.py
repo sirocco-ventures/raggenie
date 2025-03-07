@@ -14,7 +14,7 @@ class Handler(ABC):
         pass
 
     @abstractmethod
-    def handle(self, request) -> Optional[str]:
+    async def handle(self, request) -> Optional[str]:
         pass
 
 class AbstractHandler(Handler):
@@ -33,8 +33,8 @@ class AbstractHandler(Handler):
         return handler
 
     @abstractmethod
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         if self._next_handler:
-            return self._next_handler.handle(request)
+            return await self._next_handler.handle(request)
 
         return None
