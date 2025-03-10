@@ -213,13 +213,21 @@ body {
   outline: none;
   width: 330px;
   max-height: 133px;
-  overflow-y: scroll;
+  overflow-y: auto; 
   overflow-x: hidden;
   font-size: 16px;
-  word-wrap: break-word; /* Break long words onto the next line */
+  word-wrap: break-word;
   white-space: pre-wrap;
   display: flex;
   align-items: center;
+  scrollbar-width: none; /* Firefox */
+}
+
+/* hide srollbar */
+.chat-input::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  display: none;
 }
 
 .chat-input:empty::before {

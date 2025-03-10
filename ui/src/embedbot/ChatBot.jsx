@@ -57,23 +57,28 @@ function ChatBot({ apiURL, configID, uiSize }) {
     }
   }, []);  /* runs only on mount  */
 
-  const fetchAndRender = (message) => {
+  const fetchAndRender = async (message) => {
     try {
       setMessages((prevMessages) => [...prevMessages, { sender: 'user', message }]);
       setLoading(true);
-
       scrollToLastMessage(0);
-  
-      const response = chatBotAPI(contextId, configID, apiURL, message);
+      
+      const response = await chatBotAPI(contextId, configID, apiURL, message);
       const res = response.data;
-  
+      
       setMessages((prevMessages) => [
         ...prevMessages,
         { sender: 'bot', message: res.response.content, entity: res.response.main_entity, format: res.response.main_format, kind: res.response.kind, data: res.response },
       ]);
-  
+      
+      scrollToLastMessage(0); 
+      
     } catch (error) {
       console.error("Chat API error:", error);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { sender: 'bot', message: "Sorry, I encountered an error. Please try again." },
+      ]);
     } finally {
       setLoading(false);
     }
