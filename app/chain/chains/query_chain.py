@@ -1,8 +1,9 @@
+from app.chain.modules.document_retriever import DocumentRetriever
 from app.chain.modules.input_formatter import InputFormatter
 # from app.chain.modules.guard_rail import GuardRail
-from app.chain.modules.rag_module import RagModule
 from app.chain.modules.prompt_generator import PromptGenerator
 from app.chain.modules.generator import Generator
+from app.chain.modules.schema_retriever import SchemaRetriever
 from app.chain.modules.validator import Validator
 from app.chain.modules.executer import Executer
 from app.chain.modules.ouput_formatter import OutputFormatter
@@ -84,24 +85,21 @@ class QueryChain:
 
         self.configs = model_configs
         self.input_formatter = InputFormatter()
-        self.rag_module = RagModule(model_configs, self.vector_store, self.common_context)
+
         self.prompt_generator = PromptGenerator(self.common_context, model_configs, self.data_sources)
         self.generator = Generator(self.common_context, model_configs)
         self.validator = Validator(self.common_context,self.data_sources)
         self.context_retriver = ContextRetreiver(self.common_context, context_store)
         self.context_storage = ContextStorage(self.common_context, context_store)
-
-
-
+        self.schema_retriever = SchemaRetriever(self.vector_store, self.data_sources)
         self.executer = Executer(self.common_context,self.data_sources, self.prompt_generator)
         self.cache_checker = Cachechecker(self.common_context, self.vector_store,self.executer)
         self.output_formatter = OutputFormatter(self.common_context,self.data_sources)
         self.post_processor = PostProcessor()
 
         logger.info("initializing chain")
-        # self.input_formatter.set_next(self.guard_rail).set_next(self.rag_module)
 
-        self.input_formatter.set_next(self.cache_checker).set_next(self.rag_module) \
+        self.input_formatter.set_next(self.cache_checker) \
         .set_next(self.context_retriver) \
         .set_next(self.prompt_generator).set_next(self.generator).set_next(self.validator).set_next(self.executer) \
         .set_next(self.output_formatter).set_next(self.post_processor)

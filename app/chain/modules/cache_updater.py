@@ -19,7 +19,7 @@ class Cacheupdater(AbstractHandler):
         """
         self.cache = cachestore
 
-    def handle(self, response: Any) -> str:
+    async def handle(self, response: Any) -> str:
         """
         Handle the incoming response by updating the cache if necessary.
 
@@ -41,4 +41,4 @@ class Cacheupdater(AbstractHandler):
                 document = question,
                 metadata = inference,
             )
-        return super().handle(response)
+        return await super().handle(response)

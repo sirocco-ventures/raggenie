@@ -39,7 +39,7 @@ class Router(AbstractHandler):
         self.metadata_handler = metadata_handler
 
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Routes the request to the appropriate handler based on the detected intent.
 
@@ -63,21 +63,21 @@ class Router(AbstractHandler):
 
                 if datasource.__category__ == 2 or datasource.__category__ == 5:
                     logger.info("entered database workflow")
-                    return super().handle(self.forwared_handler.invoke(request))
+                    return await self.forwared_handler.invoke(request)
                 else:
                     logger.info("entered default workflow")
-                    return super().handle(self.general_handler.invoke(request))
+                    return await self.general_handler.invoke(request)
 
             elif intent == "metadata_inquiry":
-                return super().handle(self.metadata_handler.invoke(request))
+                return await self.metadata_handler.invoke(request)
             elif intent in request.get("available_intents", []) and intent != "out_of_context":
-                return super().handle(self.capability_handler.invoke(request))
+                return await self.capability_handler.invoke(request)
             else:
                 response = Formatter.format("Sorry, I can't help you with that. Is there anything i can help you with ?","")
-                return self.fallback_handler.handle(response)
+                return await self.fallback_handler.handle(response)
 
         else:
             logger.info("No intents detected")
             response = Formatter.format("Sorry, I can't help you with that. Is there anything i can help you with ?","")
-            return self.fallback_handler.handle(response)
+            return await self.fallback_handler.handle(response)
 

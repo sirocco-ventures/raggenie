@@ -26,7 +26,7 @@ class Executer(AbstractHandler):
         self.common_context = common_context
         self.datasource = datasource
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Handle the incoming request by executing the query.
 
@@ -58,4 +58,4 @@ class Executer(AbstractHandler):
             "query_error": err,
         }}
 
-        return super().handle(response)
+        return await super().handle(response)

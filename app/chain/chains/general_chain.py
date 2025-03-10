@@ -1,6 +1,5 @@
 from app.chain.modules.input_formatter import InputFormatter
 # from app.chain.modules.guard_rail import GuardRail
-from app.chain.modules.rag_module import RagModule
 from app.chain.modules.prompt_generator import PromptGenerator
 from app.chain.modules.general_answer_generator import GeneralAnswerGenerator
 from app.chain.modules.ouput_formatter import OutputFormatter
@@ -60,7 +59,6 @@ class GeneralChain:
 
         self.configs = model_configs
         self.input_formatter = InputFormatter()
-        self.rag_module = RagModule(model_configs, self.vector_store, self.common_context)
         self.prompt_generator = PromptGenerator(self.common_context, model_configs, self.data_sources)
         self.generator = GeneralAnswerGenerator(self.common_context, model_configs)
         self.context_retriver = ContextRetreiver(self.common_context, context_store)
@@ -70,8 +68,7 @@ class GeneralChain:
 
         logger.info("initializing chain")
 
-        self.input_formatter.set_next(self.rag_module) \
-        .set_next(self.context_retriver) \
+        self.input_formatter.set_next(self.context_retriver) \
         .set_next(self.prompt_generator).set_next(self.generator).set_next(self.output_formatter).set_next(self.post_processor)
 
         self.handler =  self.input_formatter

@@ -27,7 +27,7 @@ class Cachechecker(AbstractHandler):
         self.common_context = common_context
 
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Handle the incoming request by checking the cache
 
@@ -56,7 +56,7 @@ class Cachechecker(AbstractHandler):
             if output[0]["distances"] < -10:
                 result = output[0]["metadatas"]
                 logger.info("query retrieved from cache")
-                return self.forward_handler.handle({"inference":result})
+                return await self.forward_handler.handle({"inference":result})
 
         logger.info("query not retrieved from cache")
-        return super().handle(response)
+        return await super().handle(response)

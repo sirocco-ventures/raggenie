@@ -22,7 +22,7 @@ class ContextRetreiver(AbstractHandler):
         self.context_store = context_store
         self.common_context = context_store
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Handle the incoming request by retrieving relevant context.
 
@@ -44,4 +44,4 @@ class ContextRetreiver(AbstractHandler):
 
         response["context"] = context
 
-        return super().handle(response)
+        return await super().handle(response)
