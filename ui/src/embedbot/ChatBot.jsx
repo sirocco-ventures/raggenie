@@ -12,7 +12,7 @@ import Loader from '../components/ChatBox/Loader'
 import './ChatBot.css'
 
 
-function ChatBot({ apiURL, uiSize }) {
+function ChatBot({ apiURL, configID, uiSize }) {
   if (!apiURL) return console.error("apiURL is undefined")
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -51,49 +51,34 @@ function ChatBot({ apiURL, uiSize }) {
 
           setMessages(newMessages);
           scrollToLastMessage(2000);
-        });
+        }).catch(error => {
+          console.log(error, "error")
+        })
     }
   }, []);  /* runs only on mount  */
 
   const fetchAndRender = (message) => {
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { sender: 'user', message: message },
-    ]);
+    try {
+      setMessages((prevMessages) => [...prevMessages, { sender: 'user', message }]);
+      setLoading(true);
 
-    setLoading(true);
-
-    scrollToLastMessage(0);
-
-    chatBotAPI(contextId, apiURL, message)
-      .then(response => {
-        const res = response.data;
-        const chatMessage = res.response.content;
-        let chatError = isEmptyJSON(res.response.error) ? "" : res.response.error
-        let chatEntity = res.response.main_entity
-        let chatFormat = res.response.main_format
-        let chatKind = res.response.kind
-        let chatData = {
-          chart: {
-            data: res.response.data,
-            title: res.response.title,
-            xAxis: res.response.x,
-            yAxis: res.response.y
-          },
-          query: res.response.query
-        }
-
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { sender: 'bot', message: chatMessage, entity: chatEntity, error: chatError, format: chatFormat, kind: chatKind, data: chatData },
-        ]);
-
-        setLoading(false);
-
-      })
-
-
-  }
+      scrollToLastMessage(0);
+  
+      const response = chatBotAPI(contextId, configID, apiURL, message);
+      const res = response.data;
+  
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { sender: 'bot', message: res.response.content, entity: res.response.main_entity, format: res.response.main_format, kind: res.response.kind, data: res.response },
+      ]);
+  
+    } catch (error) {
+      console.error("Chat API error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   return (
     <div>
