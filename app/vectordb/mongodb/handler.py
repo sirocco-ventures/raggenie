@@ -36,7 +36,7 @@ class AltasMongoDB(BaseVectorDB):
                     "_id": "doc1",
                     "datasource":"psql_db",
                     "document": "This referes to the user data which consist of username, password, email and address",
-                    "metadatas":{
+                    "metadata":{
                         "username": "username"
                     }
                 }
@@ -64,9 +64,9 @@ class AltasMongoDB(BaseVectorDB):
     #     self.doc_collection.delete_many({})
     #     self.cache_collection.delete_many({})
         self.config_id = config_id
-        self.cache_collection.delete_many({ "metadatas.config_id": config_id })
-        self.schema_collection.delete_many({ "metadatas.config_id": config_id })
-        self.doc_collection.delete_many({ "metadatas.config_id": config_id })
+        self.cache_collection.delete_many({ "metadata.config_id": config_id })
+        self.schema_collection.delete_many({ "metadata.config_id": config_id })
+        self.doc_collection.delete_many({ "metadata.config_id": config_id })
 
     def generate_embedding(self, context: str) -> list[float]:
         array = self.emf([context])[0]
@@ -80,7 +80,7 @@ class AltasMongoDB(BaseVectorDB):
                 sample = {
                     # "_id": "doc" + str(i),
                     "document": doc.page_content,
-                    "metadatas": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
+                    "metadata": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 documents.append(sample)
@@ -94,7 +94,7 @@ class AltasMongoDB(BaseVectorDB):
                 sample = {
                     # "_id": "doc" + str(i),
                     "document": doc.page_content,
-                    "metadatas": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
+                    "metadata": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 schemas.append(sample)
@@ -107,7 +107,7 @@ class AltasMongoDB(BaseVectorDB):
                 sample = {
                     # "_id": "doc" + str(i),
                     "document": doc['description'],
-                    "metadatas": {**doc['metadata'], "datasource": datasource_name, "config_id": config_id}
+                    "metadata": {**doc['metadata'], "datasource": datasource_name, "config_id": config_id}
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 caches.append(sample)
@@ -166,7 +166,7 @@ class AltasMongoDB(BaseVectorDB):
             },
             {
             '$match': {
-                'datasource': datasource  # Filter for the specified datasource
+                'metadata.datasource': datasource  # Filter for the specified datasource
             }
             },
             {
@@ -174,7 +174,7 @@ class AltasMongoDB(BaseVectorDB):
             "_id" : 1,
             "datasource" : 1,
             "document": 1,
-            "metadatas": 1,
+            "metadata": 1,
             "score": {"$meta": "vectorSearchScore"}
             }
         }
@@ -182,7 +182,7 @@ class AltasMongoDB(BaseVectorDB):
         results = list(res)
         for result in results:
             result['distances'] = 1 - result['score']
-        return result
+        return results
 
     async def find_similar_schema(self, datasource, query,count):
        return await self. _find_similar(datasource, self.schema_collection, query, count, self.schema_index_name)

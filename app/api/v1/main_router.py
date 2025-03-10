@@ -53,7 +53,7 @@ async def qna(
     request.app.chain = chain
     request.app.vector_store = vector_store
     
-    out = chain.invoke({
+    out = await chain.invoke({
         "question": query.content,
         "context_id": context_id,
     })
