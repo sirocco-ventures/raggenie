@@ -20,7 +20,7 @@ class AltasMongoDB(BaseVectorDB):
             self.schema_collection = self.db.get_collection('schema')
             self.doc_collection = self.db.get_collection('documents')
             self.cache_collection = self.db.get_collection('cache')
-            self.clear_collection()
+            # self.clear_collection()
             self.schema_index_name = "schema"
             self.doc_index_name = "doc"
             self.cache_index_name = "cache"
@@ -36,19 +36,19 @@ class AltasMongoDB(BaseVectorDB):
                     "_id": "doc1",
                     "datasource":"psql_db",
                     "document": "This referes to the user data which consist of username, password, email and address",
-                    "metadata":{
+                    "metadatas":{
                         "username": "username"
                     }
                 }
             sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
 
             self.doc_collection.insert_many([sample])
-            self.schema_collection.insert_many([sample])
-            self.cache_collection.insert_many([sample])
+            # self.schema_collection.insert_many([sample])
+            # self.cache_collection.insert_many([sample])
 
             collection_list = self.db.list_collection_names()
             logger.info(f"collections available:{collection_list}")
-            self.clear_collection()
+            self.doc_collection.delete_many({ "datasource": "psql_db" })
             if len(collection_list) > 0:
                 return None
             else:
@@ -59,25 +59,28 @@ class AltasMongoDB(BaseVectorDB):
             return f"Failed to connect with Altas MongoDB {e}"
 
 
-    def clear_collection(self):
-        self.schema_collection.delete_many({})  # Delete all documents in the collection
-        self.doc_collection.delete_many({})
-        self.cache_collection.delete_many({})
+    def clear_collection(self, config_id):
+    #     self.schema_collection.delete_many({})  # Delete all documents in the collection
+    #     self.doc_collection.delete_many({})
+    #     self.cache_collection.delete_many({})
+        self.config_id = config_id
+        self.cache_collection.delete_many({ "metadatas.config_id": config_id })
+        self.schema_collection.delete_many({ "metadatas.config_id": config_id })
+        self.doc_collection.delete_many({ "metadatas.config_id": config_id })
 
     def generate_embedding(self, context: str) -> list[float]:
         array = self.emf([context])[0]
         return array.tolist()
 
-    def prepare_data(self, datasource_name, chunked_document, chunked_schema, queries):
+    def prepare_data(self, datasource_name, chunked_document, chunked_schema, queries, config_id):
         if chunked_document:
             documents = []
             document_count = self.doc_collection.count_documents({})
             for i, doc in enumerate(chunked_document, start = document_count):
                 sample = {
-                    "_id": "doc" + str(i),
-                    "datasource": datasource_name,
+                    # "_id": "doc" + str(i),
                     "document": doc.page_content,
-                    "metadata": doc.metadata
+                    "metadatas": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 documents.append(sample)
@@ -89,10 +92,9 @@ class AltasMongoDB(BaseVectorDB):
             schema_count = self.schema_collection.count_documents({})
             for i, doc in enumerate(chunked_schema, start = schema_count):
                 sample = {
-                    "_id": "doc" + str(i),
-                    "datasource": datasource_name,
+                    # "_id": "doc" + str(i),
                     "document": doc.page_content,
-                    "metadata": doc.metadata
+                    "metadatas": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 schemas.append(sample)
@@ -103,10 +105,9 @@ class AltasMongoDB(BaseVectorDB):
             queries_count = self.cache_collection.count_documents({})
             for i, doc in enumerate(queries, start = queries_count):
                 sample = {
-                    "_id": "doc" + str(i),
-                    "datasource": datasource_name,
+                    # "_id": "doc" + str(i),
                     "document": doc['description'],
-                    "metadatas": doc['metadata']
+                    "metadatas": {**doc['metadata'], "datasource": datasource_name, "config_id": config_id}
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 caches.append(sample)
@@ -160,6 +161,7 @@ class AltasMongoDB(BaseVectorDB):
                     "queryVector": self.generate_embedding(query),
                     "numCandidates": 50,
                     "limit": count,
+
                 }
             },
             {

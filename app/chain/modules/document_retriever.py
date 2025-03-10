@@ -46,6 +46,7 @@ class DocumentRetriever(AbstractHandler):
             ]
         results = await asyncio.gather(*tasks)
 
+
         logger.info("sorting retrieved documents")
         for index, out in enumerate(results):
             opt_doc = []

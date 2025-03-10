@@ -6,6 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from typing import Any, Dict
 import app.schemas.provider as schemas
 
+from app.models.environment import UserEnvironmentMapping
+
 
 def insert_or_update_data(db: Session, model: Any, filters: Dict[str, Any], data: Dict[str, Any]) -> tuple:
     try:
@@ -68,9 +70,17 @@ def get_sql_by_connector(id:int, db:Session):
     except SQLAlchemyError as e:
         return e, True
 
-def list_sql(db:Session):
+def list_sql(db:Session, user_id: str):
     try:
-        return db.query(models.SampleSQL).all(), False
+        active_env = (db.query(UserEnvironmentMapping)
+            .filter(UserEnvironmentMapping.user_id == user_id, UserEnvironmentMapping.is_active == True)
+            .first())
+        sql = (
+            db.query(models.SampleSQL)
+            .filter(models.SampleSQL.environment_id == active_env.id)
+            .all()
+        )
+        return sql, False
     except SQLAlchemyError as e:
         return e, True
 
@@ -80,13 +90,17 @@ def get_sql(id:int,db:Session):
     except SQLAlchemyError as e:
         return e, True
 
-def create_sql(sql:schemas.SampleSQLBase, db:Session):
+def create_sql(sql:schemas.SampleSQLBase, db:Session, user_id: str):
 
     try:
+        active_env = (db.query(UserEnvironmentMapping)
+            .filter(UserEnvironmentMapping.user_id == user_id, UserEnvironmentMapping.is_active == True)
+            .first())
         db_sql = models.SampleSQL(
             description=sql.description,
             sql_metadata=sql.sql_metadata,
             connector_id = sql.connector_id,
+            environment_id = active_env.id
         )
         db.add(db_sql)
         db.commit()

@@ -8,7 +8,7 @@ import axios from "axios";
 
 const DashboardLayout = () => {
 
-  const { username, setUsername, authEnabled, isAuthenticated, setIsAuthenticated, setAuthEnabled } = useAppSettings();
+  const { username, setUsername, authEnabled, isAuthenticated, setIsAuthenticated, setAuthEnabled, setEnvID } = useAppSettings();
 
   const navigate = useNavigate()
 
@@ -16,6 +16,7 @@ const DashboardLayout = () => {
     GetUserDetails().then((response) => {
       const userData = response.data;
       setUsername(userData.data.username);
+      setEnvID(userData.data.env_id)
       setIsAuthenticated(true)
       setAuthEnabled(userData.data.auth_enabled)
     })

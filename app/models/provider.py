@@ -79,6 +79,9 @@ class SampleSQL(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
+    environment_id = Column(Integer, ForeignKey("environments.id"), nullable=False)
+    environment = relationship("Environment", back_populates="sample_sql")
+    
     connectors = relationship('Connector', back_populates='sample_sql')
 
 class VectorDB(Base):

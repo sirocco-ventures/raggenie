@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, status, BackgroundTasks
+from app.providers.cache_manager import cache_manager
+from fastapi import APIRouter, Depends, status, Query
 from fastapi.encoders import jsonable_encoder
 from app.models.request import Chat, FeedbackCorrectionRequest
 from starlette.requests import Request
 from loguru import logger
 from app.schemas import llmchat as schemas
 from app.api.v1 import llmchat
+from app.api.v1 import connector
 from sqlalchemy.orm import Session
 from app.utils.database import get_db
 
@@ -13,7 +15,15 @@ MainRouter = APIRouter()
 
 
 @MainRouter.post("/query", status_code=status.HTTP_201_CREATED)
-async def qna(query: Chat, request: Request, background_tasks: BackgroundTasks, db:Session = Depends(get_db)):
+
+async def qna(
+    query: Chat,
+    request: Request,
+    context_id: str = Query(..., alias="contextId"),
+    config_id: str = Query(..., alias="configId"),
+    env_id: str = Query(..., alias="envId"),
+    db: Session = Depends(get_db)
+):
 
     """
     Handles user queries and invokes the chain to get an answer from the LLM.
@@ -27,14 +37,23 @@ async def qna(query: Chat, request: Request, background_tasks: BackgroundTasks, 
     Returns:
         dict: Response containing the answer to the user's query and the original query text.
     """
-
-    context_id = request.headers.get('x-llm-context-id')
-    user_id = request.headers.get('x-llm-user-id')
-
-    logger.info(f"{context_id} - {user_id} - query: {query.content}")
-
-
-    out = await request.app.chain.invoke({
+    
+    logger.info(f"{context_id} - {config_id} - query: {query.content}")
+    cached_data = cache_manager.get(int(config_id))
+    if not cached_data:
+        logger.info("configuration was not found in the cache")
+        response = connector.create_yaml(request, int(config_id), db)
+        if response['success'] == True:
+            cached_data = cache_manager.get(int(config_id))
+        else:
+            return
+        
+    chain = cached_data["chain"]
+    vector_store = cached_data['vector_store']
+    request.app.chain = chain
+    request.app.vector_store = vector_store
+    
+    out = chain.invoke({
         "question": query.content,
         "context_id": context_id,
     })
@@ -44,7 +63,9 @@ async def qna(query: Chat, request: Request, background_tasks: BackgroundTasks, 
             chat_context_id=context_id,
             chat_query=query.content,
             chat_answer= jsonable_encoder(out),
-            chat_summary=out.get("summary", query.content)
+            chat_summary=out.get("summary", query.content),
+            configuration_id=config_id,
+            environment_id=env_id
         ),
         db
     )

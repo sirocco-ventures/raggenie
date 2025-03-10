@@ -11,7 +11,7 @@
     flex-wrap: wrap;
 }
 
-.FIeldContainer {
+.FieldContainer {
     display: flex;
     padding: var(--spacing-xxxl, 40px) 60px;
     align-items: center;
@@ -23,7 +23,7 @@
     border: 0.5px solid #F0F0F0;
     background: #FFF;
     box-shadow: 0px 0px 30px 0px rgba(33, 33, 52, 0.08);
-    padding-bottom: 83px;
+    padding-bottom: 50px;
     justify-content: center;
     flex-direction: column;
 }
@@ -58,6 +58,7 @@
     width: 100%;
     text-align: center;
     justify-content: center;
+    margin: 38px 0;
 }
 
 .ErrorDiv {
@@ -95,4 +96,94 @@
 
 .SimileIcon{
     padding-top: 5px;
+}
+
+.CheckBox {
+    display: flex;
+    align-items: center;
+    gap: 4px;  
+}
+
+.CheckBox span {
+    color: #323232;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 16px; /* 133.333% */
+}
+
+input[type="checkbox"] {
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #FFF;
+    border: 1.5px solid #F0F0F0;
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  input[type="checkbox"]:checked {
+    background: #FFF;
+    border-color: #3893FF;
+  }
+  
+  input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 0px;
+    width: 4px;
+    height: 9px;
+    border: 1px solid #3893FF;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+  }
+
+  .OAuthLogin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .OrLogin {
+    color: #323232;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 16px; /* 133.333% */
+  }
+
+.LoginGoogle {
+    display: flex;
+    align-items: center;
+    padding: 16px 52px;
+    gap: 16px;
+    border-radius: 50px;
+    border: 1px solid #F0F0F0;
+    background: #FFF;
+    cursor: pointer;
+
+}
+
+.LoginGoogle img {
+    width: 23px;
+    height: 23px;
+}
+
+.LoginGoogle span {
+    color: #323232;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px; /* 125% */
 }
