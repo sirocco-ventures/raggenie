@@ -15,7 +15,8 @@ MainRouter = APIRouter()
 
 
 @MainRouter.post("/query", status_code=status.HTTP_201_CREATED)
-def qna(
+
+async def qna(
     query: Chat,
     request: Request,
     context_id: str = Query(..., alias="contextId"),

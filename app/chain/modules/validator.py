@@ -28,7 +28,7 @@ class Validator(AbstractHandler):
         self.common_context = common_context
         self.datasource = datasource
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Validates the generated SQL query and updates the response if there are validation issues.
 
@@ -52,6 +52,6 @@ class Validator(AbstractHandler):
                 result = validator.validate(formated_sql)
                 if result:
                     logger.critical(f"Generated Query Validation Issue: {result}")
-                    return Formatter.format(result,"")
+                    return await Formatter.format(result,"")
 
-        return super().handle(response)
+        return await super().handle(response)
