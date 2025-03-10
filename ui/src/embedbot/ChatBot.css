@@ -289,9 +289,10 @@ body {
   width: 550px;
   border: 1px solid #E0E0E0;
   border-radius: 25px;
-  padding: 5px 20px 5px 20px;
-  /* min-height: 54px; */
+  padding: 5px 20px;
+  min-height: 44px;
   margin: 0 auto 18px;
+  align-items: center;
 }
 .input-div.large .chat-button {
   background-color: #F9F9F9;
