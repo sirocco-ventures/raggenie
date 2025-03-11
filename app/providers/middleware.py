@@ -8,11 +8,11 @@ from fastapi import Request, status, HTTPException, Cookie
 from fastapi import Request, HTTPException, status
 from typing import Optional
 
-zitadel = Zitadel()
 
 async def verify_token(request: Request, session_data: Optional[str] = Cookie(None)):
 
     if configs.auth_enabled:
+        zitadel = Zitadel()
 
         try:
             session_data = json.loads(session_data)  # This handles None and invalid JSON
@@ -44,5 +44,5 @@ async def verify_token(request: Request, session_data: Optional[str] = Cookie(No
             )
         return {"session_id": session_id, "user_id": user_id}
     else:
-        return configs.default_username
+        return {"session_id": '1', "user_id": '1', "username": configs.default_username}
 

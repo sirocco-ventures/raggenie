@@ -18,7 +18,8 @@ from sqlalchemy.orm import Session
 import app.api.v1.commons as commons
 
 login = APIRouter()
-zitadel = Zitadel()
+if configs.auth_enabled:
+    zitadel = Zitadel()
 
 
 # will redirect to idp when called with ipdId
@@ -84,12 +85,12 @@ def list_idp(response: Response):
 
 @login.get("/user_info", dependencies=[Depends(verify_token)])
 def get_user_info(request: Request, db: Session = Depends(get_db), user_data: dict = Depends(verify_token)):
-    if user_data == 'Admin':
+    if user_data["username"] == 'Admin':
         return CommonResponse(
         status=True,
         status_code=200,
         message="User info retrieved successfully",
-        data={ "username": user_data, "auth_enabled": configs.auth_enabled, "env_id": 0 },
+        data={ "username": user_data['username'], "auth_enabled": configs.auth_enabled, "env_id": 0 },
         error=None
     )
          
