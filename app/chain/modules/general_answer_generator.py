@@ -24,7 +24,7 @@ class GeneralAnswerGenerator(AbstractHandler):
                 self.model_configs = model_configs
                 self.common_context = common_context
 
-        def handle(self, request: dict) -> str:
+        async def handle(self, request: dict) -> str:
                 """
                 Handle the incoming request by generating an inference based on the prompt and context.
 
@@ -52,10 +52,10 @@ class GeneralAnswerGenerator(AbstractHandler):
                         prompt, contexts
                 )
                 if output["error"] is not None:
-                        return Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
+                        return await Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
 
                 response["inference"] = markdown_parse_llm_response(output['content'])
                 if not response["inference"]:
-                        return Formatter.format("Oops! Something went wrong. Try Again!","")
+                        return await Formatter.format("Oops! Something went wrong. Try Again!","")
 
-                return super().handle(response)
+                return await super().handle(response)

@@ -36,7 +36,7 @@ class AltasMongoDB(BaseVectorDB):
                     "_id": "doc1",
                     "datasource":"psql_db",
                     "document": "This referes to the user data which consist of username, password, email and address",
-                    "metadatas":{
+                    "metadata":{
                         "username": "username"
                     }
                 }
@@ -64,9 +64,9 @@ class AltasMongoDB(BaseVectorDB):
     #     self.doc_collection.delete_many({})
     #     self.cache_collection.delete_many({})
         self.config_id = config_id
-        self.cache_collection.delete_many({ "metadatas.config_id": config_id })
-        self.schema_collection.delete_many({ "metadatas.config_id": config_id })
-        self.doc_collection.delete_many({ "metadatas.config_id": config_id })
+        self.cache_collection.delete_many({ "metadata.config_id": config_id })
+        self.schema_collection.delete_many({ "metadata.config_id": config_id })
+        self.doc_collection.delete_many({ "metadata.config_id": config_id })
 
     def generate_embedding(self, context: str) -> list[float]:
         array = self.emf([context])[0]
@@ -80,7 +80,7 @@ class AltasMongoDB(BaseVectorDB):
                 sample = {
                     # "_id": "doc" + str(i),
                     "document": doc.page_content,
-                    "metadatas": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
+                    "metadata": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 documents.append(sample)
@@ -94,7 +94,7 @@ class AltasMongoDB(BaseVectorDB):
                 sample = {
                     # "_id": "doc" + str(i),
                     "document": doc.page_content,
-                    "metadatas": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
+                    "metadata": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 schemas.append(sample)
@@ -107,7 +107,7 @@ class AltasMongoDB(BaseVectorDB):
                 sample = {
                     # "_id": "doc" + str(i),
                     "document": doc['description'],
-                    "metadatas": {**doc['metadata'], "datasource": datasource_name, "config_id": config_id}
+                    "metadata": {**doc['metadata'], "datasource": datasource_name, "config_id": config_id}
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 caches.append(sample)
@@ -146,50 +146,49 @@ class AltasMongoDB(BaseVectorDB):
         self._create_index(self.schema_collection, self.schema_index_name)
         self._create_index(self.cache_collection, self.cache_index_name)
 
-    def _find_similar(self, datasources, collection, query, count, index_name):
-        output = []
-        logger.info(f"datasources:{datasources}")
+    async def _find_similar(self, datasource, collection, query, count, index_name):
+        logger.info(f"datasources:{datasource}")
         logger.info(f"collection:{collection}")
         logger.info(f"index_name:{index_name}")
 
-        for datasource in datasources:
-            res = collection.aggregate([
 
-                {
-                    '$vectorSearch': {
-                        "index": index_name,
-                        "path": self.EMBEDDING_FIELD_NAME,
-                        "queryVector": self.generate_embedding(query),
-                        "numCandidates": 50,
-                        "limit": count,
-                    }
-                },
-                {
-                '$match': {
-                    'metadatas.datasource': datasource,  # Filter for the specified datasource
-                    'metadatas.config_id' : self.config_id
+        res = collection.aggregate([
+
+            {
+                '$vectorSearch': {
+                    "index": index_name,
+                    "path": self.EMBEDDING_FIELD_NAME,
+                    "queryVector": self.generate_embedding(query),
+                    "numCandidates": 50,
+                    "limit": count,
+
                 }
-                },
-                {
-                "$project": {
-                "_id" : 1,
-                "document": 1,
-                "metadatas": 1,
-                "score": {"$meta": "vectorSearchScore"}
-                }
+            },
+            {
+            '$match': {
+                'metadata.datasource': datasource  # Filter for the specified datasource
             }
-            ])
-            results = list(res)
-            for result in results:
-                result['distances'] = 1 - result['score']
-                output.append(result)
-        return output
+            },
+            {
+            "$project": {
+            "_id" : 1,
+            "datasource" : 1,
+            "document": 1,
+            "metadata": 1,
+            "score": {"$meta": "vectorSearchScore"}
+            }
+        }
+        ])
+        results = list(res)
+        for result in results:
+            result['distances'] = 1 - result['score']
+        return results
 
-    def find_similar_schema(self, datasource, query,count):
-       return self. _find_similar(datasource, self.schema_collection, query, count, self.schema_index_name)
+    async def find_similar_schema(self, datasource, query,count):
+       return await self. _find_similar(datasource, self.schema_collection, query, count, self.schema_index_name)
 
-    def find_similar_documentation(self, datasource, query, count):
-       return self. _find_similar(datasource, self.doc_collection, query, count, self.doc_index_name)
+    async def find_similar_documentation(self, datasource, query, count):
+       return await self. _find_similar(datasource, self.doc_collection, query, count, self.doc_index_name)
 
-    def find_similar_cache(self, datasource, query,count = 3):
-       return self. _find_similar(datasource, self.cache_collection, query, count, self.cache_index_name)
+    async def find_similar_cache(self, datasource, query,count = 3):
+       return await self. _find_similar(datasource, self.cache_collection, query, count, self.cache_index_name)
