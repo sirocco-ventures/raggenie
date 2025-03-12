@@ -45,9 +45,9 @@ class MetadataChain:
 
         self.input_formatter = InputFormatter()
         self.context_retriver = ContextRetreiver(self.common_context, context_store)
-        self.document_retriever = DocumentRetriever(self.vector_store)
+        self.document_retriever = DocumentRetriever(self.vector_store, self.data_sources)
 
-        self.metadata_generator = MetadataGenerator(self.common_context, model_configs)
+        self.metadata_generator = MetadataGenerator(self.common_context, model_configs, self.data_sources)
         self.post_processor = PostProcessor()
         self.metadata_ragfilter = MetadataRagFilter()
         self.output_formatter = OutputFormatter(self.common_context,self.data_sources)
