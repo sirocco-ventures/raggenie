@@ -79,9 +79,9 @@ class IntentExtracter(AbstractHandler):
                 datasource_context = context[name]
                 for index,cont in enumerate(datasource_context[:2]):
                     if index == 0:
-                        capability_description += f"{cont.get("document","")}\n"
+                        capability_description += f"{cont.get('document','')}\n"
                     else:
-                        capability_description += f"{cont.get("document","")}\n"
+                        capability_description += f"{cont.get('document','')}\n"
 
                 
         response["available_datasources"] = datasource_names

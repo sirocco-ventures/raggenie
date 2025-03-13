@@ -36,9 +36,9 @@ Join our communities for product updates, support, and to stay connected with th
 ### 🔮 Supported LLM Inferences
 Raggenie supports inference APIs to different LLM providers to run your model. The are the inference APIs currently supported by us:
 * [OpenAI](https://openai.com/index/openai-api/)
-* [Gemini](https://ai.google.dev/gemini-api)
-* [Claude](https://www.anthropic.com/api)
 * [Together.ai](https://www.together.ai/)
+* [Ollama] (https://ollama.com/)
+* [AI71] (https://ai71.ai/)
 
 ### 🗃️ Data Sources
 These connectors will help you connect your data to RAG. It can handle structured or unstructured data, enabling the RAG to answer questions from these sources.
@@ -46,15 +46,18 @@ These connectors will help you connect your data to RAG. It can handle structure
 You can use raggenie to connect to your data sources to analyse it or to intergrate it to your application. Raggenie generates queries to execute on your data sources and provides the results. Current integrations are:
     * [MySQL](https://www.mysql.com/)
     * [PostgreSQL](https://www.postgresql.org/)
-    * [GraphQL](https://graphql.org/)
-    * [Splunk](https://www.splunk.com/)
     * [Bigquery](https://cloud.google.com/bigquery)
+    * [Airtable] (https://www.airtable.com/)
+    * [MariaDB](https://mariadb.org/)
+    * [MSSQL] (https://www.microsoft.com/en-in/sql-server)
+    * [SQLite] (https://www.sqlite.org/)
+
 
 * Document based sources(default):<br />
 These sources allows you to load documents such as text documents or Word documents to create an AI chat application that can interact with this data. Current integrations are:
-    * [Google Drive](https://www.google.com/intl/en_in/drive/)
-    * [SharePoint](https://www.microsoft.com/en-in/microsoft-365/sharepoint/collaboration)
-    * [Dropbox](https://www.dropbox.com/)
+    * Document loader
+    * CSV loader
+    * Website loader
 
 ### 💡Capabilities
 you can have more functionalities from RAGGENIE than just as a chatbot by defining its capabilities. They can be used to do tasks such as booking a meeting, checking a calendar, or completing a form from the chat.

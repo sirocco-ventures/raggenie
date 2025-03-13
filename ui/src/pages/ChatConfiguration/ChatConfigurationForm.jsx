@@ -234,7 +234,7 @@ const BotConfiguration = () => {
             let llmList = []
             let vectorDbTempList = [];
             llmProviders.map(item => {
-                llmList.push({ value: item.unique_name, label: <div className={style.AlignDropdownOptions}><img src={`${BACKEND_SERVER_URL}${item.icon}`} alt={item.display_name} />{item.display_name}</div> },)
+                llmList.push({ value: item.unique_name, label: <div className={style.AlignDropdownOptions}><img className={style.LLMDropdownOptionImg} src={`${BACKEND_SERVER_URL}${item.icon}`} alt={item.display_name} />{item.display_name}</div> },)
             })
             setllmModels(llmList)
             setSelectedProvider(llmList[0])
