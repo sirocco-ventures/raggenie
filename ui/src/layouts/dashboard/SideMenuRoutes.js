@@ -28,11 +28,11 @@ import { v4 } from "uuid"
         path: "/samples",
         icon: samplesIcon,
     },
-    {
-        title: "Deploy",
-        path: "/deploy",
-        icon: deployIcon,
-    }
+    // {
+    //     title: "Deploy",
+    //     path: "/deploy",
+    //     icon: deployIcon,
+    // }
   ]
 
   export  default SideMenuRoutes

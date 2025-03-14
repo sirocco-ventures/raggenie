@@ -26,7 +26,7 @@ class FollowupInterpreter(AbstractHandler):
         self.common_context = common_context
         self.datasources = datasources
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Handle the incoming request by interpreting the inference results and formatting the response.
         Args:
@@ -109,5 +109,5 @@ class FollowupInterpreter(AbstractHandler):
             logger.info("No intents detected")
             response = Formatter.format("Sorry, I didn't get that","")
 
-        return super().handle(response)
+        return await super().handle(response)
 

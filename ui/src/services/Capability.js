@@ -28,5 +28,5 @@ export const updateBotCapability = async (capabilityId, configurationId, capabil
 }
 
 export const deleteBotCapability = async (capabilityId) => {
-    return DeleteService(`${API_URL}/capability/delete/${capabilityId}`,{},{loaderText: "Deleting Capability"})
+    return PostService(`${API_URL}/capability/delete/${capabilityId}`,{},{loaderText: "Deleting Capability"})
 }

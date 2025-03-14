@@ -4,12 +4,15 @@ from app.api.v1.main_router import MainRouter
 from app.api.v1.connector import router as ConnectorRouter
 from app.api.v1.llmchat import chat_router
 from app.api.v1.provider import router as ProviderRouter
+from app.api.v1.provider import vectordb as vectordb
 from app.api.v1.connector import cap_router as capabilityrouter
 from app.api.v1.connector import inference_router as inference_router
 from app.api.v1.connector import actions as actions
 from app.api.v1.provider import sample as sample_sql
 from app.api.v1.auth import login as login
 import app.services.connector_details as commonservices
+
+from fastapi.responses import HTMLResponse
 
 
 # from app.providers.middleware import AuthMiddleware
@@ -27,6 +30,10 @@ from loguru import logger
 import app.services.connector as svc
 import app.services.provider as provider_svc
 from app.utils.database import SessionLocal, Base, engine
+
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
+from typing import Optional
 
 session = SessionLocal()
 
@@ -52,75 +59,53 @@ def create_app(config):
     Base.metadata.create_all(bind=engine)
 
 
-    logger.info("initializing vector store")
-    vectore_store = container.vectorstore().load_class()
-    vectore_store.connect()
-
     logger.info("initializing plugin providers")
     err = provider_svc.initialize_plugin_providers(session)
     if err is not None:
         logger.critical(err)
 
-    err = commonservices.check_configurations_availability(session)
-    datasources = []
+    logger.info("initializing vector store")
+    err = provider_svc.initialize_vectordb_provider(session)
+    if err is not None:
+        logger.critical(err)
 
-    if err is None:
-        logger.info("checking execution mode")
-
-        logger.info("getting existing models and plugins configurations")
-        configuration_yaml = svc.get_inference_and_plugin_configurations(session)
-
-        logger.info("initializing datasource using container")
-        container.config.from_dict(configuration_yaml)
-        datasources = container.datasources()
-
-        logger.info("setting datasources and inference details into configuration")
-        config['datasources'] = configuration_yaml.get("datasources", [])
-        config['models'] = configuration_yaml.get("models", [])
-        id_name_mappings = configuration_yaml.get("mappings", {})
-        config["use_case"] = svc.get_use_cases(session)
-
-
-        configs.inference_llm_model=config["models"][0]["unique_name"] if len(config["models"]) > 0 else None
-
-        if len(config["datasources"]) >0:
-            datasources, err = svc.update_datasource_documentations(session, vectore_store, datasources, id_name_mappings)
-            if err is not None:
-                logger.error("Error loading data into vector store")
+    logger.info("initializing Vector Embeddings")
+    err = provider_svc.initialize_embeddings(session)
+    if err is not None:
+        logger.critical(err)
 
 
     logger.info("creating local context storage")
     context_storage = ContextStorage(session)
 
-    logger.info("initializing chain")
-    query_chain = QueryChain(config, vectore_store, datasources, context_storage)
-    general_chain = GeneralChain(config, vectore_store, datasources, context_storage)
-    capability_chain = CapabilityChain(config, context_storage, datasources)
-    metadata_chain = MetadataChain(config, vectore_store, datasources, context_storage)
-    intent_chain = IntentChain(config, vectore_store, datasources, context_storage, query_chain, general_chain, capability_chain, metadata_chain)
-
-
-
+    
     logger.info("creating llm fast_api server")
     app = FastAPI()
 
-    app.mount("/assets",StaticFiles(directory="assets"), name="assets")
+    app.mount("/assets",StaticFiles(directory="./assets"), name="assets")
+    app.mount("/ui/assets",StaticFiles(directory="./ui/dist/assets",  html=True), name="ui", )
+
+    templates = Jinja2Templates(directory="./ui/dist")
+
+    @app.get("/ui", response_class=HTMLResponse)
+    @app.get("/ui/{full_path:path}", response_class=HTMLResponse)
+    def serve_home(request: Request, full_path: Optional[str]=""):
+        if request:
+            return templates.TemplateResponse("index.html", context= {"request": request}) 
+        else:
+            return templates.TemplateResponse("index.html") 
 
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
         allow_credentials=True,
-        allow_methods=["OPTIONS", "GET", "POST"],
+        allow_methods=["OPTIONS", "GET", "POST", "DELETE"],
         allow_headers=["*"],
     )
 
     logger.info("setting chain, vector store into app context")
     app.config = config
     app.container = container
-    app.vector_store = vectore_store
-
-    app.metadata_chain = metadata_chain
-    app.chain = intent_chain
     app.context_storage = context_storage
 
     app.include_router(MainRouter,prefix="/api/v1/query")
@@ -132,6 +117,7 @@ def create_app(config):
     app.include_router(actions, prefix="/api/v1/actions")
     app.include_router(sample_sql, prefix="/api/v1/sql")
     app.include_router(login, prefix="/api/v1/auth")
+    app.include_router(vectordb, prefix="/api/v1/vectordb")
 
     curr_schema = app.openapi()
     curr_schema["info"]["title"] = "Rag genie Chat API"

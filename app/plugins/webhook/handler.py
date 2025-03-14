@@ -14,7 +14,7 @@ class Webhook(BasePlugin, PluginMetadataMixin, MessagePlugin, Formatter):
     Website class for interacting with website data.
     """
 
-    def __init__(self, webhook_url:str, webhook_method: str, webhook_headers: dict):
+    def __init__(self, connector_name : str, webhook_url:str, webhook_method: str, webhook_headers: dict):
         super().__init__(__name__)
 
         self.connection = {}
@@ -73,7 +73,7 @@ class Webhook(BasePlugin, PluginMetadataMixin, MessagePlugin, Formatter):
     def send(self, params:dict=None):
         if params is None:
             params = {}
-            
+        
         url = self.params.get('url')
         method = self.params.get('method').upper()
         header_string = self.params.get('headers', '{}')

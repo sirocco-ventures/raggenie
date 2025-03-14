@@ -1,3 +1,4 @@
+from app.chain.modules.document_retriever import DocumentRetriever
 from app.chain.modules.input_formatter import InputFormatter
 
 from app.chain.modules.intent_history_checker import IntentHistoryChecker
@@ -50,10 +51,11 @@ class IntentChain:
         self.context_retriver = ContextRetreiver(self.common_context, context_store)
         self.intent_history_checker = IntentHistoryChecker(self.common_context, model_configs, self.data_sources, capability_chain)
         self.intent_extractor = IntentExtracter(self.common_context, model_configs, self.data_sources)
+        self.document_retriever = DocumentRetriever(self.vector_store, self.data_sources)
         self.post_processor = PostProcessor()
         self.router = Router(self.common_context, self.post_processor, intent_chain, general_chain, capability_chain, metadata_chain)
 
-        self.input_formatter.set_next(self.context_retriver).set_next(self.intent_history_checker).set_next(self.intent_extractor).set_next(self.router).set_next(self.post_processor)
+        self.input_formatter.set_next(self.context_retriver).set_next(self.document_retriever).set_next(self.intent_history_checker).set_next(self.intent_extractor).set_next(self.router).set_next(self.post_processor)
 
         self.handler =  self.input_formatter
 

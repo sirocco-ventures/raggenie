@@ -24,7 +24,7 @@ function ChatHistorySideBar({handleNavigateChatContext=()=>{}, onCreateNewChat=(
 
 const formattedData = chatHistory.reduce((acc, chat) => {
   
-    const { chatContextId, chatQuery, date } = chat;
+    const { chatContextId, chatQuery, date, chatConfigurationId } = chat;
 
     // Format the date to "MONTH YEAR"
     const formattedDate = formatDate(date);
@@ -40,6 +40,7 @@ const formattedData = chatHistory.reduce((acc, chat) => {
     // Add the message to the appropriate date group
     acc[formattedDate].chatQuery.push({
         contextId: chatContextId,
+        configId: chatConfigurationId,
         message: chatQuery
     });
 

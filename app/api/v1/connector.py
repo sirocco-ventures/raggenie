@@ -1,4 +1,5 @@
-from typing import Optional
+from typing import List, Optional
+from app.providers.cache_manager import cache_manager
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 import app.schemas.connector as schemas
@@ -27,7 +28,7 @@ inference_router = APIRouter()
 actions = APIRouter()
 
 @router.get("/list", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
-def list_connectors(db: Session = Depends(get_db), provider_category_id: Optional[int] = None ):
+def list_connectors(db: Session = Depends(get_db), provider_category_ids:  Optional[List[int]] = None, user_data: dict = Depends(verify_token)):
 
     """
     Retrieves a list of all connectors from the database. If a provider category ID is provided, only connectors from that category are returned.
@@ -38,11 +39,11 @@ def list_connectors(db: Session = Depends(get_db), provider_category_id: Optiona
     Returns:
         CommonResponse: A response containing either the list of connectors or an error message.
     """
-
-    if provider_category_id:
-        result, error = svc.list_connectors_by_provider_category(provider_category_id, db)
+    user_id = user_data["user_id"]
+    if provider_category_ids:
+        result, error = svc.list_connectors_by_provider_category(provider_category_ids, db, user_id)
     else:
-        result, error = svc.list_connectors(db)
+        result, error = svc.list_connectors(db, user_id)
 
     if error:
         return commons.is_error_response("DB Error", result, {"connectors": []})
@@ -122,7 +123,7 @@ async def upload_document_datsource(
     )
 
 @router.post("/create", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
-def create_connector(connector: schemas.ConnectorBase, db: Session = Depends(get_db)):
+def create_connector(connector: schemas.ConnectorBase, db: Session = Depends(get_db), user_data: dict = Depends(verify_token)):
 
     """
     Creates a new connector in the database.
@@ -134,8 +135,8 @@ def create_connector(connector: schemas.ConnectorBase, db: Session = Depends(get
     Returns:
         CommonResponse: A response indicating success or failure of the connector creation process.
     """
-
-    result, error = svc.create_connector(connector, db)
+    user_id = user_data["user_id"]
+    result, error = svc.create_connector(connector, db, user_id)
     if error:
         return commons.is_error_response("Connector Not Created", error, {"connector": {}})
 
@@ -178,7 +179,7 @@ def update_connector(connector_id: int, connector: schemas.ConnectorUpdate, db: 
         error=None
     )
 
-@router.delete("/delete/{connector_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+@router.post("/delete/{connector_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_connector(connector_id: int, db: Session = Depends(get_db)):
 
     """
@@ -242,7 +243,7 @@ def updateschemas(connector_id: int, connector: schemas.SchemaUpdate, db: Sessio
 
 
 @router.get("/configuration/list", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
-def list_configurations(db: Session = Depends(get_db)):
+def list_configurations(db: Session = Depends(get_db), user_data: dict = Depends(verify_token)):
 
     """
     Lists all available configurations from the database.
@@ -253,8 +254,8 @@ def list_configurations(db: Session = Depends(get_db)):
     Returns:
         CommonResponse: A response containing the list of configurations or an error message.
     """
-
-    result, error = svc.list_configurations(db)
+    user_id = user_data["user_id"]
+    result, error = svc.list_configurations(db, user_id)
 
     if error:
         return commons.is_error_response("DB error", result, {"configurations": []})
@@ -269,9 +270,66 @@ def list_configurations(db: Session = Depends(get_db)):
         error=None,
         data={"configurations": result}
     )
+    
+@router.get("/configuration/{config_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+def get_configuration(config_id: int, db: Session = Depends(get_db)):
+    """
+    Retrieves a configuration by its ID.
+
+    Args:
+        config_id (int): ID of the configuration to retrieve.
+        db (Session): Database session dependency.
+
+    Returns:
+        CommonResponse: A response containing the configuration or an error message.
+    """
+    result, error = svc.get_configuration(db, config_id)
+
+    if error == "DB Error":
+        return commons.is_error_response("DB error", result, {"configuration": None})
+
+    if error == "Configuration not found":
+        return commons.is_none_reponse("Configuration Not Found", {"configuration": None})
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message="Configuration retrieved successfully",
+        error=None,
+        data={"configuration": result}
+    )
+    
+@router.delete("/configuration/{config_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+def get_configuration(config_id: int, db: Session = Depends(get_db)):
+    """
+    Retrieves a configuration by its ID.
+
+    Args:
+        config_id (int): ID of the configuration to retrieve.
+        db (Session): Database session dependency.
+
+    Returns:
+        CommonResponse: A response containing the configuration or an error message.
+    """
+    result, error = svc.delete_configuration(db, config_id)
+
+    if error == "DB Error":
+        return commons.is_error_response("DB error", result, {"configuration": None})
+
+    if error == "Configuration not found":
+        return commons.is_none_reponse("Configuration Not Found", {"configuration": None})
+
+    return resp_schemas.CommonResponse(
+        status=True,
+        status_code=200,
+        message="Configuration deleted successfully",
+        error=None,
+        data={"configuration": result}
+    )
+
 
 @router.post("/configuration/create", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
-def create_configuration(configuration: schemas.ConfigurationCreation, db: Session = Depends(get_db)):
+def create_configuration(configuration: schemas.ConfigurationCreation, db: Session = Depends(get_db), user_data: dict = Depends(verify_token)):
 
     """
     Creates a new configuration and stores it in the database.
@@ -283,8 +341,8 @@ def create_configuration(configuration: schemas.ConfigurationCreation, db: Sessi
     Returns:
         CommonResponse: A response indicating the success or failure of the configuration creation.
     """
-
-    result, error = svc.create_configuration(configuration, db)
+    user_id = user_data["user_id"]
+    result, error = svc.create_configuration(configuration, db, user_id)
 
     if error:
         return commons.is_error_response("DB error", result, {"configuration": []})
@@ -505,8 +563,10 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     configs.inference_llm_model=inference_config[0]["unique_name"]
 
     config = request.app.config
-    vectore_store = request.app.vector_store
-    vectore_store.connect()
+    vector_store, is_error = provider_svc.create_vectorstore_instance(db, config_id)
+    if vector_store:
+        vector_store.connect()
+        vector_store.clear_collection(config_id)
     context_storage = request.app.context_storage
 
     data_sources = combined_yaml_content["datasources"]
@@ -516,31 +576,38 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     config["datasources"] = data_sources
     config["models"] = inference_config
 
-    confyaml = svc.get_inference_and_plugin_configurations(db)
+    confyaml = svc.get_inference_and_plugin_configurations(db, config_id)
     request.app.container.config.from_dict(confyaml)
     datasources = request.app.container.datasources()
 
     mappings = confyaml.get("mappings",{})
-    datasources, err = svc.update_datasource_documentations(db, vectore_store, datasources, mappings)
+    datasources, err = svc.update_datasource_documentations(db, vector_store, datasources, mappings, config_id)
     if err:
         logger.error("Error updating")
 
-
-    query_chain = QueryChain(config, vectore_store, datasources, context_storage)
-    general_chain = GeneralChain(config, vectore_store, datasources, context_storage)
+    query_chain = QueryChain(config, vector_store, datasources, context_storage)
+    general_chain = GeneralChain(config, vector_store, datasources, context_storage)
     capability_chain = CapabilityChain(config, context_storage, datasources)
-    metedata_chain = MetadataChain(config, vectore_store, datasources, context_storage)
+    metedata_chain = MetadataChain(config, vector_store, datasources, context_storage)
 
-    chain = IntentChain(config, vectore_store, datasources, context_storage, query_chain, general_chain, capability_chain, metedata_chain)
+    chain = IntentChain(config, vector_store, datasources, context_storage, query_chain, general_chain, capability_chain, metedata_chain)
 
-    request.app.chain = chain
+    cache_manager.set(config_id, {
+        "chain": chain,
+        "config": config,
+        "vector_store": vector_store,
+        "datasources": datasources,
+        "context_storage": context_storage
+    })
+    
+    
 
     return {
         "success": True,
         "error":None
     }
 
-@inference_router.post("/get/models", response_model=resp_schemas.CommonResponse)
+@inference_router.post("/get/models", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def get_llm_provider_models(llm_provider: schemas.LLMProviderBase):
     """
     Retrieves the models associated with the specified LLM provider.
@@ -813,7 +880,7 @@ def update_action(action_id: int, action: schemas.ActionsUpdate, db: Session = D
         error=None
     )
 
-@actions.delete("/{action_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
+@actions.post("/{action_id}", response_model=resp_schemas.CommonResponse, dependencies=[Depends(verify_token)])
 def delete_action(action_id: int, db: Session = Depends(get_db)):
 
     """

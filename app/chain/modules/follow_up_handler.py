@@ -27,7 +27,7 @@ class FollowupHandler(AbstractHandler):
         self.model_configs = model_configs
         self.common_context = common_context
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Handle the incoming request by processing follow-up queries and extracting parameters.
 
@@ -123,13 +123,13 @@ class FollowupHandler(AbstractHandler):
                     )
         
         if output["error"] is not None:
-            return Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
+            return await Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
 
         inference = parse_llm_response(output['content'])
         inference['params'].update({k: v for k, v in captured_params.items() if k not in inference['params']})
 
         response["inference"] = inference
         response["capability"] = capability
-        return super().handle(response)
+        return await super().handle(response)
 
 

@@ -17,10 +17,14 @@ class Connector(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
+    environment_id = Column(Integer, ForeignKey("environments.id"), nullable=False)
+    environment = relationship("Environment", back_populates="connectors")
 
     provider = relationship('Provider', back_populates='connectors')
-    actions = relationship('Actions', back_populates='connectors', cascade="all,delete")
-    sample_sql = relationship('SampleSQL', back_populates='connectors')
+    actions = relationship('Actions', back_populates='connectors', cascade="all, delete-orphan")
+    sample_sql = relationship('SampleSQL', back_populates='connectors', cascade="all, delete-orphan")
+    
+    configurations = relationship('ConfigurationConnectorMapping', back_populates='connector', cascade="all, delete")
 
 
 
@@ -36,9 +40,31 @@ class Configuration(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
+    
+    environment_id = Column(Integer, ForeignKey("environments.id"), nullable=False)
+    environment = relationship("Environment", back_populates="configurations")
 
     capabilities = relationship('Capabilities', back_populates='configuration', cascade="all,delete")
     inference_mapping = relationship('Inferenceconfigmapping', back_populates='configuration')
+    vectordb_config_mapping = relationship('VectorDBConfigMapping', back_populates='configuration')
+    chat_histories = relationship("ChatHistory", back_populates="configuration", cascade="all,delete") 
+
+    
+    connectors = relationship('ConfigurationConnectorMapping', back_populates='configuration', cascade="all, delete",lazy="joined")
+    
+    
+    
+class ConfigurationConnectorMapping(Base):
+    __tablename__ = 'configuration_connector_mapping'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    configuration_id = Column(Integer, ForeignKey('configurations.id'),nullable=False)
+    connector_id = Column(Integer, ForeignKey('connectors.id'),nullable=False)
+    
+    configuration = relationship('Configuration', back_populates='connectors')
+    connector = relationship('Connector', back_populates='configurations')
+
+
 
 
 

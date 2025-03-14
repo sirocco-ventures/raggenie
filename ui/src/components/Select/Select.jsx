@@ -4,7 +4,7 @@ import style from './Select.module.css';
 
 
 
-const Select = ({label, placeholder, options, value, hasError = false, errorMessage = "", onChange, ...props}) => {
+const Select = ({label, disabled = false , placeholder, options, value, hasError = false, errorMessage = "", onChange, noMargin, ...props}) => {
     const [selectedOption, setSelectedOption] = useState(null);
 
     const handleChange = (option) => {
@@ -87,15 +87,17 @@ const Select = ({label, placeholder, options, value, hasError = false, errorMess
     };
 
     return (
-        <div className={style.SelectContainer}>
-            <h4 className={style.SelectLabel}>{label}</h4>
+        <div className={`${noMargin ? '' : style.SelectContainer}`}>
+            {noMargin ? '' : <h4 className={style.SelectLabel}>{label}</h4>}
             <DropdownSelect
                 value={selectedOption}
                 onChange={handleChange}
                 options={options}
                 placeholder={placeholder}
+                isDisabled={disabled}
                 styles={customStyles}
                 {...props}
+
             />
              {errorMessage !== "" && <span className={style.ErrorMessage}>{errorMessage}</span>}
         </div>

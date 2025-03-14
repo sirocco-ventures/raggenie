@@ -4,6 +4,7 @@ from loguru import logger
 
 from app.repository import connector as repo
 from sqlalchemy.orm import Session
+from app.vectordb import chromadb, mongodb, loader
 
 
 def test_plugin_connection(db_configs, config, provider_class):
@@ -15,7 +16,8 @@ def test_plugin_connection(db_configs, config, provider_class):
             params[conf.field] = config.provider_config[conf.slug]
 
     params = {
-        "type": provider_class,
+        "type" : provider_class,
+        "connector_name" : config.connector_name,
         "params": params,
     }
 
@@ -34,7 +36,7 @@ def test_plugin_connection(db_configs, config, provider_class):
 
     return True, "Test Credentials successfully completed"
 
-def get_plugin_metadata(db_configs, config, provider_class):
+def get_plugin_metadata(db_configs, config, connector_name, provider_class):
 
     params = {}
     for conf in db_configs:
@@ -43,7 +45,8 @@ def get_plugin_metadata(db_configs, config, provider_class):
         else:
             params[conf.field] = config.get(conf.slug, "")
     params = {
-        "type": provider_class,
+        "type" : provider_class,
+        "connector_name" : connector_name,
         "params": params,
     }
 
@@ -84,3 +87,33 @@ def check_configurations_availability(db: Session)-> Any:
         return "Connector not found"
 
     return None
+
+
+def test_vector_db_credentials(db_config, config, key):
+    if isinstance(db_config.config, list):
+        configs = [i.get("slug") for i in db_config.config if isinstance(i, dict)]
+        flag = any(con == d_conf for con in configs for d_conf in config.vectordb_config)
+
+        if not flag:
+            return f"Missing required config key: {db_config.key}", True
+
+        vectordb_config = config.vectordb_config.copy()
+        vectordb_config.pop("key", None)
+        vectorloader = loader.VectorDBLoader(config={"name":db_config.key, "params":vectordb_config}).load_class()
+        err = vectorloader.connect()
+
+        if err is not None:
+            return f"Failed to connect to {db_config.key}: {err}", True
+
+        err = vectorloader.health_check()
+
+        if err is not None:
+            return f"Failed to connect to {db_config.key}: {err}", True
+
+    return f"{db_config.key} Test Credential Successfully Completed", False
+
+
+
+
+
+

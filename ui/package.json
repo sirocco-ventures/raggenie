@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "prebuild": "vite build --config vite.library.config.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest"
@@ -38,6 +39,7 @@
     "eslint-plugin-react": "^7.37.1",
     "jsdom": "^25.0.1",
     "vite": "^5.3.1",
+    "vite-plugin-css-injected-by-js": "^3.5.2",
     "vitest": "^2.1.3"
   }
 }

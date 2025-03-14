@@ -1,4 +1,5 @@
 
+from app.loaders.ollama.loader import OllamaModelLoader
 from app.loaders.togethor.loader import TogethorModelLoader
 from app.loaders.openai.loader import OpenAiModelLoader
 from app.loaders.ai71.loader import Ai71ModelLoader
@@ -19,6 +20,8 @@ class BaseLoader:
                         loader = OpenAiModelLoader(model_config = model)
                     case "ai71":
                         loader = Ai71ModelLoader(model_config = model)
+                    case "ollama":
+                        loader = OllamaModelLoader(model_config = model)
                     case _ :
                         raise ValueError(f"Model with the inference provider '{model['kind']}' with the unique name '{unique_name}' was not found")
                 return loader

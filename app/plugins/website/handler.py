@@ -14,12 +14,12 @@ class Website(BasePlugin, PluginMetadataMixin,RemoteDataPlugin,  Formatter):
     Website class for interacting with website data.
     """
 
-    def __init__(self, website_url:str, depth : int = 1, headers: str = "{}"):
+    def __init__(self, connector_name : str, website_url:str, depth : int = 1, headers: str = "{}"):
         super().__init__(__name__)
 
         self.connection = {}
 
-        # common
+        self.connector_name = connector_name.replace(' ','_')
         self.params = {
             'url': website_url,
             "depth":  depth,

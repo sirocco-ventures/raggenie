@@ -13,10 +13,12 @@ import GetService from 'src/utils/http/GetService';
 import { API_URL } from 'src/config/const';
 import PostService from 'src/utils/http/PostService';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+
 
 const Deploy = () => {
 
-
+  const navigate = useNavigate()
   const [currentConfigID, setCurrentConfigID] = useState(undefined)
   const [disabledGenerateYAMLButton, setDisabledGenerateYAMLButton] = useState(true)
 
@@ -36,7 +38,9 @@ const Deploy = () => {
           }else{
               setDisabledGenerateYAMLButton(true)
           }
-      })
+      }).catch(() => {
+        navigate('/error')
+    })
     }
 
   const generateYMAL = ()=>{
@@ -54,15 +58,11 @@ const Deploy = () => {
 
   return (
     <div>
-      <DashboardBody title="Deploy URL">
       <div className={style.DeployURLContainer}>
       <TitleDescriptionContainer>
           <TitleDescription orderNumber={1} title='Restart your Chatbot' description='Deploy your chatbot to experience real-time updates based on your configuration changes.' />
         </TitleDescriptionContainer>
       <div className={`${style.DeployPageButton}`}>
-        <Link to={"/bot-configuration"}>
-          <Button type="soild" className={`${style.LightButton}`}> Go to Bot Configuration<img src={rightArraow} alt="right-arrow"/></Button>
-        </Link>
         <Button onClick={generateYMAL} disabled={disabledGenerateYAMLButton} > 
           Restart Chatbot  <RiRestartLine/>
         </Button>
@@ -79,7 +79,6 @@ const Deploy = () => {
           <RouteTab Deployroutes={deployTabroutes} />
         </div>
       </div>
-      </DashboardBody>
     </div>
   );
 };

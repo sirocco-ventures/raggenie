@@ -7,13 +7,15 @@ import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from "react-router-dom"
 import EmptyPreview from "./EmptyPreview"
 import { getConnectors } from "src/services/Connectors"
-import { getBotConfiguration, restartBot } from "src/services/BotConfifuration"
+import { getBotConfiguration, getBotConfigurationById, restartBot } from "src/services/BotConfifuration"
 import { toast } from "react-toastify"
 import { isEmptyJSON } from "src/utils/utils"
+import useAppSettings from "src/store/authStore";
 
 
-const PreviewChatBox = ({urlPrex = "/preview"})=>{ 
 
+const PreviewChatBox = ({urlPrex = "/preview", selectedOption, setSelectedOption})=>{ 
+    const { envID } = useAppSettings();
     const [feedbackStatus, setFeedbackStatus] = useState(false); // for dislike and like activation
     const [currentConfigID, setCurrentConfigID] = useState(0)
     const [conversations, setConversation] = useState([])
@@ -32,18 +34,15 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
     const navigate = useNavigate()
     const messageBoxRef = useRef(null)
 
-
     const chatQuery = (message)=>{
 
         setCurrentChat({isBot: false, message: message})
         
             let axiosConfig = {
-                headers: {
-                    "x-llm-context-id": contextId
-                }
+                headers: {}
             }
             setIsChatLoading(true)
-            PostService(API_URL + "/query/query",
+            PostService(API_URL + `/query/query?contextId=${contextId}&configId=${currentConfigID}&envId=${envID}`,
                     { "content": message, "role":"user" }, {showLoader: false,allowAuthHeaders:true}, axiosConfig).then(response=>{
                        
                 let res = response.data
@@ -116,21 +115,24 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
                 tempChat.push({isBot: true, message: chat.chat_answer.content, error:  isEmptyJSON(chat.chat_answer.error) ? "" : chat.chat_answer.error, entity: chat.chat_answer.main_entity, format: chat.chat_answer.main_format, kind: chat.chat_answer.kind, data: chatData })
             })
             setConversation(tempChat)
+        }).catch(() => {
+            navigate('/error')
         })
     }
 
 // ===================CHAT HISTROY START==============================
     const getChatHistory = () => {
-        GetService(API_URL + "/chat/list/context/all",{},{allowAuthHeaders:false}).then(response => {  
+        GetService(API_URL + `/chat/list/context/all/${envID}`,{},{allowAuthHeaders:false}).then(response => {  
             let chatHistory = []; 
             let chats = response.data.data.chats;
-    
+            
             chats?.map((item) => {
                 chatHistory.push({
                     chatId: item.chat_id,
                     chatContextId: item.chat_context_id,
                     chatQuery: item.chat_query,
                     chatSummary: item.chat_summary,
+                    chatConfigurationId: item.configuration_id,
                     date: new Date(item.created_at), // Convert date string to Date object
                 });
             });     
@@ -147,7 +149,12 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
         navigate(`${urlPrex}/${generateContextUUID()}/chat`)
       }
 
-    const handleNavigateChatContext=(e, contextId)=>{
+    const handleNavigateChatContext=(e, contextId, configId)=>{
+        getBotConfigurationById(configId).then((response) => { 
+            const option = { value: configId, label: response.data?.data?.configuration?.name }
+            setSelectedOption(option)
+        })
+        setCurrentConfigID(configId)
         navigate(`${urlPrex}/${contextId}/chat`)    
     }
 
@@ -167,7 +174,6 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
         getBotConfiguration().then(response=>{
             let configs = response.data?.data?.configurations
             if(configs?.length > 0){
-                setCurrentConfigID(configs[0].id)
                 if(configs[0].inference[0]?.id){
                     if(configs[0].status == 1){
                         setCurrentState(3)
@@ -219,6 +225,12 @@ const PreviewChatBox = ({urlPrex = "/preview"})=>{
     useEffect(()=>{
         getChatByContexts(contextId)
     }, [contextId])
+
+    useEffect(() => {
+        if (selectedOption?.value) {
+            setCurrentConfigID(selectedOption.value);
+        }
+    }, [selectedOption])
 
 
     useEffect(()=>{

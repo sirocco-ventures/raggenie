@@ -33,7 +33,7 @@ class IntentExtracter(AbstractHandler):
         self.common_context = common_context
         self.datasources = datasources
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Processes the request to extract the intent from the user's query.
 
@@ -51,6 +51,8 @@ class IntentExtracter(AbstractHandler):
         long_description = use_case.get("long_description", "")
         short_description = use_case.get("short_description", "")
         capabilities = use_case.get("capabilities", [])
+        rag = request.get("rag", {})
+        context = rag.get("context", {})
 
         capability_description = ""
         capability_names = ["out_of_context"]
@@ -66,23 +68,29 @@ class IntentExtracter(AbstractHandler):
         datasource_names = []
         for datasource in datasources:
             if datasource["name"] in self.datasources:
-                if self.datasources[datasource["name"]].__category__ == 2:
+                if self.datasources[datasource["name"]].__category__ in [2,5] and "metadata_inquiry" not in capability_names:
                     capability_names.append("metadata_inquiry")
                 name = datasource["name"]
                 description = datasource["description"]
+
                 capability_names.append(name)
                 datasource_names.append(name)
-                capability_description += f"{name} : {description}\n"
+                capability_description += f"\n{name} : {description}\n"
+                datasource_context = context[name]
+                for index,cont in enumerate(datasource_context[:2]):
+                    if index == 0:
+                        capability_description += f"{cont.get('document','')}\n"
+                    else:
+                        capability_description += f"{cont.get('document','')}\n"
+
                 
         response["available_datasources"] = datasource_names
 
         if "metadata_inquiry" in capability_names:
-            capability_description += "metadata_inquiry : queries about overview of available data, the structure of a database (including tables and columns), the meaning behind specific columns, eg: what kind of data you have? or list questions which can be asked?\n"
+            capability_description += "\n\nmetadata_inquiry : queries about overview of available data, the structure of a database (including tables and columns), the meaning behind specific columns, and the purpose within a database context, eg: what kind of data you have? or list questions which can be asked?\n"
 
-        contexts = request.get("context", [])
-        contexts = contexts[-5:] if len(contexts) >= 5 else contexts
-
-        previous_intent = contexts[-1].chat_answer["intent"] if len(contexts) > 0 else "None"
+        chat_contexts = request.get("context", [])
+        previous_intent = chat_contexts[-1].chat_answer.get("intent") if len(chat_contexts) > 0 else "None"
 
         prompt = """
         You are part of a chatbot system where you have to extract intent from users chats and match it with given intents.
@@ -133,7 +141,7 @@ class IntentExtracter(AbstractHandler):
         infernce_model = loader.load_model(configs.inference_llm_model)
 
         output, response_metadata = infernce_model.do_inference(
-                            prompt, contexts
+                            prompt, chat_contexts
                     )
         if output["error"] is not None:
             return Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
@@ -145,6 +153,6 @@ class IntentExtracter(AbstractHandler):
              "document_count" : 5,
              "schema_count" : 5
         }
-        return super().handle(response)
+        return await super().handle(response)
 
 
