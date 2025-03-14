@@ -25,7 +25,7 @@ const ChatConfigurationMain = ()=>{
         deleteBotConfiguration(configId).then(response=>{
             if(response.data.status == true){
                 toast.success("Configuration Deleted")
-                loadConnectors()
+                loadConfigurations()
             }else{
                 toast.error("Opps something went wrong")
             }

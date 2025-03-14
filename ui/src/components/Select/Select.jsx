@@ -56,12 +56,16 @@ const Select = ({label, disabled = false , placeholder, options, value, hasError
             ...provided,
             color: '#333'
         }),
-        multiValue: (provided)=>({
+        multiValue: (provided) => ({
             ...provided,
-            backgroundColor: "#74B3FF",
-            padding: "4px 6px",
-            color: "#FFFFFF",
-            borderRadius: "20px"
+            backgroundColor: '#74B3FF',
+            borderRadius: '20px',
+            padding: '3px 4px',
+            gap: '4px',
+            border: 'none',
+            display: 'flex',
+            alignItems: 'center'
+
         }),
         indicatorSeparator: (provided) => ({
             ...provided,
@@ -71,18 +75,25 @@ const Select = ({label, disabled = false , placeholder, options, value, hasError
             ...provided,
             color:"#888787"
         }),
-        multiValueLabel: (provided)=>({
+        multiValueLabel: (provided) => ({
             ...provided,
-            color: "#FFFFFF",
-            marginRight: "4px"
+            color: '#FFFFFF',
+            fontSize: '14px',
+            padding: '2px',
+            fontFamily: 'Inter',
         }),
-        multiValueRemove: (provided)=>({
+        multiValueRemove: (provided) => ({
             ...provided,
-            color:"#84BCFF",
-            backgroundColor: "#FFFFFF",
-            borderRadius: "20px",
-            cursor: "pointer"
-        })
+            color: '##84BCFF',
+            backgroundColor: '#fff',
+            cursor: 'pointer',
+            height: '18px',
+            width: '18px',
+            borderRadius: '100%',
+            ':hover': {
+                backgroundColor: '#FF7F6D',
+            }
+        }),
 
     };
 
