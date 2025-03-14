@@ -17,15 +17,12 @@ const ConfigurationList = ({ configurations = [], onConfigDelete }) => {
 
   const handleDelete = (config_id) => {
     confirmDialog(
-      "Confirmation",
-      "Are you sure you want to delete this?",
-      undefined,
-      undefined,
-      "Delete",
-      () => {
-        onConfigDelete(config_id);
-      }
-    );
+        "Confirmation",
+        "Are you sure you want to delete this?",
+        () => {
+          onConfigDelete(config_id);
+        }
+      );
   };
 
 

@@ -22,6 +22,8 @@ class ProviderBase(BaseModel):
     description: str
     icon: str
     category_id: int
+    actions_enabled: Optional[bool] = False,
+    actions_supported: List[str]
     enable: Optional[bool] = True
 
 class ProviderResp(ProviderBase):

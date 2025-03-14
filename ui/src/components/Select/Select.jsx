@@ -56,14 +56,6 @@ const Select = ({label, disabled = false , placeholder, options, value, hasError
             ...provided,
             color: '#333'
         }),
-        indicatorSeparator: (provided) => ({
-            ...provided,
-            display: 'none'
-        }),
-        placeholder:(provided)=>({
-            ...provided,
-            color:"#888787"
-        }),
         multiValue: (provided) => ({
             ...provided,
             backgroundColor: '#74B3FF',
@@ -74,6 +66,14 @@ const Select = ({label, disabled = false , placeholder, options, value, hasError
             display: 'flex',
             alignItems: 'center'
 
+        }),
+        indicatorSeparator: (provided) => ({
+            ...provided,
+            display: 'none'
+        }),
+        placeholder:(provided)=>({
+            ...provided,
+            color:"#888787"
         }),
         multiValueLabel: (provided) => ({
             ...provided,
@@ -91,9 +91,10 @@ const Select = ({label, disabled = false , placeholder, options, value, hasError
             width: '18px',
             borderRadius: '100%',
             ':hover': {
-                color: '#FF7F6D',
+                backgroundColor: '#FF7F6D',
             }
         }),
+
     };
 
     return (
@@ -109,7 +110,7 @@ const Select = ({label, disabled = false , placeholder, options, value, hasError
                 {...props}
 
             />
-             {errorMessage !== "" && <span className={style.errorMessage}>{errorMessage}</span>}
+             {errorMessage !== "" && <span className={style.ErrorMessage}>{errorMessage}</span>}
         </div>
     );
 };

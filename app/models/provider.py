@@ -26,6 +26,8 @@ class Provider(Base):
     icon = Column(String, nullable=False)
     category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
     enable = Column(Boolean, default=True)
+    actions_enabled = Column(Boolean, default=True)
+    actions_supported = Column(JSON, nullable=True, default=[])
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)

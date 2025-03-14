@@ -94,7 +94,9 @@ def initialize_plugin_providers(db:Session):
             "description":i["description"],
             "icon":i["icon"],
             "category_id":i["category"],
-            "key":i["plugin_name"]
+            "key":i["plugin_name"],
+            "actions_enabled": i["actions_enabled"],
+            "actions_supported": i["actions_supported"],
         })
 
         if is_error:
@@ -147,6 +149,8 @@ def list_providers(db: Session):
             icon=provider.icon,
             category_id=provider.category_id,
             key = provider.key,
+            actions_supported= provider.actions_supported,
+            actions_enabled = provider.actions_enabled,
             configs=[
                 {
                     'id': config.id,
@@ -197,6 +201,8 @@ def get_provider(provider_id: int,db: Session):
         'icon': provider.icon,
         'category_id': provider.category_id,
         'key': provider.key,
+        'actions_enabled': provider.actions_enabled,
+        'actions_supported': provider.actions_supported,
         'configs': [
             {
                 'id': config.id,
@@ -282,6 +288,8 @@ def test_credentials(provider_id: int, config: schemas.TestCredentials, db: Sess
         case 1:
             return test_plugin_connection(provider_configs, config, provider.key)
         case 2:
+            return test_plugin_connection(provider_configs, config, provider.key)
+        case 3:
             return test_plugin_connection(provider_configs, config, provider.key)
         case 4:
             return test_plugin_connection(provider_configs, config, provider.key)

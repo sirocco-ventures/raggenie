@@ -10,6 +10,8 @@ __description__ = 'MSSQL integration for handling MSSQL database operations.'
 __icon__ = '/assets/plugins/logos/mssql.svg'
 __category__ = 2
 
+__actions_enabled__ = False
+__actions_supported__ = []
 
 # Connection arguments
 __connection_args__ = OrderedDict(

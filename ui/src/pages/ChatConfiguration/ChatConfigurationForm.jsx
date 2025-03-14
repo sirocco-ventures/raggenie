@@ -20,7 +20,9 @@ import { v4 as uuid4 } from "uuid"
 import Capability from './Capability/Capability';
 import Modal from 'src/components/Modal/Modal';
 import { deleteBotCapability, saveBotCapability, updateBotCapability } from 'src/services/Capability';
+import { getAllActions } from 'src/services/Action';
 import { getBotConfiguration, getBotConfigurationById, getLLMProviders, getVectorDBList, saveBotConfiguration, saveBotInferene, saveVectorDB, testInference, testVectorDB} from 'src/services/BotConfifuration';
+import confirmDialog from 'src/utils/ConfirmDialog';
 import NotificationPanel from 'src/components/NotificationPanel/NotificationPanel';
 import PostService from 'src/utils/http/PostService';
 import ToastIcon from "./assets/ToastIcon.svg"
@@ -49,7 +51,7 @@ const BotConfiguration = () => {
     const [activeTab, setActiveTab] = useState("configuration")
     const [selectedProvider, setSelectedProvider] = useState()
     const [capabalities, setCapabalities] = useState([])
-
+    const [actions, setActions] = useState([])
     const [llmModels, setllmModels] = useState([])
     const [vectordbId,setVectorDbID] = useState()
 
@@ -94,6 +96,16 @@ const BotConfiguration = () => {
             }
           );
     } 
+
+    const getActionsList = ()=>{
+        getAllActions().then(response=>{
+            let tempAcitions = [];
+            response.data?.data?.actions?.map(item=>{
+                tempAcitions.push({id: item.id, name: item.name})
+            });
+            setActions(tempAcitions)
+        })
+    }
 
     const ToastCloseButton = ({ closeToast }) => {
         return (
@@ -376,14 +388,14 @@ const onInferanceSave = (data) => {
 
 
         if (capabilityId == "") {
-            saveBotCapability(currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements).then(response => {
+            saveBotCapability(currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements, formData.getAll("actions[]")).then(response => {
                 toast.success("Capability Saved Successfully")
             }).catch(() => {
                 toast.error("Capability save failed")
             })
 
         } else {
-            updateBotCapability(capabilityId, currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements).then(response => {
+            updateBotCapability(capabilityId, currentConfigID, formData.get("capability-name"), formData.get("capability-description"), requirements, formData.getAll("actions[]")).then(response => {
                 toast.success("Capability Updated Successfully")
             }).catch(() => {
                 toast.error("Capability update failed")
@@ -392,8 +404,22 @@ const onInferanceSave = (data) => {
 
     }
 
-    const deleteCapability = (capabilityIndex, capabilityId) => {
-        deleteBotCapability(capabilityId).then(() => toast.success("Capability Deleted Successfully")).catch(() => toast.error("Capability Deletion Failed"))
+    const deleteCapability = (capabilityIndex, capabilityId)=>{
+        confirmDialog("Do you want to delete this", "" ,()=>{
+            if(capabilityId){
+                deleteBotCapability(capabilityId).then(()=>{
+                    toast.success("Capability deleted")
+                    let capabilityContainer = document.querySelector(`[data-capability-index='${capabilityIndex}']`)
+                    capabilityContainer.remove()
+                }).catch(()=>toast.error("Capability deletion failed"))
+            }else{
+                let capabilityContainer = document.querySelector(`[data-capability-index='${capabilityIndex}']`)
+                capabilityContainer.remove()
+            }
+
+        })
+        
+       
     }
 
     const onClickNewParams = (capabilityId, capabilityIndex) => {
@@ -529,6 +555,7 @@ const onInferanceSave = (data) => {
     useEffect(() => {
         getLLMModels();
         getConnectorsList();
+        getActionsList();
     }, [])
 
     const getConnectorsList = async () => {
@@ -693,7 +720,7 @@ const onInferanceSave = (data) => {
                     )}
 
                 </Tab>
-                <Tab title="Capabilities" disabled={activeInferencepiontTab} tabKey="capabalities" key={"capabalities"}>
+                <Tab title={<>Capabilities <span className="beta-tag">Beta</span></>} disabled={activeInferencepiontTab} tabKey="capabalities" key={"capabalities"}>
                     <div style={{ marginBottom: "30px" }}>
                         <h4>Capabilities details</h4>
                         <p>Explore and define the functionalities offered by the plugin. By incorporating additional capabilities, you can maximize its benefits and fully leverage the plugin's potential.</p>
@@ -712,6 +739,8 @@ const onInferanceSave = (data) => {
                                 name={item.name}
                                 description={item.description}
                                 parameters={item.requirements}
+                                actions={item.actions}
+                                actionsList={actions}
                                 isCollapse={item.isCollapse}
                                 onCapabilitySave={onSaveCapability}
                                 onParamEdit={editParameter}
