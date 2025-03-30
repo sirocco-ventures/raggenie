@@ -6,6 +6,11 @@ export const getSamples = ()=>{
     return GetService(API_URL + "/sql/list")
 }
 
+export const deleteSamples = (sampleId)=>{
+    return PostService(API_URL + `/sql/delete/${sampleId}`)
+
+}
+
 export const saveSamples = (sampleId, data)=>{
     let apiURL = "/sql/create";
     if(sampleId){
