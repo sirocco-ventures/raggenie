@@ -2,6 +2,8 @@ from app.base.abstract_handlers import AbstractHandler
 from loguru import logger
 from typing import Any
 from app.providers.container import Container
+import asyncio
+
 
 
 class DocumentRetriever(AbstractHandler):
@@ -12,7 +14,7 @@ class DocumentRetriever(AbstractHandler):
     process similar documents from a vector store based on the input question.
     """
 
-    def __init__(self,store):
+    def __init__(self,store, datasources):
         """
         Initialize the DocumentRetriever.
 
@@ -22,9 +24,10 @@ class DocumentRetriever(AbstractHandler):
 
         self.store =store
         self.context_relevance_threshold = 4
+        self.datasources = datasources
 
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Handle the incoming request by retrieving relevant documents.
 
@@ -37,36 +40,32 @@ class DocumentRetriever(AbstractHandler):
 
         logger.info("passing through => document_retriever")
         response = request
-        datasources = request['rag_filters']["datasources"]
-        document_count = request['rag_filters']["document_count"]
-        intent = request["intent_extractor"]["intent"]
-        out = self.store.find_similar_documentation(datasources, request["question"], document_count)
-
+        tasks = [
+                self.store.find_similar_documentation(datasource, request['question'], 10)
+                for datasource in self.datasources
+            ]
+        results = await asyncio.gather(*tasks)
 
 
         logger.info("sorting retrieved documents")
-        if out and len(out) > 0 and out[0]['distances'] < self.context_relevance_threshold:
+        for index, out in enumerate(results):
+            opt_doc = []
+            if out and len(out) > 0 and out[0]['distances'] < self.context_relevance_threshold:
+                distances = [doc['distances'] for doc in out]
+                if len(out) > 5:
+                    clusters = Container.clustering().kmeans(distances, 2)
+                    shortest_cluster = clusters[0]
+                    for doc in out:
+                        if doc['distances'] in shortest_cluster:
+                            opt_doc.append(doc)
+                else:
+                    opt_doc = out
 
-            distances = [doc['distances'] for doc in out]
-            if len(out) > 2 and intent != 'metadata_inquiry':
-                clusters = Container.clustering().kmeans(distances, 2)
-                shortest_cluster = clusters[0]
-                opt_doc = []
-                for doc in out:
-                    if doc['distances'] in shortest_cluster:
-                        opt_doc.append(doc)
-            else:
-                opt_doc = out
+            if "rag" not in response:
+                response["rag"]= {"context" : {}}
+            response["rag"]["context"][list(self.datasources.keys())[index]] = opt_doc
 
-            response["rag"]={
-                "context": opt_doc,
-            }
-        else:
-            response["rag"]={
-                "context": [],
-            }
-
-        return super().handle(response)
+        return await super().handle(response)
 
 
 

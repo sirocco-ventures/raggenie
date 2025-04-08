@@ -27,7 +27,7 @@ class OutputFormatter(AbstractHandler):
         self.common_context = common_context
 
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Formats the response based on the inference and query response.
 
@@ -69,8 +69,9 @@ class OutputFormatter(AbstractHandler):
             response["question"] = request["question"]
 
         response["query"] = input_data.get("query", '')
+        response["intent"] = request.get("intent_extractor", {}).get("intent","")
         response["summary"] = request.get("summary", '')
         logger.debug(f"content: {response.get("content")}")
 
 
-        return super().handle(response)
+        return await super().handle(response)

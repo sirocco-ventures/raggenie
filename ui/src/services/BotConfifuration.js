@@ -1,9 +1,18 @@
 import { API_URL } from "src/config/const"
+import DeleteService from "src/utils/http/DeleteService"
 import GetService from "src/utils/http/GetService"
 import PostService from "src/utils/http/PostService"
 
 export const getBotConfiguration = ()=>{
     return  GetService(API_URL + "/connector/configuration/list")
+}
+
+export const getBotConfigurationById = (configId)=>{
+    return GetService(API_URL + `/connector/configuration/${configId}`)
+}
+
+export const deleteBotConfiguration = (configId)=>{
+    return DeleteService(API_URL + `/connector/configuration/${configId}`)
 }
 
 
@@ -21,6 +30,7 @@ export const saveBotConfiguration = (configID, saveData = {})=>{
        short_description: saveData.botShortDescription,
        long_description: saveData.botLongDescription,
        name: saveData.botName,
+       connectors: saveData.connectors,
        status: 1,
        capabilities: []
    })

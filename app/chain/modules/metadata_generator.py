@@ -11,20 +11,25 @@ from app.chain.formatter.general_response import Formatter
 
 class MetadataGenerator(AbstractHandler):
 
-    def __init__(self, common_context , model_configs) -> None:
+    def __init__(self, common_context , model_configs, datasources) -> None:
         self.model_configs = model_configs
         self.common_context = common_context
+        self.datasources = datasources
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         response = request
         logger.info("passing through => Metadata description generator")
         rag = request["rag"]
-        dbcontexts = rag["context"]
-
         contexts = ""
-        for cont in dbcontexts:
-            datasource_name = cont['metadata'].get('datasource','').replace("_"," ")
-            contexts += "Plugin/Database Name: "+ datasource_name + "\n" + cont["document"] + "\n\n"
+        for datasource_name, handler in self.datasources.items():
+            if handler.__category__ in [2,5]:
+                rag_contexts = rag.get("context", {}).get(datasource_name,"")
+                for index,cont in enumerate(rag_contexts):
+                    if index==0:
+                        contexts += "\n\n" + "Plugin/Database Name: "+ datasource_name + "\n" + cont["document"] 
+                    else:
+                        contexts +=  "\n" + cont["document"]
+                    
 
         prompt = """
             You are part of a chatbot system where you need to answer user questions based on the given database schema and context.
@@ -52,7 +57,7 @@ class MetadataGenerator(AbstractHandler):
 
         prompt = Template(prompt).safe_substitute(question = request["question"], context =contexts)
         response["prompt"] = prompt
-
+        logger.info(f"prompt:{prompt}")
         chat_history = []
         if "context" in request and len(request["context"]) > 0:
             chat_history = request["context"]
@@ -65,9 +70,9 @@ class MetadataGenerator(AbstractHandler):
                             prompt, chat_history
                     )
         if output["error"] is not None:
-            return Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
+            return await Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
 
         response["inference"] = markdown_parse_llm_response(output['content'])
 
         response["summary"] = ""
-        return super().handle(response)
+        return await super().handle(response)

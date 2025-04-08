@@ -16,7 +16,7 @@ class SchemaRetriever(AbstractHandler):
         store (object): The data store used to find similar schemas.
     """
 
-    def __init__(self,store):
+    def __init__(self,store,datasources):
         """
         Initializes the SchemaRetriever with the provided store.
 
@@ -24,8 +24,10 @@ class SchemaRetriever(AbstractHandler):
             store (object): The data store used for schema retrieval.
         """
         self.store = store
+        self.datasources = datasources
 
-    def handle(self, request: Any) -> str:
+
+    async def handle(self, request: Any) -> str:
         """
         Retrieves similar schemas from the store and updates the response with the results.
 
@@ -40,13 +42,13 @@ class SchemaRetriever(AbstractHandler):
 
         response = request
 
-        datasources = request.get('rag_filters', {}).get("datasources", [])
         schema_count = request.get('rag_filters', {}).get("schema_count", 0)
 
         auto_context = "\n\n".join(cont.get("document", "") for cont in request.get("rag", {}).get("context", []))
+        intent = request.get("intent_extracter",{}).get("intent","")
 
-
-        out = self.store.find_similar_schema(datasources, request["question"] + "\n" + auto_context, schema_count)
+        datasource = self.datasources[intent]
+        out = await self.store.find_similar_schema(datasource, request["question"] + "\n" + auto_context, schema_count)
 
         if out and len(out) > 0:
             distances = [doc['distances'] for doc in out]
@@ -65,7 +67,7 @@ class SchemaRetriever(AbstractHandler):
                 "schema": [],
             })
 
-        return response
+        return await super().handle(response)
 
 
 

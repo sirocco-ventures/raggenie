@@ -62,12 +62,6 @@ def create_app(config):
     Base.metadata.create_all(bind=engine)
 
 
-    logger.info("initializing vector store")
-    vectore_store, is_error = provider_svc.create_vectorstore_instance(session)
-    if is_error is not None:
-        logger.critical(is_error)
-    err = vectore_store.connect()
-
     logger.info("initializing plugin providers")
     err = provider_svc.initialize_plugin_providers(session)
     if err is not None:
@@ -83,46 +77,11 @@ def create_app(config):
     if err is not None:
         logger.critical(err)
 
-    err = commonservices.check_configurations_availability(session)
-    datasources = []
-
-    if err is None:
-        logger.info("checking execution mode")
-
-        logger.info("getting existing models and plugins configurations")
-        configuration_yaml = svc.get_inference_and_plugin_configurations(session)
-
-        logger.info("initializing datasource using container")
-        container.config.from_dict(configuration_yaml)
-        datasources = container.datasources()
-
-        logger.info("setting datasources and inference details into configuration")
-        config['datasources'] = configuration_yaml.get("datasources", [])
-        config['models'] = configuration_yaml.get("models", [])
-        id_name_mappings = configuration_yaml.get("mappings", {})
-        config["use_case"] = svc.get_use_cases(session)
-
-
-        configs.inference_llm_model=config["models"][0]["unique_name"] if len(config["models"]) > 0 else None
-
-        if len(config["datasources"]) >0:
-            datasources, err = svc.update_datasource_documentations(session, vectore_store, datasources, id_name_mappings)
-            if err is not None:
-                logger.error("Error loading data into vector store")
-
 
     logger.info("creating local context storage")
     context_storage = ContextStorage(session)
 
-    logger.info("initializing chain")
-    query_chain = QueryChain(config, vectore_store, datasources, context_storage)
-    general_chain = GeneralChain(config, vectore_store, datasources, context_storage)
-    capability_chain = CapabilityChain(config, context_storage, query_chain)
-    metadata_chain = MetadataChain(config, vectore_store, datasources, context_storage)
-    intent_chain = IntentChain(config, vectore_store, datasources, context_storage, query_chain, general_chain, capability_chain, metadata_chain)
-
-
-
+    
     logger.info("creating llm fast_api server")
     app = FastAPI()
 
@@ -140,6 +99,7 @@ def create_app(config):
 
     app.mount("/assets",StaticFiles(directory="./assets"), name="assets")
     app.mount("/ui/assets",StaticFiles(directory="./ui/dist/assets",  html=True), name="ui", )
+    app.mount("/ui/dist-library", StaticFiles(directory="./ui/dist-library", html=True), name="embedbot")
 
     templates = Jinja2Templates(directory="./ui/dist")
 
@@ -155,17 +115,13 @@ def create_app(config):
         CORSMiddleware,
         allow_origins=["*"],
         allow_credentials=True,
-        allow_methods=["OPTIONS", "GET", "POST"],
+        allow_methods=["OPTIONS", "GET", "POST", "DELETE"],
         allow_headers=["*"],
     )
 
     logger.info("setting chain, vector store into app context")
     app.config = config
     app.container = container
-    app.vector_store = vectore_store
-
-    app.metadata_chain = metadata_chain
-    app.chain = intent_chain
     app.context_storage = context_storage
 
     app.include_router(MainRouter,prefix="/api/v1/query")

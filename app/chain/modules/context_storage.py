@@ -23,7 +23,7 @@ class ContextStorage(AbstractHandler):
         self.context_store = context_store
         self.common_context = context_store
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Handle the incoming request by storing the interaction in the context.
 
@@ -43,4 +43,4 @@ class ContextStorage(AbstractHandler):
         if "context_id" in request:
             self.context_store.insert_data(Chat(context_id = request["context_id"], question = request["question"], created_at = datetime.datetime.now(), answer = request["content"], summary = summary))
 
-        return super().handle(response)
+        return await super().handle(response)

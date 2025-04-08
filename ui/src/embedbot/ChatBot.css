@@ -213,13 +213,21 @@ body {
   outline: none;
   width: 330px;
   max-height: 133px;
-  overflow-y: scroll;
+  overflow-y: auto; 
   overflow-x: hidden;
   font-size: 16px;
-  word-wrap: break-word; /* Break long words onto the next line */
+  word-wrap: break-word;
   white-space: pre-wrap;
   display: flex;
   align-items: center;
+  scrollbar-width: none; /* Firefox */
+}
+
+/* hide srollbar */
+.chat-input::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  display: none;
 }
 
 .chat-input:empty::before {
@@ -281,9 +289,10 @@ body {
   width: 550px;
   border: 1px solid #E0E0E0;
   border-radius: 25px;
-  padding: 5px 20px 5px 20px;
-  /* min-height: 54px; */
+  padding: 5px 20px;
+  min-height: 44px;
   margin: 0 auto 18px;
+  align-items: center;
 }
 .input-div.large .chat-button {
   background-color: #F9F9F9;

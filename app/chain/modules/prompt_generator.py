@@ -13,25 +13,25 @@ class PromptGenerator(AbstractHandler):
     Attributes:
         common_context (dict): Shared context information used across handlers.
         model_configs (dict): Configuration settings for the model, including prompt injection settings.
-        data_sources (dict): Data sources for generating prompt contexts based on intent.
+        datasources (dict): Data sources for generating prompt contexts based on intent.
     """
 
 
-    def __init__(self, common_context , model_configs, data_sources) -> None:
+    def __init__(self, common_context , model_configs, datasources) -> None:
         """
         Initializes the PromptGenerator with common context, model configurations, and data sources.
 
         Args:
             common_context (dict): Shared context information used across handlers.
             model_configs (dict): Configuration settings for the model.
-            data_sources (dict): Data sources for generating prompt contexts based on intent.
+            datasources (dict): Data sources for generating prompt contexts based on intent.
         """
 
         self.model_configs = model_configs
         self.common_context = common_context
-        self.data_sources = data_sources
+        self.datasources = datasources
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Generates a prompt based on the incoming request and provided configurations.
         Args:
@@ -43,11 +43,12 @@ class PromptGenerator(AbstractHandler):
 
         logger.info("passing through => prompt_generator")
         response = request
+        intent = response["intent_extractor"]['intent']
 
         # Few shot prompting
         samples_retrieved = ""
-        recal_history = ""
 
+        recal_history = ""
         rag = request.get("rag", {})
         suggestions = rag.get("suggestions", [])
         for doc in suggestions:
@@ -55,10 +56,8 @@ class PromptGenerator(AbstractHandler):
             samples_retrieved += f"query: {doc.get('metadatas', {}).get('query', '')}\n\n"
 
 
-
-
         prompt_injection = self.model_configs.get("prompt_injection", {"mode": "auto"})
-        data_source = self.data_sources.get(self.common_context.get("intent", "default"))
+        data_source = self.datasources.get(self.common_context.get("intent", "default"))
 
         context = data_source.__prompt__
         prompt = context.base_prompt
@@ -72,7 +71,7 @@ class PromptGenerator(AbstractHandler):
                 **{**system_prompt_context["prompt_variables"]}
             )
         else:
-            auto_context = "\n\n".join(cont["document"] for cont in rag.get("context", []))
+            auto_context = "\n\n".join(cont["document"] for cont in rag.get("context", {}).get(intent,[]))
             auto_schema = "\n\n".join(schema["document"] for schema in rag.get("schema", []))
             system_prompt_context = context.system_prompt
             system_prompt = system_prompt_context.template.format(

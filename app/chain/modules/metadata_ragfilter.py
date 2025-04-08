@@ -18,7 +18,7 @@ class MetadataRagFilter(AbstractHandler):
             Processes the request to apply RAG filters and forwards it to the next handler.
     """
 
-    def handle(self, request: Any) -> str:
+    async def handle(self, request: Any) -> str:
         """
         Applies RAG filters to the request's response and forwards it to the next handler.
 
@@ -37,4 +37,4 @@ class MetadataRagFilter(AbstractHandler):
         }
 
 
-        return super().handle(response)
+        return await super().handle(response)

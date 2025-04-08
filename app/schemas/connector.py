@@ -55,6 +55,7 @@ class ConfigurationBase(BaseModel):
 
 class ConfigurationCreation(ConfigurationBase):
     capabilities: List[int]
+    connectors: List[int]
 
 
 
@@ -64,6 +65,7 @@ class ConfigurationUpdate(BaseModel):
     long_description: Optional[str] = None
     status: Optional[int] = 0
     capabilities: Optional[List[int]]=None
+    connectors: List[int]
 
 
 class InferenceBase(BaseModel):
@@ -90,6 +92,7 @@ class ConfigurationResponse(ConfigurationBase):
     capabilities: List[CapabilitiesBase]
     inference: Optional[List[InferenceResponse]]=None
     vectordb: Optional[List[VectorDBResponse]]=None
+    connector: Optional[List[ConnectorResponse]]=None
 
 class Actions(BaseModel):
     name: str
