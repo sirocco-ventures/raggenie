@@ -14,3 +14,13 @@
     margin-left: 4.23px;
     display: block;
 }
+
+.ErrorMessage {
+    color: #FF7F6D;
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px; /* 133.333% */
+    margin-left: 4px;
+}

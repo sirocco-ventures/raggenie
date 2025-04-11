@@ -24,12 +24,10 @@ const Configuration = ()=>{
 
     const onConnectorDelete = (connectorId)=>{
         deleteConnector(connectorId).then(response=>{
-            if(response.data.status == true){
-                toast.success("Plugin Deleted")
-                loadConnectors()
-            }else{
-                toast.error("Opps something went wrong")
-            }
+            toast.success("Plugin Deleted")
+            loadConnectors()
+        }).catch(()=>{
+            toast.error("Plugin deletion failed")
         })
     }
 

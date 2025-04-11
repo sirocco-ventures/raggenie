@@ -11,6 +11,8 @@ class PluginMetadataMixin:
     __connection_args__= ""
     __category__ = ""
     __prompt__ = ""
+    __actions_enabled__ = False
+    __actions_supported__ = []
 
 
 
@@ -31,5 +33,7 @@ class PluginMetadataMixin:
             self.__connection_args__ = getattr(module, '__connection_args__')
             self.__category__ = getattr(module, '__category__')
             self.__prompt__ = getattr(module, '__prompt__')
+            self.__actions_enabled__ = getattr(module, '__actions_enabled__')
+            self.__actions_supported__ = getattr(module, '__actions_supported__')
         except Exception as e:
             raise Exception(e)

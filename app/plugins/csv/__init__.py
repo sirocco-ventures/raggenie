@@ -10,6 +10,9 @@ __description__ = 'CSV loader for interacting with CSV data'
 __icon__ = '/assets/plugins/logos/csv.svg'
 __category__ = 5
 
+__actions_enabled__ = False
+__actions_supported__ = []
+
 # Connection arguments
 __connection_args__ = OrderedDict(
     document_files = ConnectionArgument(

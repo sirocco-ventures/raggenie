@@ -22,10 +22,13 @@ def test_plugin_connection(db_configs, config, provider_class):
     }
 
     datasource = DSLoader(params).load_ds()
-    success, err = datasource.connect()
+    try:
+        success, err = datasource.connect()
 
-    if not success and err:
-        return None, f"Test Credentials Failed: {str(err)}"
+        if not success and err:
+            return None, f"Test Credentials Failed: {str(err)}"
+    except Exception as e:
+        return None, f"Test Credentials Failed: {e}"
 
     success, err = datasource.healthcheck()
     if not success and err:

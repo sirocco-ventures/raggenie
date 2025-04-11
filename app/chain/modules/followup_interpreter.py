@@ -2,6 +2,8 @@ from app.base.abstract_handlers import AbstractHandler
 from typing import Any
 from loguru import logger
 from app.chain.formatter.general_response import Formatter
+from string import Template
+import json
 
 class FollowupInterpreter(AbstractHandler):
     """
@@ -12,7 +14,7 @@ class FollowupInterpreter(AbstractHandler):
     """
 
 
-    def __init__(self, common_context, general_chain) -> None:
+    def __init__(self, common_context, datasources) -> None:
         """
         Initialize the FollowupInterpreter.
 
@@ -22,7 +24,7 @@ class FollowupInterpreter(AbstractHandler):
         """
 
         self.common_context = common_context
-        self.general_chain = general_chain
+        self.datasources = datasources
 
     async def handle(self, request: Any) -> str:
         """
@@ -39,11 +41,68 @@ class FollowupInterpreter(AbstractHandler):
 
         if "inference" in request:
             inference = request["inference"]
-            if inference["completed"] == True or inference["completed"] == "true":
-                logger.info("Intent completed, trigger the action")
+            capability = request.get("capability",{})
+            required_params = capability.get("requirements", [])
+            extracted_params = inference.get("params", {})
 
-            response = Formatter.format(inference["message"],"")
-            response["summary"] = request["inference"]["summary"]
+            missing_params = [param for param in required_params if param["parameter_name"] not in extracted_params]
+
+            if len(missing_params) == 0:
+                logger.info("Intent completed, triggering the action")
+
+                inference["abort"] = "true"
+                response = Formatter.format(f"{inference['message']} {inference['followup']} ","")
+                if inference["completed"] == False or inference["completed"] == "false":
+                    response = Formatter.format("The requested process has been successfully completed!","")
+
+                response['params'] = {} if 'params' in response else response.get('params')
+                actions = capability.get("action",[])
+                if len(actions) == 0:
+                    logger.info("No actions are linked with capability")
+                
+                for action in actions:
+                    connector = action.get("connector",{})
+                    if connector.get("name","") in self.datasources :
+                        datasource = self.datasources[connector.get("name","")]
+                        if datasource.__actions_enabled__ :
+                        
+                            body_string = json.dumps(action.get("body", {}))
+                            temp = Template(body_string).safe_substitute(
+                                **extracted_params
+                            )
+                            body = json.loads(temp)
+                            action = action.get("action", "")
+                            
+                            if action in datasource.__actions_supported__:
+                                match action:
+                                    case "send":
+                                        datasource.send(body)
+                                    case "default":
+                                        logger.warning("unsupported action")
+                                        
+                            else:
+                                logger.warning("unsupoorted action for connector")
+                        else:
+                            logger.warning("actions are not enabled in connector")
+                    else:
+                        logger.warning(f"failed to load connector for action {action.get('name','')}")
+            else:
+                logger.info("missing parameters")
+                response = Formatter.format(inference["followup"],"")
+                if inference["abort"] == True or inference["abort"] == "true":
+                    response = Formatter.format(inference["message"],"")
+
+                    
+
+            #somethines even though parameters are collected still llm fails mark completed as true
+
+            response["intent"] = request["intent_extractor"]["intent"]
+            response["inference"] = {
+                "params" : inference.get("params", {}),
+                "abort" : inference.get("abort", "false"),
+                "missing_params" : missing_params
+                }
+            response["summary"] = inference.get("summary", "")
             response["question"] = request["question"]
             response["context_id"] = request["context_id"]
         else:

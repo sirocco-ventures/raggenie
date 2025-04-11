@@ -66,49 +66,69 @@ class FollowupHandler(AbstractHandler):
                 $long_description
                 -- Form system context ---
 
-                Required parameters
+                Required parameters:
                 -- Parameter section ---
                 $parameter_description
                 --- Parameter section ---
 
+                Previously captured parameters:
+                $captured_params 
+
                 Instructions:
-                Carefully review all previous messages to establish context.
-                Only extract values that are explicitly provided in previous messages.
-                Do not assume or fill in any values that are not present in previous messages.
-                Do not hallucinate or claim that required values are present when they are not.
+                    1. Only extract values that are explicitly stated in the current query if found
+                    2. Never re-request already captured parameters
+                    3. Do not assume, infer, or hallucinate missing values
+                    4. Process parameters in order of appearance in Required Parameters
+                  
 
                 Generate a JSON response in the following format for the query '$question':
                 {
-                  "explanation": "Describe which required values were found in previous messages and how they were extracted. If no values were found, state this clearly.",
-                  "params": {},dont extract values for the params which is not mentioned in previous messages
-                  "completed": "true|false, if all the required values are captured",
-                  "message": "Ask for specific required parameters that have not been provided yet. If all parameters are captured, provide a success message for the booking.",
-                  "summary" : "summarise question and answer in one sentence"
+                    "explanation": "Describe which required values were found in current query and how they were extracted. If no values were found, state this clearly.",
+                    "params": {},// Only include newly found parameters from current query
+                    "completed": "true if all the required parameters are captured from previously and newly found",
+                    "abort" : "true",// if user query request to cancel for $capability_description, examples quries: cancel this or cancel the booking",
+                    "message": "1. If cancellation requested(abort=true) then message must be cancellation message.
+                                2. If all required parameters are captured, message must be a succes message ",
+                    "followup": "1. If any required parameter is missing to capture, only ask for that parameter.
+                                 2. If all the required parameters are captured (completed=true), ask whether to perform the duty again, which is to: $capability_description.",
+                    "summary" : "Summarize all captured parameters and current status"
                 }
           """
 
         contexts = request.get("context", [])
-        contexts = contexts[-5:] if len(contexts) >= 5 else contexts
+        contexts = contexts[-1:] if len(contexts) >= 1 else contexts
+
+        abort_status = contexts[-1].chat_answer.get("inference", {}).get("abort", "false") if len(contexts) > 0 else {}
+
+        captured_params = {}
+        if abort_status == False or abort_status == "false":
+            captured_params = contexts[-1].chat_answer.get("inference", {}).get("params", {}) if len(contexts) > 0 else {}
+
 
         prompt = Template(prompt).safe_substitute(
             question = request["question"],
             long_description= long_description,
             capability_description= capability_description,
-            parameter_description=parameter_description
+            parameter_description=parameter_description,
+            captured_params = captured_params
         )
 
 
         loader = BaseLoader(model_configs=self.model_configs["models"])
         infernce_model = loader.load_model(configs.inference_llm_model)
+        logger.info(f"follow up prompt:{prompt}")
 
         output, response_metadata = infernce_model.do_inference(
-                            prompt, contexts
+                            prompt, []
                     )
         
         if output["error"] is not None:
             return await Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
 
-        response["inference"] = parse_llm_response(output['content'])
+        inference = parse_llm_response(output['content'])
+        inference['params'].update({k: v for k, v in captured_params.items() if k not in inference['params']})
+
+        response["inference"] = inference
         response["capability"] = capability
         return await super().handle(response)
 

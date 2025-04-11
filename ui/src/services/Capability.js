@@ -2,24 +2,26 @@ import { API_URL } from "src/config/const"
 import DeleteService from "src/utils/http/DeleteService"
 import PostService from "src/utils/http/PostService"
 
-export const saveBotCapability = async (configurationId, capabilityName, capabilityDescription, params = {}) => {
+export const saveBotCapability = async (configurationId, capabilityName, capabilityDescription, params = {}, actions = []) => {
     
     let saveData = {
         config_id: configurationId,
         name: capabilityName,
         description: capabilityDescription,
         requirements : params,
+        actions_list: actions
     }
 
     return  PostService(`${API_URL}/capability/create`, saveData, {loaderText : "Saving Capability"})
 }
 
-export const updateBotCapability = async (capabilityId, configurationId, capabilityName, capabilityDescription, params = {}) => {
+export const updateBotCapability = async (capabilityId, configurationId, capabilityName, capabilityDescription, params = {}, actions = []) => {
     let updateData = {
         config_id: configurationId,
         name: capabilityName,
         description: capabilityDescription,
         requirements : params,
+        actions_list: actions
     }
 
     return PostService(`${API_URL}/capability/update/${capabilityId}`, updateData, {loaderText : "Updating Capability"})

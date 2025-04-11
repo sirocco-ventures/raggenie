@@ -364,7 +364,7 @@ def update_capability(cap_id: int, capability: schemas.CapabilitiesUpdateBase, d
             capability_record.requirements = capability.requirements if capability.requirements else capability_record.requirements
             capability_record.config_id = capability.config_id if capability.config_id else capability_record.config_id
 
-            if capability.actions_list:
+            if capability.actions_list != None:
                 db.query(models.CapActionsMapping).filter(models.CapActionsMapping.capability_id == cap_id).delete()
 
                 for action_id in capability.actions_list:

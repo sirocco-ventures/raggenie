@@ -587,7 +587,7 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
 
     query_chain = QueryChain(config, vector_store, datasources, context_storage)
     general_chain = GeneralChain(config, vector_store, datasources, context_storage)
-    capability_chain = CapabilityChain(config, context_storage, query_chain)
+    capability_chain = CapabilityChain(config, context_storage, datasources)
     metedata_chain = MetadataChain(config, vector_store, datasources, context_storage)
 
     chain = IntentChain(config, vector_store, datasources, context_storage, query_chain, general_chain, capability_chain, metedata_chain)

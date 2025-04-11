@@ -10,6 +10,8 @@ __description__ = 'Postgres integration for handling Postgres database operation
 __icon__ = '/assets/plugins/logos/postgresql.svg'
 __category__ = 2
 
+__actions_enabled__ = False
+__actions_supported__ = []
 
 # Connection arguments
 __connection_args__ = OrderedDict(

@@ -10,6 +10,8 @@ __description__ = 'SQLite integration for handling SQLite database operations.'
 __icon__ = '/assets/plugins/logos/sqlite.svg'
 __category__ = 2
 
+__actions_enabled__ = False
+__actions_supported__ = []
 
 # Connection arguments
 __connection_args__ = OrderedDict(

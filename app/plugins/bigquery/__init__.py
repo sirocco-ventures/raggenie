@@ -10,6 +10,9 @@ __description__ = 'Bigquery integration for handling Bigquery database operation
 __icon__ = '/assets/plugins/logos/bigquery.svg'
 __category__ = 2
 
+__actions_enabled__ = False
+__actions_supported__ = []
+
 
 # Connection arguments
 __connection_args__ = OrderedDict(

@@ -75,3 +75,6 @@ csv_db.sqlite
 # node_modules folder
 ui/node_modules
 ui/dist-library
+
+# config files
+config.yaml

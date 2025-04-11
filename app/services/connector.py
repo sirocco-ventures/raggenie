@@ -219,6 +219,8 @@ def create_connector(connector: schemas.ConnectorBase, db: Session, user_id: str
                 return None, "Failed to create connector"
         case 1:
             logger.info("creating plugin with category remote documents")
+        case 3:
+            logger.info("creating plugin with category messaging")
         case 4:
             logger.info("creating plugin with category offline documents")
         case _:
@@ -404,10 +406,19 @@ def list_configurations(db: Session, user_id: str):
         capabilities=[schemas.CapabilitiesBase(
             id=capabilities.id,
             name=capabilities.name,
+            actions= [{
+                "id": mapping.actions.id,
+                "name": mapping.actions.name,
+                "description": mapping.actions.description,
+                "types": mapping.actions.types,
+                "table": mapping.actions.table,
+                "enable": mapping.actions.enable,
+                } for mapping in capabilities.cap_actions_mapping],
             requirements=capabilities.requirements,
             description=capabilities.description,
             config_id=capabilities.config_id,
         ) for capabilities in config.capabilities],
+        
         inference=[schemas.InferenceResponse(
             id=inference_mapping.inference.id,
             name=inference_mapping.inference.name,
@@ -468,6 +479,14 @@ def get_configuration(db: Session, config_id: int):
             schemas.CapabilitiesBase(
                 id=capabilities.id,
                 name=capabilities.name,
+                actions=[{
+                    "id": mapping.actions.id,
+                    "name": mapping.actions.name,
+                    "description": mapping.actions.description,
+                    "types": mapping.actions.types,
+                    "table": mapping.actions.table,
+                    "enable": mapping.actions.enable,
+                } for mapping in capabilities.cap_actions_mapping],
                 requirements=capabilities.requirements,
                 description=capabilities.description,
                 config_id=capabilities.config_id,
@@ -914,7 +933,6 @@ def create_yaml_file(request:Request, config_id: int, db: Session):
     Tuple: Configuration YAML and error message (if any).
 
     """
-
     configuration, is_error = repo.get_configuration_by_id(config_id, db)
     if (configuration == [] or configuration==None) or is_error:
         return None, None, "Configuration Not Found"
@@ -939,7 +957,7 @@ def create_yaml_file(request:Request, config_id: int, db: Session):
             datasource['description'] = conn.connector_description
             datasource['mappings'] =  {"id": conn.id, "schema_config":conn.schema_config}
             datasources.append(datasource)
-
+            
     use_case = dict({
         'short_description': configuration.short_description,
         'long_description': configuration.long_description,
@@ -949,11 +967,22 @@ def create_yaml_file(request:Request, config_id: int, db: Session):
                 "description": cap.description if cap.description else "No description provided",
                 "requirements": cap.requirements if cap.requirements else [],
                 "analysis": [],
-                "action": {}
+                "action": [
+                    {
+                        "name": mapping.actions.name,
+                        "description": mapping.actions.description,
+                        "action": mapping.actions.types,
+                        "table": mapping.actions.table,
+                        "connector": {
+                                "name": str(mapping.actions.connectors.connector_name).replace(" ", "_").lower(),
+                        } if mapping.actions.connectors else None,
+                        "body": mapping.actions.body,
+                    } for mapping in cap.cap_actions_mapping
+                ]
                 } for cap in configuration.capabilities
          ]
     })
-
+    
     if datasources is not None and use_case is not None:
         repo.update_configuration_status(config_id,db)
     return datasources, use_case, None
@@ -984,6 +1013,12 @@ def formatting_datasource(connector, provider):
             'type': provider.key,
             'params': connector.connector_config,
             'documentations': [{'type': 'text', 'value': connector.connector_docs}]
+        }
+    elif provider.category_id == 3:
+        return {
+            'type': provider.key,
+            'params': connector.connector_config,
+            'documentations': []
         }
     elif provider.category_id == 4:
         return {
@@ -1314,6 +1349,22 @@ def get_use_cases(db: Session):
             capability['name'] = cap.name
             capability['description'] = cap.description
             capability['requirements'] = cap.requirements
+            actions = []
+            for mapping in cap.cap_actions_mapping:
+                temp = {
+                        "name": mapping.actions.name,
+                        "description": mapping.actions.description,
+                        "action": mapping.actions.types,
+                        "table": mapping.actions.table,
+                        "body": mapping.actions.body,
+                }
+                if mapping.actions.connectors:
+                    temp["connector"] = {
+                        "name": str(mapping.actions.connectors.connector_name).replace(" ", "_").lower(),
+                    }
+                actions.append(temp)
+                
+            capability["action"] = actions
             use_case['capabilities'].append(capability)
         use_cases.append(use_case)
 

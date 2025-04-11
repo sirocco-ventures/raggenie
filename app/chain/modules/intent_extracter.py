@@ -90,7 +90,7 @@ class IntentExtracter(AbstractHandler):
             capability_description += "\n\nmetadata_inquiry : queries about overview of available data, the structure of a database (including tables and columns), the meaning behind specific columns, and the purpose within a database context, eg: what kind of data you have? or list questions which can be asked?\n"
 
         chat_contexts = request.get("context", [])
-        previous_intent = chat_contexts[-1].chat_answer["intent"] if len(chat_contexts) > 0 else "None"
+        previous_intent = chat_contexts[-1].chat_answer.get("intent") if len(chat_contexts) > 0 else "None"
 
         prompt = """
         You are part of a chatbot system where you have to extract intent from users chats and match it with given intents.
@@ -147,7 +147,6 @@ class IntentExtracter(AbstractHandler):
             return Formatter.format("Oops! Something went wrong. Try Again!",output['error'])
 
         response["intent_extractor"] = parse_llm_response(output['content'])
-
         response["available_intents"] = capability_names
         response["rag_filters"] = {
              "datasources" : [response["intent_extractor"]['intent']] if 'intent_extractor' in response else [],

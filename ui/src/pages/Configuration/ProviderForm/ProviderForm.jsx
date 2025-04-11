@@ -6,17 +6,17 @@ import Input from "src/components/Input/Input"
 import Textarea from "src/components/Textarea/Textarea"
 import Button from "src/components/Button/Button"
 import Table from "../SchemaTable/SchemaTable"
+import ActionForm from "./ActionForm/ActionForm"
 import { useForm } from "react-hook-form"
 import { FaArrowLeft, FaPen } from "react-icons/fa6";
+import { GoPlus } from "react-icons/go"
 import { RiPlugLine } from "react-icons/ri";
 import { FaRegArrowAltCircleRight } from "react-icons/fa";
-
-import { FiTable} from "react-icons/fi"
-
+import { FiCheckCircle, FiTable} from "react-icons/fi"
 import { useEffect, useState, useRef} from "react"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
-
 import { getConnector, healthCheck, saveConnector, updateSchema, updateDocument} from "src/services/Connectors"
+import { deleteAction, getAllActionsByConnector, saveAction } from "src/services/Action"
 import { toast } from "react-toastify"
 
 import "./DatabaseTable.css"
@@ -25,6 +25,7 @@ import { getProviderInfo } from "src/services/Plugins"
 import FileUpload from "src/components/FileUpload/FileUpload"
 import { API_URL } from "src/config/const"
 import UploadFile from "src/utils/http/UploadFile"
+import confirmDialog from "src/utils/ConfirmDialog"
 import GenerateConfigs from "src/utils/form/GenerateConfigs"
 
 
@@ -47,6 +48,8 @@ const ProviderForm = ()=>{
     const [disableConnectorSave, setDisableConnectorSave] = useState(true);
     
     let [documentationError, setDocumentationError] = useState({hasError: false, errorMessage: ""})
+
+    const [actions, setActions]= useState([])
 
     let configDocRef = useRef(null)
 
@@ -73,7 +76,9 @@ const ProviderForm = ()=>{
                 description:  data.provider.description,
                 icon: data.provider.icon,
                 category_id: data.provider.category_id,
-                enable: data.provider.enable
+                enable: data.provider.enable,
+                actions_enabled: data.provider.actions_enabled,
+                actions_supported: data.provider.actions_supported
             })
 
             setProviderConfig(data.provider.configs)
@@ -126,6 +131,22 @@ const ProviderForm = ()=>{
                 
             })
             window.localStorage.setItem("dbschema", JSON.stringify(tempSaveTableDetails))
+
+            getAllActionsByConnector(connectorId).then(response=>{
+                let tempAction = [];
+                response.data.data?.actions?.map(item=>{
+                    tempAction.push({
+                        id: item.id,
+                        name: item.name,
+                        description: item.description,
+                        type: item.types,
+                        table: item.table,
+                        body: item.body,
+                        condition: item.condition
+                    })
+                })
+                setActions(tempAction)
+            })
             
         })
     }
@@ -336,6 +357,32 @@ const onRemoveFile = (fileId) => {
     }
 
 
+    const navigateToTab = (category, connectorId, refresh = false)=>{
+        let tabName = "documentation"
+        let url = window.location.href.split('/');
+        switch (category) {
+            case 2:
+                tabName = "database-table"
+                break;
+            case 3:
+                tabName = "action"
+                break;
+            case 5:
+                tabName = "database-table"
+                break;
+            default:
+                tabName = "documentation"
+                break;
+        }
+
+        if(refresh){
+            window.location.href = url.join("/") + `/${connectorId}/details?activeTab=${tabName}`
+        }else{
+            setCurrentActiveTab(tabName)
+        }
+    }
+
+
     const onSaveConnector = async (data) => {
 
         let { formValues } = await getConfigFormData();
@@ -345,18 +392,9 @@ const onRemoveFile = (fileId) => {
         saveConnector(connectorId, providerId, data.pluginName, data.pluginDescription, formValues).then(response => {
             toast.success("Successfuly plugin added")
             if (connectorId == undefined) {
-                let url = window.location.href.split('/');
-                if(providerDetails.category_id == 2 || providerDetails.category_id == 5){
-                    window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=database-table`
-                }else{
-                    window.location.href = url.join("/") + `/${response.data.data.connector.connector_id}/details?activeTab=documentation`
-                }
+                navigateToTab(providerDetails.category_id, response.data.data.connector.connector_id, true)
             } else {
-                if(providerDetails.category_id == 2 || providerDetails.category_id == 5){
-                    setCurrentActiveTab("database-table")
-                }else{
-                    setCurrentActiveTab("documentation")
-                }
+                navigateToTab(providerDetails.category_id, connectorId)
             }
         }).catch(e => {
             toast.error("Plugin saving failed")
@@ -449,6 +487,110 @@ const onRemoveFile = (fileId) => {
             setCurrentActiveTab("configuration")
         }
     }
+    const onBacktoDocumenation = ()=>{
+        console.log({l: providerDetails.category_id})
+        if([3].includes(providerDetails.category_id)){
+            setCurrentActiveTab("configuration")
+        }else{
+            setCurrentActiveTab("documentation")
+        }
+    }
+
+    const renderActionHeader = (categoryId)=>{
+        switch (categoryId) {
+            case 2: return <TitleDescription title="Database" description="Action is a specific operation or command that is executed against a database to modify, retrieve, or manage data. It typically involves interacting with database tables, records, and fields."  />
+            case 3: return <TitleDescription title="Webhook" description="Webhook triggers a specific action or sends data to a predefined URL based on events that happen in another service or system."  />
+            default: return ""
+        }
+    }
+
+    const onSaveAction = (actionId, data) => {
+        
+        let formData = {};
+
+        formData["name"] = data.actionName;
+        formData["description"] = data.actionDescription ?? "";
+        formData["connector_id"] = connectorId
+        formData["types"] = data.actionType;
+        formData["table"] = data.actionTable ?? "";
+        formData["condition"] = data.actionCondition ?? {};
+        formData["body"] = data.actionBody ? JSON.parse( data.actionBody) : {};
+        console.log({data})
+        saveAction(actionId, formData).
+        then(response=>toast.success("Action saved succesfully")).
+        catch(()=>toast.success("Action Saved failed"))
+ 
+    };
+
+    const onDeleteAction = (index, actionId)=>{
+
+        confirmDialog("Do you want to delete this", "" ,()=>{
+            if(actionId){
+                deleteAction(actionId).
+                then(()=>{
+                    toast.success("Action deleted succesfully");
+                    let actionPanel = document.querySelector(`[data-action-index='${index}']`)
+                    actionPanel.remove()
+                }).
+                catch(()=>toast.error("Action deleted failed"))
+            }else{
+                let actionPanel = document.querySelector(`[data-action-index='${index}']`)
+                actionPanel.remove()
+            }
+            
+        })
+
+       
+    }
+
+    const onCreateNewAction = ()=>{
+        let tempAction = JSON.parse(JSON.stringify(actions));
+        tempAction.push({id: undefined, name: `Action ${tempAction?.length + 1}`, table:"", type: ""})
+        setActions(tempAction)
+    }
+
+   
+
+    useEffect(()=>{
+        setTimeout(()=>{
+            let elem = document.querySelectorAll(".col-edit");
+            for (let index = 0; index < elem.length; index++) {
+            elem[index].addEventListener("click",(event)=>{
+                
+                event.stopPropagation()
+                const target = event.target.parentElement.parentElement
+                
+                target.querySelector(".textarea").addEventListener("focusout", () => {
+                    target.querySelector(".textarea").style.display = "none"
+                    target.querySelector(".span").style.display = "block"
+                    target.querySelector(".span").innerText = target.querySelector(".textarea").value
+                    updateTableDetails(target.querySelector(".textarea"))
+                });
+                
+                if(target.querySelector(".textarea").style.display == "none"){
+                    target.querySelector(".textarea").style.display = "block"
+                    target.querySelector(".textarea").focus()
+                    target.querySelector(".span").style.display = "none"
+                }else{
+                    target.querySelector(".textarea").style.display = "none"
+                    target.querySelector(".span").style.display = "block"
+                }
+                
+            });
+            }
+       }, 1000)
+
+
+       return()=>{
+        let elem = document.querySelectorAll(".textarea-container");
+        for (let index = 0; index < elem.length; index++) {
+          elem[index].removeEventListener("click",()=>{});
+          elem[index].querySelector(".textarea").removeEventListener("focusout", () => {});
+        }
+       };
+
+    }, [])
+
 
     useEffect(()=>{
         getProviderDetails()
@@ -461,8 +603,7 @@ const onRemoveFile = (fileId) => {
     return (
         <>
             <DashboardBody title={providerDetails.name}>
-                {/* activeTab={searchParams.get("activeTab") ?? "configuration"} */}
-                <Tabs activeTab={currentActiveTab}>
+                <Tabs activeTab={currentActiveTab} onTabChange={setCurrentActiveTab}>
                     <Tab  title="Configuration" tabKey="configuration" key={"configuration"}>
                         <form onSubmit={handleSubmit(onSaveConnector)}>
                              
@@ -494,7 +635,7 @@ const onRemoveFile = (fileId) => {
                             </div>
                         </div>
                     </Tab>    
-                    <Tab title="Documentation" tabKey="documentation" key={"documentation"} disabled={connectorId ? false : true}>
+                    <Tab title="Documentation" tabKey="documentation" key={"documentation"} hide={[3].includes(providerDetails.category_id)} disabled={connectorId ? false : true}>
                         <form onSubmit={onDocumentUpdate}>
                             <div style={{marginBottom: "30px"}}>
                                 <h4>Documentation details</h4>
@@ -512,6 +653,46 @@ const onRemoveFile = (fileId) => {
                                 </div>
                             </div>
                         </form>
+                        
+                    </Tab>
+                    <Tab title={<>Action <span className="beta-tag">Beta</span></>} tabKey="action" key={"action"} disabled={connectorId ? false : true} hide={!providerDetails.actions_enabled} >
+                        
+                        {renderActionHeader(providerDetails.category_id)}
+                        <div className={style.ActionCreateNewContainer}>
+                            <div className={style.ActionCreateNewLabel}>Action List</div>
+                            <div className={style.ActionCreateNewControls}>
+                                <Button variant="secondary" onClick={onCreateNewAction}>Create New <GoPlus/></Button>
+                            </div>
+                        </div>
+                        {
+                            actions?.map((action, index)=>{
+                               return <ActionForm 
+                                        key={index}
+                                        index={index}
+                                        category={providerDetails.category_id} 
+                                        schemas={providerSchema} 
+                                        id={action.id}
+                                        name={action.name}
+                                        description={action.description}
+                                        type={action.type}
+                                        table={action.table}
+                                        condition={action.condition} 
+                                        body={action.body}
+                                        actions={providerDetails.actions_supported}
+                                        onActionSave={onSaveAction} 
+                                        onActionDelete={onDeleteAction} />
+                            })
+                        }
+                        
+                           
+                                              
+                         
+                        <div className={style.ActionDiv}>
+                            <div style={{flexGrow: 1}}>
+                                <Button type="transparent" className="icon-button" onClick={onBacktoDocumenation}> <FaArrowLeft/> Back</Button>
+                            </div>
+                        </div>
+                           
                     </Tab>
                 </Tabs>
             </DashboardBody>
