@@ -166,3 +166,5 @@ flake8==7.1.1
 pep8-naming==0.14.1
 uvloop==0.20.0; sys_platform != 'win32'
 Jinja2==3.1.4
+google-api-python-client==2.126.0
+google-auth-httplib2==0.2.0

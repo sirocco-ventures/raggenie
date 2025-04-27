@@ -1,3 +1,4 @@
+from app.plugins.google_drive.handler import GoogleDriveLoader
 from app.plugins.csv.handler import CSVPlugin
 from app.plugins.postgresql.handler import Postresql
 from app.plugins.mysql.handler import Mysql
@@ -27,6 +28,7 @@ class DSLoader:
             "sqlite" : Sqlite,
             "CSV" : CSVPlugin,
             "maria": Maria,
+            "google_drive": GoogleDriveLoader, 
         }
         db_type = self.config.get("type","")
         connection_params = self.config.get("params",{})
