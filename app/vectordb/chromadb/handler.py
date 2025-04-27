@@ -27,8 +27,6 @@ class ChromaDataBase(BaseVectorDB):
     def connect(self):
         try:
             self.client = chromadb.PersistentClient(**self.params)
-            if configs.indexing_enabled:
-                self.client.reset()
             self.embedding_function = self.load_embeddings_function()
 
             self.schema_store = self.client.get_or_create_collection(

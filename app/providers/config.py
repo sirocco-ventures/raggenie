@@ -42,8 +42,6 @@ class Configs(BaseSettings):
     config_cache_limit: int = os.getenv("CONFIG_CACHE_LIMIT", 10)
     
 
-    indexing_enabled: bool = os.getenv("INDEXING", False)
-
 
 
 configs = Configs()

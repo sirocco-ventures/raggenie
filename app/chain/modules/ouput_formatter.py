@@ -71,7 +71,7 @@ class OutputFormatter(AbstractHandler):
         response["query"] = input_data.get("query", '')
         response["intent"] = request.get("intent_extractor", {}).get("intent","")
         response["summary"] = request.get("summary", '')
-        logger.debug(f"content: {response.get("content")}")
+        logger.debug(f"content: {response.get('content')}")
 
 
         return await super().handle(response)

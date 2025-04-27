@@ -105,4 +105,4 @@ class PromptGenerator(AbstractHandler):
 
         response["prompt"] = final_prompt
         logger.debug(f"final_prompt:{final_prompt}")
-        return super().handle(response)
+        return await super().handle(response)

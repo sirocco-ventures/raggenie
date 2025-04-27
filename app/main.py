@@ -10,6 +10,7 @@ from app.api.v1.connector import inference_router as inference_router
 from app.api.v1.connector import actions as actions
 from app.api.v1.provider import sample as sample_sql
 from app.api.v1.auth import login as login
+import app.repository.connector as repo
 import app.services.connector_details as commonservices
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import timezone
@@ -76,6 +77,9 @@ def create_app(config):
     err = provider_svc.initialize_embeddings(session)
     if err is not None:
         logger.critical(err)
+        
+    logger.info("setting all configuration status to 1")
+    repo.default_configuration_status(session)
 
 
     logger.info("creating local context storage")

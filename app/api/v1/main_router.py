@@ -42,7 +42,7 @@ async def qna(
     cached_data = cache_manager.get(int(config_id))
     if not cached_data:
         logger.info("configuration was not found in the cache")
-        response = connector.create_yaml(request, int(config_id), db)
+        response = connector.create_yaml(request, int(config_id), db, False)
         if response['success'] == True:
             cached_data = cache_manager.get(int(config_id))
         else:

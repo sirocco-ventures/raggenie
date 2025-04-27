@@ -90,7 +90,7 @@ class IntentExtracter(AbstractHandler):
             capability_description += "\n\nmetadata_inquiry : queries about overview of available data, the structure of a database (including tables and columns), the meaning behind specific columns, and the purpose within a database context, eg: what kind of data you have? or list questions which can be asked?\n"
 
         chat_contexts = request.get("context", [])
-        previous_intent = chat_contexts[-1].chat_answer["intent"] if len(chat_contexts) > 0 else "None"
+        previous_intent = chat_contexts[-1].chat_answer.get("intent") if len(chat_contexts) > 0 else "None"
 
         prompt = """
         You are part of a chatbot system where you have to extract intent from users chats and match it with given intents.
@@ -112,7 +112,6 @@ class IntentExtracter(AbstractHandler):
         1.Only one intent must be identified.Multiple intents are prohibited.
         2.Pay special attention to whether the previous intent has been completed.
         3.Strictly only if the current user query doesn't clearly match an intent, consider the previous messages to identify the most appropriate intent.
-        3.If user seeks data structure info or data overview, label intent as metadata_inquiry.
         4.When asked to list possible questions, provide general examples without mentioning "specific" word
 
         Generate a response for the user query '$question' in the following JSON format:

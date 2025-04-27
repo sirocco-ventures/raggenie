@@ -524,7 +524,7 @@ def delete_capability(cap_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/createyaml/{config_id}", dependencies=[Depends(verify_token)])
-def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db)):
+def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db), index: Optional[bool] = True):
 
     """
     Creates a YAML configuration file and initializes processing chains for the specified configuration.
@@ -566,7 +566,6 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     vector_store, is_error = provider_svc.create_vectorstore_instance(db, config_id)
     if vector_store:
         vector_store.connect()
-        vector_store.clear_collection(config_id)
     context_storage = request.app.context_storage
 
     data_sources = combined_yaml_content["datasources"]
@@ -581,7 +580,7 @@ def create_yaml(request: Request, config_id: int, db: Session = Depends(get_db))
     datasources = request.app.container.datasources()
 
     mappings = confyaml.get("mappings",{})
-    datasources, err = svc.update_datasource_documentations(db, vector_store, datasources, mappings, config_id)
+    datasources, err = svc.update_datasource_documentations(db, vector_store, datasources, mappings, config_id, index)
     if err:
         logger.error("Error updating")
 

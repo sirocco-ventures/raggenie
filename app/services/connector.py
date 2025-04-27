@@ -12,7 +12,6 @@ from app.services.connector_details import get_plugin_metadata
 from fastapi import Request
 from app.providers.data_preperation import SourceDocuments
 from app.loaders.base_loader import BaseLoader
-from app.providers.config import configs
 
 
 
@@ -769,8 +768,9 @@ def delete_capability(cap_id: int, db: Session):
     return True, None
 
 
-def update_datasource_documentations(db: Session, vector_store, datasources, id_name_mappings, config_id, index=False):
+def update_datasource_documentations(db: Session, vector_store, datasources, id_name_mappings, config_id, index):
         logger.info("Updating datasource documentations")
+        repo.update_configuration_status(config_id, 1, db)
         active_datsources = {}
         for key, datasource in datasources.items():
             connector_details = id_name_mappings.get(key, {})
@@ -790,10 +790,10 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
 
             active_datsources[key] = datasource
             logger.info("Pushing plugin metadata to vector store")
-            if configs.indexing_enabled or index:
 
-                sd = SourceDocuments([], [], [])
-                queries = []
+            sd = SourceDocuments([], [], [])
+            queries = []
+            if index:
                 match datasource.__category__:
                     case 1:
                         documentations = datasource.fetch_data()
@@ -807,8 +807,11 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
                         documentations = datasource.fetch_data()
                         sd = SourceDocuments([], [], documentations)
 
-            chunked_document, chunked_schema = sd.get_source_documents()
-            vector_store.prepare_data(key, chunked_document,chunked_schema, queries, int(config_id))
+                chunked_document, chunked_schema = sd.get_source_documents()
+                vector_store.clear_collection(config_id)
+                vector_store.prepare_data(key, chunked_document,chunked_schema, queries, int(config_id))
+                repo.update_configuration_status(config_id, 2, db)
+
 
 
         return active_datsources, None
@@ -958,8 +961,6 @@ def create_yaml_file(request:Request, config_id: int, db: Session):
          ]
     })
 
-    if datasources is not None and use_case is not None:
-        repo.update_configuration_status(config_id,db)
     return datasources, use_case, None
 
 

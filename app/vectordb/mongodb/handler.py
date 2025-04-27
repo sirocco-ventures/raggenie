@@ -22,8 +22,6 @@ class AltasMongoDB(BaseVectorDB):
             self.schema_collection = self.db.get_collection('schema')
             self.doc_collection = self.db.get_collection('documents')
             self.cache_collection = self.db.get_collection('cache')
-            if configs.indexing_enabled:
-                self.clear_collection()
             self.schema_index_name = "schema"
             self.doc_index_name = "doc"
             self.cache_index_name = "cache"
