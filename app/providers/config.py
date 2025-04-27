@@ -40,7 +40,10 @@ class Configs(BaseSettings):
     
     # Cache
     config_cache_limit: int = os.getenv("CONFIG_CACHE_LIMIT", 10)
-    
 
+
+    #Intents
+    answer_from_enabled: bool = os.getenv("ANSWER_FROM_ENABLED",True)
+    answer_from: str = os.getenv("ANSWER_FROM",None)
 
 configs = Configs()

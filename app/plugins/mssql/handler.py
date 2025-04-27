@@ -13,9 +13,10 @@ from app.base.plugin_metadata_mixin import PluginMetadataMixin
 class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
 
 
-    def __init__(self, connector_name : str, db_name:str, db_user:str, db_password:str, db_host:str="localhost", db_port:int=1433):
+    def __init__(self, connector_name : str, db_name:str, db_user:str, db_password:str, db_server:str="localhost", db_port:int=1433):
         logger.info("Initializing datasource")
         super().__init__(__name__)
+
 
         self.connector_name = connector_name.replace(' ','_')
         self.params = {
@@ -34,7 +35,14 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
     def connect(self):
         try:
             drivers = [driver for driver in pyodbc.drivers()]
-            connection_string = f"DRIVER={{{drivers[0]}}};SERVER={self.params['server']};DATABASE={self.params['database']};UID={self.params['user']};PWD={self.params['password']}"
+            connection_string = (
+                f"DRIVER={{{drivers[0]}}};"
+                f"SERVER={self.params['server']},{self.params['port']};"
+                f"DATABASE={self.params['database']};"
+                f"UID={self.params['user']};"
+                f"PWD={self.params['password']};"
+                f"TrustServerCertificate=yes;"
+            )
             self.connection = pyodbc.connect(connection_string)
             self.cursor = self.connection.cursor()
             logger.info("Connection to MsSQL DB successful.")
@@ -90,82 +98,79 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
     def fetch_schema_details(self):
         schema_ddl = []
         table_metadata = []
-        # Execute query to get all table names and schemas in the database
-        self.cursor.execute("SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'")
+
+        # Fetch all table and view names
+        self.cursor.execute("""
+            SELECT TABLE_SCHEMA, TABLE_NAME, TABLE_TYPE 
+            FROM INFORMATION_SCHEMA.TABLES 
+            WHERE TABLE_TYPE IN ('BASE TABLE', 'VIEW')
+        """)
         tables = self.cursor.fetchall()
-        
-        for table in tables:
+
+        for table in tables[:5]:
             schema_name = table[0]
             table_name = table[1]
+            table_type = table[2]
 
-            logger.info(f"Fetching DDL for table: {schema_name}.{table_name}")
-            
+            logger.info(f"Fetching DDL for {table_type}: {schema_name}.{table_name}")
+
             schema = {
-                    "table_id": str(uuid.uuid4()),
-                    "table_name": f"{schema_name}.{table_name}",
-                    "description": "",
-                    "columns": []
-                }
-            # Fetch column details for the current table
+                "table_id": str(uuid.uuid4()),
+                "table_name": f"{schema_name}.{table_name}",
+                "description": "",
+                "columns": []
+            }
+
+            # Fetch column details
             self.cursor.execute(f"""
-                    SELECT 
-                        COLUMN_NAME,
-                        DATA_TYPE,
-                        CHARACTER_MAXIMUM_LENGTH,
-                        IS_NULLABLE,
-                        COLUMN_DEFAULT
-                    FROM 
-                        INFORMATION_SCHEMA.COLUMNS
-                    WHERE 
-                        TABLE_SCHEMA = '{schema_name}'
-                        AND TABLE_NAME = '{table_name}';
-                """)
+                SELECT 
+                    COLUMN_NAME,
+                    DATA_TYPE,
+                    CHARACTER_MAXIMUM_LENGTH,
+                    IS_NULLABLE,
+                    COLUMN_DEFAULT
+                FROM 
+                    INFORMATION_SCHEMA.COLUMNS
+                WHERE 
+                    TABLE_SCHEMA = '{schema_name}'
+                    AND TABLE_NAME = '{table_name}';
+            """)
             columns = self.cursor.fetchall()
+            ddl = f"CREATE { 'TABLE' if table_type == 'BASE TABLE' else 'VIEW' } {schema_name}.{table_name} (\n"
+            fields = []
 
-            # Start building the DDL statement
-            ddl = f"CREATE TABLE {schema_name}.{table_name} (\n"
-            fields= []
-
-            # Loop through each column and add its definition to the DDL
             for column in columns:
                 column_name = column[0]
                 data_type = column[1]
                 max_length = column[2]
                 is_nullable = column[3]
                 column_default = column[4]
+
                 fields.append({
-                        "column_id" : str(uuid.uuid4()),
-                        "column_name": column_name,
-                        "column_type": data_type,
-                        "description": "",
-                    })
-                
-                schema["columns"] = fields
+                    "column_id": str(uuid.uuid4()),
+                    "column_name": column_name,
+                    "column_type": data_type,
+                    "description": "",
+                })
 
-                table_metadata.append(schema)
+                # Format data type with length if needed
+                datatype_formatted = f"{data_type}({max_length})" if max_length else data_type
 
-                # Format data type with length if applicable
-                if max_length:
-                    data_type = f"{data_type}({max_length})"
-                
-                # Add NULL/NOT NULL constraint
                 nullable = "NULL" if is_nullable == "YES" else "NOT NULL"
-                
-                # Handle column default value if any
                 default = f"DEFAULT {column_default}" if column_default else ""
 
-                # Add the column definition to the DDL
-                ddl += f"    {column_name} {data_type} {nullable} {default},\n"
+                ddl += f"    {column_name} {datatype_formatted} {nullable} {default},\n"
 
-            # Remove the last comma and newline, then close the statement
-            ddl = ddl.rstrip(",\n") + "\n);\n\n"
-
+            # Fix schema['columns'] once per table
+            schema["columns"] = fields
             table_metadata.append(schema)
 
-            # Append the DDL statement for the current table to schema_ddl
+            # Clean up DDL (remove last comma)
+            ddl = ddl.rstrip(",\n") + "\n);\n\n"
             schema_ddl.append(ddl)
-
+            
         return schema_ddl, table_metadata
+
 
     def create_ddl_from_metadata(self,table_metadata):
         schema_ddl = []
