@@ -733,7 +733,7 @@ const onInferanceSave = (data) => {
                     </div>
                 </Tab>
                 <Tab title="Deploy" tabKey='Deploy'>
-                    <Deploy></Deploy>
+                    <Deploy currentConfigID={currentConfigID}></Deploy>
 
                 </Tab>
             </Tabs>
