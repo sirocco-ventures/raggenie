@@ -3,7 +3,7 @@ import CopyURL from "./DeployTabs/CopyURL";
 import MaximizedLayout from "./DeployTabs/MaximizedLayout";
 import MinimizedLayout from "./DeployTabs/MinimizedLayout";
 
-export const deployTabroutes = [
+export const deployTabroutes = (currentConfigID) => [
   {
     title: "Get URL for live preview",
     path: "/copyURL",
@@ -13,26 +13,26 @@ export const deployTabroutes = [
   },
   {
     title: "Copy Chatbot embed code",
-    path: "/Copyembedcode",  // Fixed the typo from 'Copyembeedcode' to 'Copyembedcode'
+    path: "/copyEmbedCode",  
     icon: "",
-    page: <CopyEmbedCode />,
+    page: <CopyEmbedCode currentConfigID={currentConfigID}/>,
     isPrivate: true,
   },
 ];
 
-export const ChatBotEmbeddedCodeTabs = [
+export const ChatBotEmbeddedCodeTabs = (currentConfigID) => [
   {
     title: "Minimized Layout",
-    path: "/copyURL",
+    path: "/minimzedLayout",
     icon: "",
-    page: <MinimizedLayout/>,
+    page: <MinimizedLayout currentConfigID={currentConfigID}/>,
     isPrivate: true,
   },
   {
     title: "Expanded Layout",
-    path: "/Copyembedcode",  // Fixed the typo here as well
+    path: "/maximizedLayout",  
     icon: "",
-    page: <MaximizedLayout/>,
+    page: <MaximizedLayout currentConfigID={currentConfigID}/>,
     isPrivate: true,
   },
 ];

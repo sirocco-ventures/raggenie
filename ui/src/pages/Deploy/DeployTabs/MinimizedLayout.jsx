@@ -4,8 +4,7 @@ import style from './DeployTabs.module.css'
 import Screenshot from "src/assets/images/screen_shot_small.svg"
 import { API_URL } from "src/config/const"
 
-const MinimizedLayout = () => {
-
+const MinimizedLayout = ({ currentConfigID }) => {
     return (
         <>
             <TitleDescription showOrder={false} title='Copy code for Minimized Layout' description='Experience a rich view environment with the minimized view' />
@@ -14,7 +13,7 @@ const MinimizedLayout = () => {
                 <CodeBlock codeString={`<script>
 (function injectChatbot() {
     const script = document.createElement('script');
-    script.src = 'http://${window.location.host}/dist-library/chatbot.js';
+    script.src = 'http://${window.location.host}/ui/dist-library/chatbot.js';
     script.type = 'text/javascript';
     script.onload = function () {
     const container = document.createElement('div');
@@ -23,6 +22,7 @@ const MinimizedLayout = () => {
     if (ChatBot.mountChatbox) {
         ChatBot.mountChatbox('chatbox-container', {
         apiURL: '${API_URL}',
+        configID: ${currentConfigID}
         });
     } else {
         console.error('ChatBot object is not defined.');
