@@ -288,15 +288,12 @@ def delete_configuration_by_id(configuration_id: int, db: Session):
         db.rollback()
         return str(e), True
 
-def update_configuration_status(config_id: int, db: Session):
+def update_configuration_status(config_id: int,status: int, db: Session):
     try:
         db_config, is_error = get_configuration_by_id(config_id, db)
 
         if db_config and not is_error:
-            db.query(models.Configuration).filter(
-            models.Configuration.status == 2
-            ).update({"status": 0})
-            db_config.status = 2
+            db_config.status = status
 
             db.commit()
             db.refresh(db_config)
@@ -307,6 +304,20 @@ def update_configuration_status(config_id: int, db: Session):
     except (SQLAlchemyError, ValueError) as e:
         db.rollback()
         return str(e), True
+    
+def default_configuration_status(db: Session):
+    try:
+        db.query(models.Configuration).filter(
+            models.Configuration.status == 2
+            ).update({"status": 1})
+        db.commit()
+        return True, False
+
+    except (SQLAlchemyError, ValueError) as e:
+        db.rollback()
+        return str(e), True
+    
+    
 
 
 

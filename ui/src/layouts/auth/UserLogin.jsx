@@ -7,6 +7,11 @@ import Button from 'src/components/Button/Button';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AuthLoginService, IdpLoginService, GetIdpList } from 'src/services/Auth';
+import { useNavigate } from "react-router-dom";
+import { v4 as uuid4 } from "uuid"
+import { toast } from "react-toastify";
+
+
 
 const UserLogin = () => {
     const { register: authRegister, setValue: authSetValue, handleSubmit: authHandleSubmit, formState: authFormState, setError: authSetError, clearErrors: authClearErrors, watch: authWatch } = useForm({ mode: 'all' });
@@ -14,6 +19,8 @@ const UserLogin = () => {
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [idpList, setIdpList] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate()
 
     useEffect(() => {
         GetIdpList().then(response => {
@@ -30,7 +37,7 @@ const UserLogin = () => {
     /* fucntion to render idp buttons dynamically */
 
     const renderIdpButtons = () => {
-        return idpList.slice(0,1).map((idp) => {
+        return idpList?.slice(0,1).map((idp) => {
             let logo = idp.type === "PROVIDER_TYPE_GOOGLE" ? googleLogo : 
                        idp.type === "PROVIDER_TYPE_GITHUB" ? githubLogo : null;
             return (
@@ -43,21 +50,24 @@ const UserLogin = () => {
     };
 
     const onSubmit = (data) => {
+            setLoading(true);
             const authCredentials = {
                 "username": data.username,
                 "password": data.password
             };
             AuthLoginService(authCredentials).then((response) => {
                 const authResponse = response.data
-                // console.log(authResponse)
+                console.log("authResponse", authResponse)
+                toast.success("Login successful");
+                navigate(`/preview/${uuid4()}/chat`)
+                setLoading(false);
                 // const token = authResponse.data.token
                 // storeToken(token)
                 // setIsAuthenticated(true)
-                // toast.success(authResponse.message);
-                // navigate(`/preview/${uuid4()}/chat`)
             }).catch(() => {
                 setErrorMessage("Incorrect username or password. Please try again.");
                 setShowError(true);
+                setLoading(false);
             });
         };
 
@@ -71,7 +81,7 @@ const UserLogin = () => {
                 <h2 className={style.Welcome}>Welcome Back</h2>
                 <p>Login to your Ragggenie account</p>
                 <div style={{ width: "100%", backgroundColor: "#FFF"}}>
-                        {/* <form onSubmit={authHandleSubmit(onSubmit)}>
+                        <form onSubmit={authHandleSubmit(onSubmit)}>
                             <Input
                                 label="Email"
                                 placeholder="Enter your email address"
@@ -95,11 +105,11 @@ const UserLogin = () => {
                             </div>
 
                             <Button buttonType="submit" className={style.SubmitButton}>
-                                Login
+                                {loading ? <span className={style.loader}></span> : "Login"}
                             </Button>
-                        </form> */}
+                        </form>
                         <div className={style.OAuthLogin}>
-                            {/* <span className={style.OrLogin}>Or Login with</span> */}
+                            <span className={style.OrLogin}>Or Login with</span>
                             {renderIdpButtons()}
 
                         </div>

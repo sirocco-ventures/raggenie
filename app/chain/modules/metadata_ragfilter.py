@@ -32,7 +32,7 @@ class MetadataRagFilter(AbstractHandler):
         response = request
         response["rag_filters"] = {
                 "datasources": response.get("available_datasources", []),
-                "document_count": 10,
+                "document_count": 50,
                 "schema_count": 10
         }
 

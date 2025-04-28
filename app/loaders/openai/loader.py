@@ -27,7 +27,6 @@ class OpenAiModelLoader(ModelLoader, LoaderMetadataMixin):
         )
 
         out = self.model._call("")
-        logger.info(f"openai response:{out}")
         response = self.get_response(out)
         usage = self.get_response_metadata(prompt, response, out)
 
@@ -86,7 +85,6 @@ class OpenAiModelLoader(ModelLoader, LoaderMetadataMixin):
             messages.extend(chat_history)
         messages.append({"role": "user", "content": prompt})
 
-        logger.info(f"messages:{messages}")
         return messages
 
     def get_models(self):

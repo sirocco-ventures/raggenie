@@ -210,5 +210,3 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
     def close_connection(self):
         self.cursor.close()
         self.connection.close()
-
-

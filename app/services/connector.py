@@ -16,6 +16,7 @@ from app.loaders.base_loader import BaseLoader
 
 
 
+
 def list_connectors(db: Session, user_id: str):
 
     """
@@ -767,8 +768,9 @@ def delete_capability(cap_id: int, db: Session):
     return True, None
 
 
-def update_datasource_documentations(db: Session, vector_store, datasources, id_name_mappings, config_id):
+def update_datasource_documentations(db: Session, vector_store, datasources, id_name_mappings, config_id, index):
         logger.info("Updating datasource documentations")
+        repo.update_configuration_status(config_id, 1, db)
         active_datsources = {}
         for key, datasource in datasources.items():
             connector_details = id_name_mappings.get(key, {})
@@ -788,23 +790,28 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
 
             active_datsources[key] = datasource
             logger.info("Pushing plugin metadata to vector store")
+
             sd = SourceDocuments([], [], [])
             queries = []
-            match datasource.__category__:
-                case 1:
-                    documentations = datasource.fetch_data()
-                    sd = SourceDocuments([], [], documentations)
-                case 2 | 5:
-                    schema_config = connector_details.get("schema_config",[])
-                    schema_details, metadata = datasource.fetch_schema_details()
-                    sd = SourceDocuments(schema_details, schema_config, [])
-                    queries = get_all_connector_samples(connector_details.get("id"), db)
-                case 4:
-                    documentations = datasource.fetch_data()
-                    sd = SourceDocuments([], [], documentations)
+            if index:
+                match datasource.__category__:
+                    case 1:
+                        documentations = datasource.fetch_data()
+                        sd = SourceDocuments([], [], documentations)
+                    case 2 | 5:
+                        schema_config = connector_details.get("schema_config",[])
+                        schema_details, metadata = datasource.fetch_schema_details()
+                        sd = SourceDocuments(schema_details, schema_config, [])
+                        queries = get_all_connector_samples(connector_details.get("id"), db)
+                    case 4:
+                        documentations = datasource.fetch_data()
+                        sd = SourceDocuments([], [], documentations)
 
-            chunked_document, chunked_schema = sd.get_source_documents()
-            vector_store.prepare_data(key, chunked_document,chunked_schema, queries, int(config_id))
+                chunked_document, chunked_schema = sd.get_source_documents()
+                vector_store.clear_collection(config_id)
+                vector_store.prepare_data(key, chunked_document,chunked_schema, queries, int(config_id))
+                repo.update_configuration_status(config_id, 2, db)
+
 
 
         return active_datsources, None
@@ -954,8 +961,6 @@ def create_yaml_file(request:Request, config_id: int, db: Session):
          ]
     })
 
-    if datasources is not None and use_case is not None:
-        repo.update_configuration_status(config_id,db)
     return datasources, use_case, None
 
 

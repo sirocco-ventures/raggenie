@@ -10,7 +10,11 @@ from app.api.v1.connector import inference_router as inference_router
 from app.api.v1.connector import actions as actions
 from app.api.v1.provider import sample as sample_sql
 from app.api.v1.auth import login as login
+import app.repository.connector as repo
 import app.services.connector_details as commonservices
+from apscheduler.schedulers.background import BackgroundScheduler
+from pytz import timezone
+
 
 from fastapi.responses import HTMLResponse
 
@@ -73,6 +77,9 @@ def create_app(config):
     err = provider_svc.initialize_embeddings(session)
     if err is not None:
         logger.critical(err)
+        
+    logger.info("setting all configuration status to 1")
+    repo.default_configuration_status(session)
 
 
     logger.info("creating local context storage")
@@ -81,6 +88,18 @@ def create_app(config):
     
     logger.info("creating llm fast_api server")
     app = FastAPI()
+
+    # async def lifespan(app: FastAPI):
+    #     scheduler = BackgroundScheduler()
+    #     scheduler.add_job(svc.update_datasource_documentations(session, vectore_store, datasources, id_name_mappings), 'cron', minute='*/1', timezone=timezone('UTC'), args=[{"response": ""}])
+    #     scheduler.start()
+        
+    #     yield 
+        
+    #     scheduler.shutdown()
+
+    # app = FastAPI(lifespan=lifespan)
+
 
     app.mount("/assets",StaticFiles(directory="./assets"), name="assets")
     app.mount("/ui/assets",StaticFiles(directory="./ui/dist/assets",  html=True), name="ui", )

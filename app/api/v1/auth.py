@@ -21,6 +21,21 @@ login = APIRouter()
 if configs.auth_enabled:
     zitadel = Zitadel()
 
+@login.post("/login")
+def login_user(response: Response, user: LoginData, db: Session = Depends(get_db)):
+    login_response = zitadel.login_with_username_password(user.username, user.password)
+    
+    # Extract user_id from the respons e
+    if login_response.status_code == 201:
+        response_data = login_response.body.decode("utf-8")
+        response_json = json.loads(response_data)
+        user_id = response_json.get("user_id")
+        username = response_json.get("username")
+        user, error = svc.get_or_create_user(schemas.UserCreate(id=int(user_id), username=username), db)
+        if error:
+            return commons.is_error_response("DB Error", error, {"user": {}})
+        
+    return login_response
 
 # will redirect to idp when called with ipdId
 # need to set successurl and failureUrl dynamically *****
