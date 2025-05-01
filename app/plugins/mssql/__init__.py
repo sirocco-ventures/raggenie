@@ -67,19 +67,22 @@ __prompt__ = Prompt(**{
             "template": """
             You are an Mssql expert. Your job is to answer questions about a Mssql database using only the provided schema details and rules.
 
-            go through the schema details given below
+            Conversation history is provided below:
+            -- start chat_history section --
+            {recal_history}
+            -- end chat_history section --
+
+            go through the schema details given below:
             -- start db schema section--
             {schema}
             -- end db schema section--
 
-            A brief description about the schema is given below
-
+            A brief description about the schema is given below:
             -- start db context section--
             {context}
             -- end db context section--
 
-            Sample sql queries with their questions are given below
-
+            Sample sql queries with their questions are given below:
             -- start query samples section--
             $suggestions
             -- end query samples section--

@@ -65,9 +65,9 @@ class AltasMongoDB(BaseVectorDB):
     #     self.doc_collection.delete_many({})
     #     self.cache_collection.delete_many({})
         self.config_id = config_id
-        self.cache_collection.delete_many({ "metadata.config_id": config_id })
-        self.schema_collection.delete_many({ "metadata.config_id": config_id })
-        self.doc_collection.delete_many({ "metadata.config_id": config_id })
+        self.cache_collection.delete_many({ "metadatas.config_id": config_id })
+        self.schema_collection.delete_many({ "metadatas.config_id": config_id })
+        self.doc_collection.delete_many({ "metadatas.config_id": config_id })
 
     def generate_embedding(self, context: str) -> list[float]:
         array = self.emf([context])[0]
@@ -81,7 +81,7 @@ class AltasMongoDB(BaseVectorDB):
                 sample = {
                     # "_id": "doc" + str(i),
                     "document": doc.page_content,
-                    "metadata": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
+                    "metadatas": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 documents.append(sample)
@@ -95,7 +95,7 @@ class AltasMongoDB(BaseVectorDB):
                 sample = {
                     # "_id": "doc" + str(i),
                     "document": doc.page_content,
-                    "metadata": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
+                    "metadatas": {**doc.metadata,"datasource": datasource_name, "config_id": config_id}
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 schemas.append(sample)
@@ -108,7 +108,7 @@ class AltasMongoDB(BaseVectorDB):
                 sample = {
                     # "_id": "doc" + str(i),
                     "document": doc['description'],
-                    "metadata": {**doc['metadata'], "datasource": datasource_name, "config_id": config_id}
+                    "metadatas": {**doc['metadata'], "datasource": datasource_name, "config_id": config_id}
                 }
                 sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
                 caches.append(sample)
@@ -167,7 +167,7 @@ class AltasMongoDB(BaseVectorDB):
             },
             {
             '$match': {
-                'metadata.datasource': datasource  # Filter for the specified datasource
+                'metadatas.datasource': datasource[0]  # Filter for the specified datasource
             }
             },
             {
@@ -175,7 +175,7 @@ class AltasMongoDB(BaseVectorDB):
             "_id" : 1,
             "datasource" : 1,
             "document": 1,
-            "metadata": 1,
+            "metadatas": 1,
             "score": {"$meta": "vectorSearchScore"}
             }
         }

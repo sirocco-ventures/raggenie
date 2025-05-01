@@ -92,7 +92,7 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
                 logger.info("Attempting to reconnect...")
                 self.connect()  # Attempt to reconnect
                 reconnect_attempt = False
-                self.fetch_data(self, query, reconnect_attempt = False)
+                self.fetch_data(query, reconnect_attempt = False, params=None)
             return None, str(error)
 
     def fetch_schema_details(self):
@@ -107,7 +107,7 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
         """)
         tables = self.cursor.fetchall()
 
-        for table in tables[:5]:
+        for table in tables:
             schema_name = table[0]
             table_name = table[1]
             table_type = table[2]
@@ -200,10 +200,10 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
         if "DDL" in token_names:
             return "Sorry, I am not designed for data manipulation operations"
 
-        sql_query = sqlvalidator.parse(formated_sql)
-        if not sql_query.is_valid():
-            logger.info(sql_query.is_valid())
-            return "I didn't get you, Please reframe your question"
+        # sql_query = sqlvalidator.parse(formated_sql)
+        # if not sql_query.is_valid():
+        #     logger.info(sql_query.is_valid())
+        #     return "I didn't get you, Please reframe your question"
 
         return  None
 

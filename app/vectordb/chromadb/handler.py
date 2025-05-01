@@ -164,7 +164,7 @@ class ChromaDataBase(BaseVectorDB):
         res = store.query(
             query_texts=[query],
             n_results=sample_count,
-            where={"datasource": datasource}  # Filter by the datasource in the metadata
+            where={"datasource": datasource[0]}  # Filter by the datasource in the metadata
         )
 
 
