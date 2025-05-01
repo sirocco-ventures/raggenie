@@ -26,7 +26,7 @@ class SourceDocuments:
         try:
 
             text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=20,separators=["\n\n","\'\")"])
-            text_splitter_doc = RecursiveCharacterTextSplitter(chunk_size=250, chunk_overlap=20,separators=["\n\n","\n \n"])
+            text_splitter_doc = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=20,separators=["##"])
 
             splitted_schema = list(map(lambda item: f"'{item}'", self.schema_details))
             load_schema = text_splitter.create_documents(splitted_schema)

@@ -261,6 +261,73 @@ class Zitadel:
         except requests.exceptions.RequestException as e:
             return {"error": "Failed to retrieve identity provider info", "details": str(e)}, 500
         
+    def login_with_username_password(self, username: str, password: str):
+        """Login user with username and password."""
+        self._ensure_valid_token()
+        try:
+            response = requests.post(
+                f"{self.base_url}/v2/sessions",
+                json={
+                    "checks": {
+                        "user": {
+                            "loginName": username
+                        }
+                    }
+                },
+                headers=self.headers,
+            )
+            response.raise_for_status()
+
+            session_data = response.json()
+            session_id = session_data.get("sessionId")
+            session_token = session_data.get("sessionToken")
+
+            validate_response = requests.patch(
+                f"{self.base_url}/v2/sessions/{session_id}",
+                json={
+                    "checks": {
+                        "password": {
+                            "password": password
+                        }
+                        
+                    },
+                    "lifetime": "1800.000000000s"
+                },
+                headers=self.headers,
+            )
+            validate_response.raise_for_status()
+
+            user_info = self.get_user_info(session_id)
+            user_id = user_info.get("session").get("factors").get("user").get("id")
+            username = user_info.get("session").get("factors").get("user").get("displayName")
+
+            
+            json_response = JSONResponse(
+                status_code=201,
+                content={"message": "Session created successfully", "session_id": session_id, "user_id": user_id, "username": username},
+            )
+            
+            json_response.set_cookie(
+                key="session_data",
+                value=json.dumps({"session_id": session_id, "session_token": session_token, "user_id": user_id}),
+                httponly=True,
+                secure=False,
+                samesite="Lax",
+                max_age=1800,
+                path="/",
+            )
+            
+            return json_response
+
+        except requests.RequestException as e:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "error": "Failed to create session",
+                    "details": str(e)
+                }
+            )
+        
     
     def logout_user(self, session_id: str):
         """Logout user by deleting the session."""
