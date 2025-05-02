@@ -42,7 +42,7 @@ class Cachechecker(AbstractHandler):
         response = request
         question = request.get("question", "")
         rag_filters = response["rag_filters"]["datasources"]
-        output = self.cache.find_similar_cache(rag_filters, question)
+        output = await self.cache.find_similar_cache(rag_filters, question)
         if "rag" not in response:
             response["rag"] = {
                 "suggestions": output

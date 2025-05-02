@@ -26,8 +26,9 @@ class OpenAiModelLoader(ModelLoader, LoaderMetadataMixin):
             }
         )
 
-        out = self.model._call("")
+        out = self.model._call("")      
         response = self.get_response(out)
+        logger.info(f"response: {response}")
         usage = self.get_response_metadata(prompt, response, out)
 
         return response, usage

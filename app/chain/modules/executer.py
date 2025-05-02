@@ -51,7 +51,7 @@ class Executer(AbstractHandler):
                 logger.info("going back for resolving error")
                 self.common_context["chain_retries"] =self.common_context["chain_retries"] + 1
                 self.common_context["execution_logs"].append({"query": formated_sql, "error": str(err)})
-                return self.fall_back_handler.handle(request)
+                return await self.fall_back_handler.handle(request)
 
         response = {**dict(request), **{
             "query_response": out,

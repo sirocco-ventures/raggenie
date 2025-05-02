@@ -45,10 +45,18 @@ class PromptGenerator(AbstractHandler):
         response = request
         intent = response["intent_extractor"]['intent']
 
+        contexts = request.get("context",[])
+        previous_messages = contexts[-5:] if len(contexts) >= 5 else contexts
+
+        recal_history = ""
+        for message in previous_messages:
+            recal_history += f"USER: {message.chat_query}\n"
+            answer = message.chat_answer
+            recal_history += f"ASSITANT: {answer.get('query','')}\n\n"
+
         # Few shot prompting
         samples_retrieved = ""
 
-        recal_history = ""
         rag = request.get("rag", {})
         suggestions = rag.get("suggestions", [])
         for doc in suggestions:
@@ -79,7 +87,7 @@ class PromptGenerator(AbstractHandler):
                 context=auto_context,
                 question=request.get("question", ""),
                 suggestions="",
-                recall=recal_history
+                recal_history=recal_history
             )
 
 

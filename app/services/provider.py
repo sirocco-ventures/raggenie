@@ -568,7 +568,7 @@ def insert_vector_store(request, sql, db: Session):
 
     datasource, is_error = conn_repo.get_connector_by_id(sql.connector_id, db)
 
-    vectore_store = request.app.vector_store
+    vector_store = request.app.vector_store
     queries = [
         {
             "description": sql.description,
@@ -577,7 +577,7 @@ def insert_vector_store(request, sql, db: Session):
     ]
 
     try :
-        vectore_store.prepare_data(datasource_name=datasource.connector_name, queries=queries, chunked_document = None, chunked_schema = None)
+        vector_store.prepare_data(datasource_name=datasource.connector_name, queries=queries, chunked_document = None, chunked_schema = None)
     except Exception as e:
 
         return str(e)
@@ -697,31 +697,31 @@ def create_vectorstore_instance(db:Session, config_id: int):
     """
     configs, is_error = conn_repo.get_configuration_by_id(config_id, db)
     vector_store_formatting=None
-    vectore_store = None
+    vector_store = None
 
     if is_error:
         return configs, "DB Error"
 
     if configs:
 
-        vectore_store, is_error = repo.get_mapped_vector_store(db, configs.id)
+        vector_store, is_error = repo.get_mapped_vector_store(db, configs.id)
 
-    if vectore_store:
+    if vector_store:
         vector_store_formatting = {
-            "name": vectore_store.get("vectordb"),
-            "params": {**vectore_store.get("vectordb_config", {})}
+            "name": vector_store.get("vectordb"),
+            "params": {**vector_store.get("vectordb_config", {})}
         }
 
 
-        vectordb_config = vectore_store.get("vectordb_config", {})
+        vectordb_config = vector_store.get("vectordb_config", {})
 
         if vectordb_config:
-            embeddings = vectore_store.get("embedding_config", {})
+            embeddings = vector_store.get("embedding_config", {})
 
             vector_store_formatting["embeddings"] = {
                 **embeddings,
-                "provider": vectore_store.get("em_provider"),
-                "vectordb": vectore_store.get("vectordb")
+                "provider": vector_store.get("em_provider"),
+                "vectordb": vector_store.get("vectordb")
             }
 
             vector_store_formatting={**vector_store_formatting,**vectordb_config}
