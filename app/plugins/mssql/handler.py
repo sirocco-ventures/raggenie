@@ -169,6 +169,7 @@ class Mssql(Formatter, BasePlugin, QueryPlugin,  PluginMetadataMixin):
             ddl = ddl.rstrip(",\n") + "\n);\n\n"
             schema_ddl.append(ddl)
             
+        table_metadata = sorted(table_metadata, key=lambda x: x['table_name'].lower())
         return schema_ddl, table_metadata
 
 
