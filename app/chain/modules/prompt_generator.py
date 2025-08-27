@@ -79,7 +79,10 @@ class PromptGenerator(AbstractHandler):
                 **{**system_prompt_context["prompt_variables"]}
             )
         else:
-            auto_context = "\n\n".join(cont["document"] for cont in rag.get("context", {}).get(intent,[]))
+            auto_context = "\n\n".join(
+                (f"{cont.get('document', '')}"+ (f"\nURL: {cont['metadatas']['url']}" if cont.get("metadatas", {}).get("url") else "")).strip()
+                for cont in rag.get("context", {}).get(intent, [])
+            )
             auto_schema = "\n\n".join(schema["document"] for schema in rag.get("schema", []))
             system_prompt_context = context.system_prompt
             system_prompt = system_prompt_context.template.format(

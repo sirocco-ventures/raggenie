@@ -37,6 +37,12 @@ class Configs(BaseSettings):
     
     # Cache
     config_cache_limit: int = os.getenv("CONFIG_CACHE_LIMIT", 10)
-
-
+    
+    # pdf parse engine
+    pdf_parse_engine: str = os.getenv("PDF_PARSE_ENGINE", 'docling')
+    
+    # Azure Document Intelligence
+    azure_di_enpoint: str = os.getenv("AZURE_DI_ENDPOINT", "")
+    azure_di_secret_key: str = os.getenv("AZURE_DI_SECRET_KEY", "")
+    
 configs = Configs()

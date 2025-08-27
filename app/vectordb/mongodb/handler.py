@@ -41,12 +41,16 @@ class AltasMongoDB(BaseVectorDB):
             sample[self.EMBEDDING_FIELD_NAME] = self.generate_embedding(sample['document'])
 
             self.doc_collection.insert_many([sample])
-            # self.schema_collection.insert_many([sample])
-            # self.cache_collection.insert_many([sample])
+            self.schema_collection.insert_many([sample])
+            self.cache_collection.insert_many([sample])
 
             collection_list = self.db.list_collection_names()
             logger.info(f"collections available:{collection_list}")
+            
             self.doc_collection.delete_many({ "datasource": "psql_db" })
+            self.schema_collection.delete_many({ "datasource": "psql_db" })
+            self.cache_collection.delete_many({ "datasource": "psql_db" })
+
             if len(collection_list) > 0:
                 return None
             else:

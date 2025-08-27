@@ -12,6 +12,7 @@ import LineChart from "../Chart/LineChart/LineChart"
 import AreaChart from "../Chart/AreaChart/AreaChart"
 import Summary from "./Summary"
 import Markdown from "react-markdown"
+import remarkGfm from "remark-gfm";
 import ErrorMessage from "./ErrorMessage"
 const Message = ({
     message = {},
@@ -46,6 +47,13 @@ const Message = ({
         setShowChatSummary(false)
     }
 
+    function modifyImageUrl(url) {
+        try {
+            return (window.location.origin + url);
+        } catch {
+            return url; // fallback to original if parsing fails
+        }
+    }
 
     return(
         <>
@@ -54,7 +62,20 @@ const Message = ({
                     {message.isBot && <div> <img src={ message.error != "" ? botErrorIcon : botIcon} className={style.MessageAvatar} /></div>}
                     <div>
                         <div className={`${style.MessageContainer}  ${message.isBot == false ? style.UserMessage : style.BotMessage}`}>
-                            <Markdown>{message.message}</Markdown> { (message.isBot == true && message.error != "") && <span className={style.ErrorExpandButton} onClick={()=>setShowChatError(!showChatError)}>click here</span>}
+                            <Markdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    img: ({ node, ...props }) => {
+                                    const originalSrc = props.src;
+                                    const newSrc = modifyImageUrl(originalSrc);
+                                    return (
+                                        <img {...props} src={newSrc} alt={props.alt || ""} />
+                                    );
+                                    },
+                                }}
+                            >
+                                {message.message}
+                            </Markdown> { (message.isBot == true && message.error != "") && <span className={style.ErrorExpandButton} onClick={()=>setShowChatError(!showChatError)}>click here</span>}
                             {message.isBot == true &&  <Time onLike={handleOnLikeClick} onDisLike={handleOnDislikeClick} onSummaryClick={handleOnSummaryOpen} summaryOpen ={showChatSummary}  time={"Today 12:30pm"} message={message}/>}
                         </div>
                     </div>
