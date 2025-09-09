@@ -10,6 +10,7 @@ import BarChart from "../Chart/BarChart/BarChart"
 import PieChart from "../Chart/PieChart/PieChart"
 import LineChart from "../Chart/LineChart/LineChart"
 import AreaChart from "../Chart/AreaChart/AreaChart"
+import Image from "./Image"
 import Summary from "./Summary"
 import Markdown from "react-markdown"
 import remarkGfm from "remark-gfm";
@@ -47,14 +48,6 @@ const Message = ({
         setShowChatSummary(false)
     }
 
-    function modifyImageUrl(url) {
-        try {
-            return (window.location.origin + url);
-        } catch {
-            return url; // fallback to original if parsing fails
-        }
-    }
-
     return(
         <>
             <div className={style.Message}>
@@ -62,20 +55,7 @@ const Message = ({
                     {message.isBot && <div> <img src={ message.error != "" ? botErrorIcon : botIcon} className={style.MessageAvatar} /></div>}
                     <div>
                         <div className={`${style.MessageContainer}  ${message.isBot == false ? style.UserMessage : style.BotMessage}`}>
-                            <Markdown
-                                remarkPlugins={[remarkGfm]}
-                                components={{
-                                    img: ({ node, ...props }) => {
-                                    const originalSrc = props.src;
-                                    const newSrc = modifyImageUrl(originalSrc);
-                                    return (
-                                        <img {...props} src={newSrc} alt={props.alt || ""} />
-                                    );
-                                    },
-                                }}
-                            >
-                                {message.message}
-                            </Markdown> { (message.isBot == true && message.error != "") && <span className={style.ErrorExpandButton} onClick={()=>setShowChatError(!showChatError)}>click here</span>}
+                            <Markdown>{message.message}</Markdown> { (message.isBot == true && message.error != "") && <span className={style.ErrorExpandButton} onClick={()=>setShowChatError(!showChatError)}>click here</span>}
                             {message.isBot == true &&  <Time onLike={handleOnLikeClick} onDisLike={handleOnDislikeClick} onSummaryClick={handleOnSummaryOpen} summaryOpen ={showChatSummary}  time={"Today 12:30pm"} message={message}/>}
                         </div>
                     </div>
@@ -85,6 +65,7 @@ const Message = ({
                  {/* {showFeedback && message.isBot && <Feedback onSubmit={onFeedbackSubmit} onFeedBackClose={handleOnFeedbackClose} message={message} /> } */}
                 
                  { (message.kind == "list" || message.kind == "table" || message.kind == "single" || message.kind == "none") && <Table data={message.data?.chart?.data} />}
+                 { message.kind == "image" && <Image message={message} /> }
                  { message.kind == "bar_chart" && <BarChart title={message.data.chart.title} data={message.data.chart.data} xAxis={message.data.chart.xAxis[0]} yAxis={message.data.chart.yAxis[0]}  /> }
                  { message.kind == "pie_chart" && <PieChart title={message.data.chart.title} data={message.data.chart.data} labelKey={message.data.chart.xAxis[0]} dataKey={message.data.chart.yAxis[0]}  /> }
                  { message.kind == "line_chart" && <LineChart title={message.data.chart.title} data={message.data.chart.data} xAxis={message.data.chart.xAxis[0]} yAxis={message.data.chart.yAxis[0]}  /> }

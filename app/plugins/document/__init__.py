@@ -51,7 +51,13 @@ __prompt__ = Prompt(**{
             Generate a JSON response in the following format without any formatting:
             {
                 "explanation": "<Explain how you determined the answer using the provided context>",
-                "general_message": "<Respond in Markdown format to the users question, using all available context, and ensure that the reply is comprehensive, detailed, descriptive and well-structured. If a provided image URL is available in the context, striclty embed it in the response using standard Markdown image syntax: ![Image](URL)>"
+                "general_message": "<Respond in Markdown format to the users question, using all available context, and ensure that the reply is comprehensive, detailed, descriptive and well-structured.>",
+                "operation_kind" : "list",
+                "visualisation": {
+                    "type": "image",
+                    "image_data": [ {"url": url, "caption": caption}, ]
+                },
+                "main_entity" : "main entity  for the query"
             }
             """
         },
