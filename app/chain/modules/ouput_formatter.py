@@ -52,7 +52,7 @@ class OutputFormatter(AbstractHandler):
 
 
         if "data" in response and isinstance(response["data"], list) and len(response["data"]) == 0:
-            if  "empty_message" in input_data:
+            if "empty_message" in input_data:
                 response["content"] = input_data["empty_message"]
             else:
                 response["content"] = "I didn't find any data matching the query"

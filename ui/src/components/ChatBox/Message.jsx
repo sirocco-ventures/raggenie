@@ -10,8 +10,10 @@ import BarChart from "../Chart/BarChart/BarChart"
 import PieChart from "../Chart/PieChart/PieChart"
 import LineChart from "../Chart/LineChart/LineChart"
 import AreaChart from "../Chart/AreaChart/AreaChart"
+import Image from "./Image"
 import Summary from "./Summary"
 import Markdown from "react-markdown"
+import remarkGfm from "remark-gfm";
 import ErrorMessage from "./ErrorMessage"
 const Message = ({
     message = {},
@@ -46,7 +48,6 @@ const Message = ({
         setShowChatSummary(false)
     }
 
-
     return(
         <>
             <div className={style.Message}>
@@ -64,6 +65,7 @@ const Message = ({
                  {/* {showFeedback && message.isBot && <Feedback onSubmit={onFeedbackSubmit} onFeedBackClose={handleOnFeedbackClose} message={message} /> } */}
                 
                  { (message.kind == "list" || message.kind == "table" || message.kind == "single" || message.kind == "none") && <Table data={message.data?.chart?.data} />}
+                 { message.kind == "image" && <Image message={message} /> }
                  { message.kind == "bar_chart" && <BarChart title={message.data.chart.title} data={message.data.chart.data} xAxis={message.data.chart.xAxis[0]} yAxis={message.data.chart.yAxis[0]}  /> }
                  { message.kind == "pie_chart" && <PieChart title={message.data.chart.title} data={message.data.chart.data} labelKey={message.data.chart.xAxis[0]} dataKey={message.data.chart.yAxis[0]}  /> }
                  { message.kind == "line_chart" && <LineChart title={message.data.chart.title} data={message.data.chart.data} xAxis={message.data.chart.xAxis[0]} yAxis={message.data.chart.yAxis[0]}  /> }

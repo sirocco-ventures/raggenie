@@ -76,7 +76,7 @@ class Document(BasePlugin, PluginMetadataMixin,DocumentDataPlugin,  Formatter):
             logger.exception(f"Exception during fetching data: {str(e)}")
             return False, str(e)
 
-    def fetch_data(self, params=None):
+    def fetch_data(self, engine, params=None):
         data = []
 
         for file_info in self.params.get("document_files", []):
@@ -99,7 +99,7 @@ class Document(BasePlugin, PluginMetadataMixin,DocumentDataPlugin,  Formatter):
                 "type": file_type,
                 "path": [url]
             })
-            data.extend(base_reader.load_data())
+            data.extend(base_reader.load_data(engine))
 
         return data
 

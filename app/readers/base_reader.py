@@ -11,7 +11,7 @@ class BaseReader:
         logger.info(f"initializing docs {source}")
         self.source = source
 
-    def load_data(self):
+    def load_data(self, engine=None):
         type = self.source["type"] if "type" in self.source else ""
         match type:
             case "text":
@@ -23,7 +23,8 @@ class BaseReader:
             case "url":
                 loader = UrlReader(source=self.source)
             case "pdf":
-                loader = PDFLoader(source=self.source)
+                loader = PDFLoader(source=self.source, engine=engine)
+                return loader.load(engine)
             case _:
                 raise ValueError(f"Documentation in given format '{type}' not supported.")
         return loader.load()

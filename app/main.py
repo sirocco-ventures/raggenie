@@ -89,6 +89,7 @@ def create_app(config):
     app.mount("/assets",StaticFiles(directory="./assets"), name="assets")
     app.mount("/ui/assets",StaticFiles(directory="./ui/dist/assets",  html=True), name="ui", )
     app.mount("/ui/dist-library", StaticFiles(directory="./ui/dist-library", html=True), name="embedbot")
+    app.mount("/static/doc-images", StaticFiles(directory="./static/doc-images", html=True), name="doc-images")
 
     templates = Jinja2Templates(directory="./ui/dist")
 

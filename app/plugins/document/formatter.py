@@ -7,7 +7,7 @@ class Formatter:
     """
 
 
-    def format(self, data: Dict[str, Any], inference: Dict[str, Any]) -> dict:
+    def format(self, data: Any, inference) -> (dict):
         """
         Format the response using the given data and inference information.
 
@@ -22,11 +22,32 @@ class Formatter:
         self.main_entity = inference.get("main_entity", "")
         self.kind = inference.get("operation_kind", "")
         self.general_message = inference.get("general_message", "Unable to process question, try again")
+        
+        if self.kind == "list":
+            response = self.basic_formatter(inference)
 
-        response["content"] = self.general_message
+        response.update({
+            "main_entity": self.main_entity,
+            "main_format": self.kind,
+            "role": "assistant",
+            "content": self.general_message,
+        })
 
-        response["main_entity"] = self.main_entity
-        response["main_format"] = self.kind
-        response["role"] = "assistant"
         return response
 
+
+    def basic_formatter(self, input:Any) -> dict :
+        """
+        Formats data as a list, handling cases for none.
+
+        :param input: The data to format.
+        :return: A dictionary containing the formatted list response.
+        """
+        data = input.get('visualisation', {}).get("image_data", [])
+
+        if data is None:
+            response = {"data": [], "kind": "none"}
+        else:
+            response = {"data": data, "kind": "image"}
+
+        return response

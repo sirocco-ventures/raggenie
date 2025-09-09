@@ -1,5 +1,6 @@
 from loguru import logger
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.schema import Document
 
 class SourceDocuments:
     def __init__(self,schema_details, schema_configs, documentation):
@@ -39,6 +40,19 @@ class SourceDocuments:
                 for chunk in chunks:
                     chunk.metadata = docs["metadata"] if "metadata" in docs else {}
                 chunked_docs.extend(chunks)
+                for img in docs.get("images", []):
+                    print(img, "current images")
+                    image_chunk = Document(
+                        page_content=img.get("caption", ""),
+                        metadata={
+                            **docs.get("metadata", {}),
+                            "type": "image",
+                            "url": img["url"],
+                            "file": img["file"],
+                            "page": img["page"]
+                        }
+                    )
+                    chunked_docs.append(image_chunk)
 
             chunked_schema = text_splitter.split_documents(load_schema)
         except Exception as e:

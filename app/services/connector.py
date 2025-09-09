@@ -12,7 +12,8 @@ from app.services.connector_details import get_plugin_metadata
 from fastapi import Request
 from app.providers.data_preperation import SourceDocuments
 from app.loaders.base_loader import BaseLoader
-
+from app.providers.document_parser.loader import ParserEngineLoader
+from app.providers.config import configs
 
 
 
@@ -772,7 +773,7 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
         logger.info("Updating datasource documentations")
         repo.update_configuration_status(config_id, 1, db)
         active_datsources = {}
-        vector_store.clear_collection(config_id)
+        processed_datasources = {}
         for key, datasource in datasources.items():
             connector_details = id_name_mappings.get(key, {})
             if "id" not in connector_details:
@@ -805,14 +806,31 @@ def update_datasource_documentations(db: Session, vector_store, datasources, id_
                         sd = SourceDocuments(schema_details, schema_config, [])
                         queries = get_all_connector_samples(connector_details.get("id"), db)
                     case 4:
-                        documentations = datasource.fetch_data()
+                        loader = ParserEngineLoader()
+                        engine = loader.load_engine(configs.pdf_parse_engine)
+                        documentations = datasource.fetch_data(engine)
                         sd = SourceDocuments([], [], documentations)
 
                 chunked_document, chunked_schema = sd.get_source_documents()
-                vector_store.prepare_data(key, chunked_document,chunked_schema, queries, int(config_id))
-        
-        
+                processed_datasources[key] = {
+                    "chunked_doc": chunked_document,
+                    "chunked_schema": chunked_schema,
+                    "queries": queries
+                }
+        if index:
+            vector_store.clear_collection(config_id)
+            for key, data in processed_datasources.items():
+                vector_store.prepare_data(
+                    datasource_name=key,
+                    chunked_document=data["chunked_doc"],
+                    chunked_schema=data["chunked_schema"],
+                    queries=data["queries"],
+                    config_id=int(config_id)
+                )
         repo.update_configuration_status(config_id, 2, db)
+
+
+
         return active_datsources, None
 
 def get_inference_and_plugin_configurations(db: Session, config_id: int):
