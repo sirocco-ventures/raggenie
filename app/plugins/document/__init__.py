@@ -57,7 +57,7 @@ __prompt__ = Prompt(**{
                     "type": "image",
                     "image_data": [ {"url": url, "caption": caption}, ]
                 },
-                "main_entity" : "main entity  for the query"
+                "main_entity" : "knowledge_chunk"
             }
             """
         },
